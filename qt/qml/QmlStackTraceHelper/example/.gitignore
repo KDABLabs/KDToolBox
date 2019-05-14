@@ -1,0 +1,8 @@
+qrc*o
+*pro.user
+Makefile
+/example
+*.o
+main.moc
+moc_predefs.h
+qrc_qrc.cpp
