@@ -9,6 +9,8 @@ Tools
   An _header-only_ tool to break the program when the main-thread event loop is blocked for more than 300ms.
 - [Qml Stacktrace Helper](https://github.com/KDAB/KDToolBox/tree/master/qt/qml/QmlStackTraceHelper)
   A function for retrieving a QML backtrace with gdb.
+- [Qml PropertySelector](https://github.com/KDAB/KDToolBox/tree/master/qt/qml/PropertySelector)
+  A QML Item to easily set property values based on a combination of conditions
 
 Licensing
 =========
