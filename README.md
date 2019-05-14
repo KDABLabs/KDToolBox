@@ -3,9 +3,10 @@ KDToolBox
 
 KDAB's collection of miscellaneous useful C++ classes and stuff.
 
-Table of contents
+Tools
 =================
-    * [Ui Watchdog](https://github.com/KDAB/KDToolBox/tree/master/qt/ui_watchdog)
+- [Ui Watchdog](https://github.com/KDAB/KDToolBox/tree/master/qt/ui_watchdog)
+  An _header-only_ tool to break the program when the main-thread event loop is blocked for more than 300ms.
 
 
 Licensing
