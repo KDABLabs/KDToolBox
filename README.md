@@ -5,7 +5,7 @@ KDAB's collection of miscellaneous useful C++ classes and stuff.
 
 Table of contents
 =================
-    * [Ui Watchdog](qt/ui_watchdog)
+    * [Ui Watchdog](https://github.com/KDAB/KDToolBox/tree/master/qt/ui_watchdog)
 
 
 Licensing
