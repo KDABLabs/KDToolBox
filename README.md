@@ -11,6 +11,8 @@ Tools
   A function for retrieving a QML backtrace with gdb.
 - [Qml PropertySelector](https://github.com/KDAB/KDToolBox/tree/master/qt/qml/PropertySelector)
   A QML Item to easily set property values based on a combination of conditions
+- [Model/View ModelIterator](https://github.com/KDAB/KDToolBox/tree/master/qt/model_view/modelIterator)
+  A set of (template) classes to allow iteratating over QAbstractItemModels using std algorithms
 
 Licensing
 =========
