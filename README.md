@@ -13,6 +13,8 @@ Tools
   A QML Item to easily set property values based on a combination of conditions
 - [Model/View ModelIterator](https://github.com/KDAB/KDToolBox/tree/master/qt/model_view/modelIterator)
   A set of (template) classes to allow iteratating over QAbstractItemModels using std algorithms
+- [Model/View SortProxyModel](https://github.com/KDAB/KDToolBox/tree/master/qt/model_view/sortProxyModel)
+  A QSortFilterProxyModel replacement that just does sorting, but properly signals moves due to sorts.
 
 Licensing
 =========
