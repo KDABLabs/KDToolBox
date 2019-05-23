@@ -392,7 +392,7 @@ void SortProxyModel::handleRowsRemoved(const QModelIndex &parent, int firstRemov
     auto it = predecessor(removedRows.end());
     forever {
         auto lastRowToRemove = *it;
-        //see if we have consequtive rows we can remove in one go
+        //see if we have consecutive rows we can remove in one go
         while (it != removedRows.begin() && *predecessor(it) == *it - 1) --it;
         auto firstRowToRemove = *it;
         beginRemoveRows({}, firstRowToRemove, lastRowToRemove);
