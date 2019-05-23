@@ -18,8 +18,18 @@ Tools
 - [Model/View UpdateableModel](https://github.com/KDAB/KDToolBox/tree/master/qt/model_view/updateableModel)
   A template class to make defining a model that sends proper update signals easy
 
+
+Other code snippets
+===================
+- [Integrating Qt Quick 2 with OpenGL](https://github.com/KDAB/integrating-qq2-with-opengl)
+  Code for Giuseppe D'Angelo's talk at the Qt World Summit 2015, QtCon 2016, Qt World Summit 2017.
+
+
 Licensing
 =========
 
 This software is provided as GPLv2 or later (see LICENSE.GPL.txt) or, alternatively,
 contact KDAB at <info@kdab.com> if you need different licensing.
+
+For the "Other code snippets", which are hosted outside of this repo, please consult
+their own license.
