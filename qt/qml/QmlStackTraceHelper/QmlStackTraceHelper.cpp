@@ -1,21 +1,29 @@
 /****************************************************************************
-** Copyright (C) 2019 Klaralvdalens Datakonsult AB, a KDAB Group company, info@kdab.com.
-** Author: sergio.martins@kdab.com
-** All rights reserved.
+**                                MIT License
 **
-** This file may be distributed and/or modified under the terms of the
-** GNU Lesser General Public License version 3 as published by the
-** Free Software Foundation and appearing in the file LICENSE.LGPL.txt included.
+** Copyright (c) 2018-2019 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
+** Author: Sérgio Martins <sergio.martins@kdab.com>
 **
-** You may even contact us at info@kdab.com for different licensing options.
+** This file is part of KDToolBox (https://github.com/KDAB/KDToolBox).
 **
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+** Permission is hereby granted, free of charge, to any person obtaining a copy
+** of this software and associated documentation files (the "Software"), to deal
+** in the Software without restriction, including without limitation the rights
+** to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+** copies of the Software, ** and to permit persons to whom the Software is
+** furnished to do so, subject to the following conditions:
 **
-** Contact info@kdab.com if any conditions of this licensing are not
-** clear to you.
+** The above copyright notice and this permission notice (including the next paragraph)
+** shall be included in all copies or substantial portions of the Software.
 **
-**********************************************************************/
+** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+** IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+** FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+** AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+** LIABILITY, WHETHER IN AN ACTION OF ** CONTRACT, TORT OR OTHERWISE,
+** ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+** DEALINGS IN THE SOFTWARE.
+****************************************************************************/
 
 #include <QString>
 #include <QVector>

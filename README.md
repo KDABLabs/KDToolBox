@@ -28,8 +28,9 @@ Other code snippets
 Licensing
 =========
 
-This software is provided as GPLv2 or later (see LICENSE.GPL.txt) or, alternatively,
-contact KDAB at <info@kdab.com> if you need different licensing.
+This software is provided as MIT (see the LICENSE file in the root of this repository [1]).
 
 For the "Other code snippets", which are hosted outside of this repo, please consult
 their own license.
+
+[1] [License file] (https://github.com/KDAB/KDToolBox/blob/master/LICENSE)
