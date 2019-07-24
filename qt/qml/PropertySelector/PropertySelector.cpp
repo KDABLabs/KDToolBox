@@ -36,6 +36,11 @@ using namespace cpp::qmltypes;
   @class PropertySelector
   @brief A QML Item to set one or more properties on a target based on a set of rules
 
+  PropertySelector allows you to select which values to set on one or more properties based
+  on a set of other boolean properties. This enables you to easily express complex 
+  conditions, for instance to have the color of an item differ based on selection, hover, 
+  checked and enabled status without complex binding expressions or imperative code.
+
   PropertySelector is a class that employs custom parsing of its contents, allowing it to
   use the QML syntax in a slightly different way. PropertySelector operates on a @ref target
   which by default is the parent item. That is the only convential property that it exposes.
@@ -54,21 +59,25 @@ using namespace cpp::qmltypes;
 
   For example:
   \code{.qml}
-  checked.color: "red"
-  hovered.color: _style.hoveredColor
-  checked.hovered.color: _style.checkedHoveredColor
-  color: "#dddddd"
+  PropertySelector {
+    checked.color: "red"
+    hovered.color: _style.hoveredColor
+    checked.hovered.color: _style.checkedHoveredColor
+    color: "#dddddd"
+  }
   \endcode
 
   The nested syntax for grouped properties is available too, so you can also use:
   \code{.qml}
-  checked {
-    color: "red"
-    hovered.color: _style.checkedHoveredColor
-  }
+  PropertySelector {
+    checked {
+      color: "red"
+      hovered.color: _style.checkedHoveredColor
+    }
 
-  hovered.color: _style.hoveredColor
-  color: "#dddddd"
+    hovered.color: _style.hoveredColor
+    color: "#dddddd"
+  }
   \endcode
 
   ##Order of evaluation##
