@@ -1,0 +1,33 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>images/Austria.png</file>
+        <file>images/Belgium.png</file>
+        <file>images/Bulgaria.png</file>
+        <file>images/Croatia.png</file>
+        <file>images/Cyprus.png</file>
+        <file>images/Czech Republic.png</file>
+        <file>images/Denmark.png</file>
+        <file>images/Estonia.png</file>
+        <file>images/Finland.png</file>
+        <file>images/France.png</file>
+        <file>images/Germany.png</file>
+        <file>images/Greece.png</file>
+        <file>images/Hungary.png</file>
+        <file>images/Ireland.png</file>
+        <file>images/Italy.png</file>
+        <file>images/Latvia.png</file>
+        <file>images/Lithuania.png</file>
+        <file>images/Luxembourg.png</file>
+        <file>images/Malta.png</file>
+        <file>images/Netherlands.png</file>
+        <file>images/Poland.png</file>
+        <file>images/Portugal.png</file>
+        <file>images/Romania.png</file>
+        <file>images/Slovakia.png</file>
+        <file>images/Slovenia.png</file>
+        <file>images/Spain.png</file>
+        <file>images/Sweden.png</file>
+        <file>images/United Kingdom.png</file>
+    </qresource>
+</RCC>
