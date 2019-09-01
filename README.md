@@ -29,10 +29,35 @@ Other code snippets
 
 Licensing
 =========
-
-This software is provided as MIT (see the LICENSE file in the root of this repository [1]).
+KDToolBox is (C) 2019, Klarälvdalens Datakonsult AB, and is available under the
+terms of the MIT license (see the LICENSE file in the root of this repository [1]).
 
 For the "Other code snippets", which are hosted outside of this repo, please consult
 their own license.
 
+Contact KDAB at <info@kdab.com> if you need different licensing options.
+
 [1] [License file] (https://github.com/KDAB/KDToolBox/blob/master/LICENSE)
+
+Get Involved
+============
+KDAB will happily accept external contributions; however, **all**
+contributions will require a signed Contributor License Agreement
+(see docs/KDToolBox-CopyrightAssignmentForm.docx).
+
+Contact info@kdab.com for more information.
+
+About KDAB
+==========
+KDToolBox is supported and maintained by Klarälvdalens Datakonsult AB (KDAB).
+
+The KDAB Group is the global No.1 software consultancy for Qt, C++ and
+OpenGL applications across desktop, embedded and mobile platforms.
+
+The KDAB Group provides consulting and mentoring for developing Qt applications
+from scratch and in porting from all popular and legacy frameworks to Qt.
+We continue to help develop parts of Qt and are one of the major contributors
+to the Qt Project. We can give advanced or standard trainings anywhere
+around the globe on Qt as well as C++, OpenGL, 3D and more.
+
+Please visit http://www.kdab.com to meet the people who write code like this.
