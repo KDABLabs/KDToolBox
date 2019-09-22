@@ -75,8 +75,7 @@ DepthFirstIterator &DepthFirstIterator::operator--()
         //we cannot iterate backwards from the first node in the tree
         Q_ASSERT(m_index.parent().isValid() || m_index.row() > 0);
 
-        auto index = m_index;
-        auto sibling = prevSibling(m_index);
+        const auto sibling = prevSibling(m_index);
         if (!sibling.isValid()) {
             m_index = m_index.parent();
         } else {

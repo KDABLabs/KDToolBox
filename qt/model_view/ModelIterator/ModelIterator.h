@@ -124,16 +124,16 @@ public:
     FlatIterator(const QModelIndex& index, int column = 0);
     inline FlatIterator(const FlatIterator& other) : m_index(other.m_index), m_atEnd(other.m_atEnd) {}
 
-    FlatIterator& operator+=(int step);
-    FlatIterator& operator-=(int step);
-    inline FlatIterator operator+(int step) {FlatIterator tmp(*this); tmp += step; return tmp;}
-    inline FlatIterator operator-(int step) {FlatIterator tmp(*this); tmp -= step; return tmp;}
+    FlatIterator& operator+=(difference_type step);
+    FlatIterator& operator-=(difference_type step);
+    inline FlatIterator operator+(difference_type step) {FlatIterator tmp(*this); tmp += step; return tmp;}
+    inline FlatIterator operator-(difference_type step) {FlatIterator tmp(*this); tmp -= step; return tmp;}
 
     inline FlatIterator& operator++() {return operator+=(1);}
     inline FlatIterator operator++(int) {FlatIterator tmp(*this); operator++(); return tmp;}
     inline FlatIterator& operator--() {return operator-=(1);}
     inline FlatIterator operator--(int) {FlatIterator tmp(*this); operator--(); return tmp;}
-    inline int operator-(const FlatIterator& other) {Q_ASSERT(canCompare(*this, other)); return row() - other.row();}
+    inline difference_type operator-(const FlatIterator& other) const {Q_ASSERT(canCompare(*this, other)); return row() - other.row();}
 
     inline bool operator==(const FlatIterator& other) {return m_index == other.m_index && m_atEnd == other.m_atEnd;}
     inline bool operator!=(const FlatIterator& other) {return !operator==(other);}
@@ -206,6 +206,7 @@ public: //methods
     inline friend bool operator>(const DataValueWrapper& lhs, const DataValueWrapper& rhs) {return lhs.it > rhs.it;}
     inline friend bool operator<=(const DataValueWrapper& lhs, const DataValueWrapper& rhs) {return lhs.it <= rhs.it;}
     inline friend bool operator>=(const DataValueWrapper& lhs, const DataValueWrapper& rhs) {return lhs.it >= rhs.it;}
+    inline difference_type operator-(const DataValueWrapper& other) const {return this->it - other.it;}
 
     inline pseudo_val operator*()  {return pseudo_val{(*it)};}
     inline pseudo_val operator->() {return pseudo_val{(*it)};}

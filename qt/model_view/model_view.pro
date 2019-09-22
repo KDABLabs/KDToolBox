@@ -1,7 +1,7 @@
 TEMPLATE = subdirs
 SUBDIRS += \
     KDTableToListProxyModel \
-#    ModelIterator \
+    ModelIterator \
     sortProxyModel \
     updateableModel \
 
