@@ -53,19 +53,26 @@
 // by using @ref ModelAdapter.
 // The Iterator is a bi-directional iterator. This has an impact over the efficiency of some algorithms
 // over using a random-access iterator.
-class DepthFirstIterator: public std::iterator<std::bidirectional_iterator_tag, QModelIndex, int>
+class DepthFirstIterator
 {
     QModelIndex m_index;
     int m_column = 0;
     bool m_atEnd = false;
 
-public:
+public: //types
     struct pseudo_ptr {
         QModelIndex t;
         QModelIndex operator*()&&{return t;}
         QModelIndex* operator->(){ return &t; }
     };
 
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = QModelIndex;
+    using difference_type = int;
+    using pointer = value_type*;
+    using reference = value_type&;
+
+public: //methods
     DepthFirstIterator(const QModelIndex& index, int column = 0);
     inline DepthFirstIterator(const DepthFirstIterator& other) : m_index(other.m_index), m_column(other.m_column) {}
 
@@ -112,13 +119,17 @@ private:
 // by using @ref ModelAdapter.
 // FlatIterator is a random-access iterator, which allows algortihms to operate in the most effecient
 // way.
-class FlatIterator: public std::iterator<std::random_access_iterator_tag, QModelIndex, int>
+class FlatIterator
 {
     QModelIndex m_index;
     bool m_atEnd = true;
 
 public: //types
-    //iterator catagory, value_type, difference_type, pointer and reference declared via std::iterator template
+    using iterator_category = std::random_access_iterator_tag;
+    using value_type = QModelIndex;
+    using difference_type = int;
+    using pointer = value_type*;
+    using reference = value_type&;
 
 public:
     FlatIterator(const QModelIndex& index, int column = 0);
