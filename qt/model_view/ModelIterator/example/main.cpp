@@ -26,7 +26,7 @@
 ****************************************************************************/
 
 #include <QCoreApplication>
-#include "ModelIterator.h"
+#include "../src/ModelIterator.h"
 #include <QStandardItemModel>
 #include <QStandardItem>
 #include <QDebug>
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     qDebug() << "\n\nDepth-first iterator, std::find_if:";
     auto it = std::find_if(adapter2.begin(), adapter2.end(), [](const QModelIndex& index)
     {
-        return index.data().toString() == QStringLiteral("node .3.2.4");
+        return index.data().toString() == "node .3.2.4";
     });
     if (it == adapter2.end()) {
         qDebug() << "Node not found!";
@@ -85,15 +85,12 @@ int main(int argc, char *argv[])
     auto it2 = DataValueWrapper<DepthFirstIterator, QString>::begin(&model);
     const auto end2 = DataValueWrapper<DepthFirstIterator, QString>::end(&model);
 
-    qDebug() << "\n\nDepth-first iterator, std::find_if on DataValueWrapped iterators:";
-    auto findit = std::find_if(it2, end2, [](const QString& label)
-    {
-        return label == QStringLiteral("node .3.2.4");
-    });
+    qDebug() << "\n\nDepth-first iterator, std::find on DataValueWrapped iterators:";
+    auto findit = std::find(it2, end2, "node .3.2.4"); //we're looking directly for the value
     if (findit == end2) {
         qDebug() << "Node not found!";
     } else {
-        qDebug() << "Node found:" << *findit << findit.index() << "\n\n";
+        qDebug() << "Node found:" << *findit << findit.index() << "\n\n"; //Note that we can still access the modelindex
     }
 
     //Assign to DatavalueWrapper iterator. This will call setData on the model
@@ -105,7 +102,7 @@ int main(int argc, char *argv[])
     //We can use ModelAdapter with an additional template argument to iterate over that type
     qDebug() << "\nvisited all top nodes?";
     auto adapter3 = ModelAdapter<FlatIterator, QString>(&model);
-    for (const QString &label: adapter3) {
+    for (const QString &label: adapter3) { //use adapter with ranged for loop
         qDebug() << label;
     }
 

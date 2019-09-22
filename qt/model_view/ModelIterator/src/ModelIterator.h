@@ -179,6 +179,7 @@ public: //types
         inline T* operator->(){return &t;}
         inline operator T() {return t;}
         inline void operator=(const T &newValue) {const_cast<QAbstractItemModel*>(index.model())->setData(index, QVariant::fromValue(newValue), role);}
+        template <typename ComparedType> inline bool operator==(const ComparedType& value) const {return t == value;}
     };
 
     using value_type = T;
