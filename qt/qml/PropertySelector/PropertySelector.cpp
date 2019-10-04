@@ -286,9 +286,9 @@ void PropertySelector::prepareRules()
                 auto context = QQmlEngine::contextForObject(target());
                 const QString objectName = context->objectName().isEmpty() ? QStringLiteral("unnamed") : context->objectName(); //FIXME: broken
                 auto switchContext = QQmlEngine::contextForObject(this);
-                qWarning(QString("PropertySelector target %1 (%2) does not have a property '%3' requested from %4, line %5:%6")
+                qWarning() << QString("PropertySelector target %1 (%2) does not have a property '%3' requested from %4, line %5:%6")
                               .arg(target()->metaObject()->className(), objectName, start->property,
-                               switchContext->baseUrl().toString(), QString::number(start->location.line), QString::number(start->location.column)).toLatin1() );
+                               switchContext->baseUrl().toString(), QString::number(start->location.line), QString::number(start->location.column)).toLatin1();
             } else {
                 PropertyRules rules {prop, start, end, end, nullptr};
                 m_properties.append(rules);
