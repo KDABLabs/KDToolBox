@@ -110,7 +110,7 @@ using namespace cpp::qmltypes;
 
 ///@brief constructor
 ///@param parent the parent item
-PropertySelector::PropertySelector(QQuickItem *parent)
+PropertySelector::PropertySelector(QObject *parent)
     :QObject(parent)
 {
 }

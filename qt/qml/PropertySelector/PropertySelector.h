@@ -30,7 +30,6 @@
 #ifndef PROPERTYSWITCH_H
 #define PROPERTYSWITCH_H
 
-#include <QQuickItem>
 #include <bitset>
 #include <private/qqmlcustomparser_p.h>
 #include <QQmlParserStatus>
@@ -51,7 +50,7 @@ public:
     ///@brief the maximum number of conditions supported
     static const int MaxConditionCount = 32;
 
-    PropertySelector(QQuickItem *parent = nullptr);
+    PropertySelector(QObject *parent = nullptr);
 
     QObject *target() const;
     Q_SLOT void setTarget(QObject *target);
