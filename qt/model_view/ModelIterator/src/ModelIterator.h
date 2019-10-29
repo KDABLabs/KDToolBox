@@ -73,8 +73,7 @@ public: //types
     using reference = value_type&;
 
 public: //methods
-    DepthFirstIterator(const QModelIndex& index, int column = 0);
-    inline DepthFirstIterator(const DepthFirstIterator& other) : m_index(other.m_index), m_column(other.m_column) {}
+    explicit DepthFirstIterator(const QModelIndex& index, int column = 0);
 
     DepthFirstIterator& operator++();
     inline DepthFirstIterator operator++(int) {DepthFirstIterator tmp(*this); operator++(); return tmp;}
@@ -132,8 +131,7 @@ public: //types
     using reference = value_type&;
 
 public:
-    FlatIterator(const QModelIndex& index, int column = 0);
-    inline FlatIterator(const FlatIterator& other) : m_index(other.m_index), m_atEnd(other.m_atEnd) {}
+    explicit FlatIterator(const QModelIndex& index, int column = 0);
 
     FlatIterator& operator+=(difference_type step);
     FlatIterator& operator-=(difference_type step);
@@ -200,7 +198,7 @@ public: //types
     using difference_type = typename ModelIterator::difference_type;
 
 public: //methods
-    DataValueWrapper(ModelIterator it): it(it){}
+    explicit DataValueWrapper(ModelIterator it): it(it){}
 
     DataValueWrapper& operator+=(int step) {it+= step; return *this;}
     DataValueWrapper& operator-=(int step) {it-= step; return *this;}
@@ -251,7 +249,7 @@ public: //types
     using const_iterator = Wrapper;
 
 public:
-    ModelAdapter(QAbstractItemModel *model, int column = 0) : m_model(model), m_column(column) {}
+    explicit ModelAdapter(QAbstractItemModel *model, int column = 0) : m_model(model), m_column(column) {}
 
     Wrapper begin() const {return Wrapper::begin(m_model, m_column);}
     Wrapper end() const {return Wrapper::end(m_model, m_column);}
@@ -273,7 +271,7 @@ public: //types
     using const_iterator = ModelIterator;
 
 public:
-    ModelAdapter(QAbstractItemModel *model, int column = 0) : m_model(model), m_column(column) {}
+    explicit ModelAdapter(QAbstractItemModel *model, int column = 0) : m_model(model), m_column(column) {}
 
     ModelIterator begin() const {return ModelIterator::begin(m_model, m_column);}
     ModelIterator end() const {return ModelIterator::end(m_model, m_column);}
