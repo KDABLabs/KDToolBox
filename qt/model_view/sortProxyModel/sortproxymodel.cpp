@@ -39,27 +39,27 @@ SortProxyModel::SortProxyModel(QObject *parent)
 QModelIndex SortProxyModel::index(int row, int column, const QModelIndex &parent) const
 {
     Q_ASSERT(!parent.isValid()); //we do not support tree models
-    Q_UNUSED(parent);
+    Q_UNUSED(parent)
 
     if (!sourceModel())
         return {};
-    if (row >= m_rowMap.size())
+    if (row >= static_cast<int>(m_rowMap.size()))
         return {};
     if (column < 0 || column >= sourceModel()->columnCount())
         return {};
 
-    return createIndex(row, column, m_rowMap[row]);
+    return createIndex(row, column, static_cast<quintptr>(m_rowMap[static_cast<ulong>(row)]));
 }
 
 QModelIndex SortProxyModel::parent(const QModelIndex &child) const
 {
-    Q_UNUSED(child);
+    Q_UNUSED(child)
     return {};
 }
 
 int SortProxyModel::rowCount(const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
+    Q_UNUSED(parent)
     if (sourceModel()) {
         return static_cast<int>(m_rowMap.size());
     } else {
@@ -69,7 +69,7 @@ int SortProxyModel::rowCount(const QModelIndex &parent) const
 
 int SortProxyModel::columnCount(const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
+    Q_UNUSED(parent)
     const auto source = sourceModel();
     if (source) {
         return source->columnCount();
@@ -145,7 +145,7 @@ QModelIndex SortProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
 
     //no further bounds checking, out of bounds indices are a breach of contract
     auto it = std::find(m_rowMap.cbegin(), m_rowMap.cend(), sourceIndex.row());
-    return index(it - m_rowMap.cbegin(), sourceIndex.column());
+    return index(static_cast<int>(it - m_rowMap.cbegin()), sourceIndex.column());
 }
 
 void SortProxyModel::setSortRole(int role)
@@ -208,10 +208,10 @@ void SortProxyModel::rebuildRowMap()
     //simple initial sort. No emitting of row moves
     m_rowMap.clear();
     if (sourceModel()) {
-        m_rowMap.resize(sourceModel()->rowCount());
+        m_rowMap.resize(static_cast<ulong>(sourceModel()->rowCount()));
         std::iota(m_rowMap.begin(), m_rowMap.end(), 0);
         sortMappingContainer(m_rowMap);
-    };
+    }
 }
 
 template <class Iterator>
@@ -317,8 +317,8 @@ bool SortProxyModel::lessThan(int source_left_row, int source_right_row) const
 
 void SortProxyModel::handleDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, QVector<int> roles)
 {
-    Q_UNUSED(topLeft);
-    Q_UNUSED(bottomRight);
+    Q_UNUSED(topLeft)
+    Q_UNUSED(bottomRight)
 
     if (roles.isEmpty() || roles.contains(m_sortRole)) {
         reorder();
@@ -332,7 +332,7 @@ void SortProxyModel::handleRowsInserted(const QModelIndex &parent, int firstNewR
 
     //create a mapping for the new rows
     std::vector<int> newRowsMap;
-    newRowsMap.resize(lastNewRow - firstNewRow + 1);
+    newRowsMap.resize(static_cast<ulong>(lastNewRow - firstNewRow + 1));
     std::iota(newRowsMap.begin(), newRowsMap.end(), firstNewRow);
     sortMappingContainer(newRowsMap);
 
@@ -369,6 +369,14 @@ void SortProxyModel::handleRowsInserted(const QModelIndex &parent, int firstNewR
             ++curIt;
         }
     }
+    // handle case of insert at the end of the container: insert the remaining items in newRowsMap
+    if (curIt == m_rowMap.end() && newIt != newRowsMap.end()) {
+        const auto insertStartPos = static_cast<int>(curIt - m_rowMap.begin());
+        const auto insertLength = static_cast<int>(newRowsMap.end() - newIt);
+        beginInsertRows({}, insertStartPos, insertStartPos + insertLength - 1);
+        m_rowMap.insert(m_rowMap.end(), newIt, newRowsMap.end());
+        endInsertRows();
+    }
 }
 
 void SortProxyModel::handleRowsRemoved(const QModelIndex &parent, int firstRemovedRow, int lastRemovedRow)
@@ -380,7 +388,7 @@ void SortProxyModel::handleRowsRemoved(const QModelIndex &parent, int firstRemov
     //  up list of rows to remove
     const int shift = lastRemovedRow - firstRemovedRow + 1;
     std::vector<int> removedRows;
-    removedRows.reserve(shift);
+    removedRows.reserve(static_cast<ulong>(shift));
     int row = 0;
     for(auto &oldPos : m_rowMap) {
         if (oldPos > lastRemovedRow) {

@@ -67,11 +67,13 @@ private Q_SLOTS:
     void insertSingleValue();
     void insertMultipleContiniousValues();
     void insertMultipleDiscontiniousValues();
+    void insertAtEndOfRange();
     void removeSingleValue();
     void removeMultipleContiniousValues();
     void removeMultipleDiscontiniousValues();
 
     void strings();
+    void doubles();
     void sortOnRolesAndColumns();
 };
 
@@ -92,7 +94,7 @@ void checkModelContents(const QAbstractItemModel &model, std::initializer_list<v
                                      "Called from line %d",
                   rowCount, values.size(), line);
 
-    QVERIFY2(rowCount == values.size(), sizeMessage);
+    QVERIFY2(rowCount == static_cast<int>(values.size()), sizeMessage);
 
     for (int row = 0; row < rowCount; ++row)
     {
@@ -359,6 +361,39 @@ void SortProxyModelTest::insertMultipleDiscontiniousValues()
     QCOMPARE(insertedSpy.at(2)[InsertToIndex], 6);
 }
 
+void SortProxyModelTest::insertAtEndOfRange()
+{
+    VectorModel<int> sourceModel{};
+    SortProxyModel sorted;
+    sorted.setSourceModel(&sourceModel);
+
+    QCOMPARE(sorted.rowCount(), 0);
+    QSignalSpy insertedSpy(&sorted, &SortProxyModel::rowsInserted);
+
+    // append to empty model
+    sourceModel.append({3, 1, 2});
+    CHECKMODELCONTENTS(int)(sorted, {1, 2, 3});
+    QCOMPARE(insertedSpy.count(), 1);
+    QCOMPARE(insertedSpy.at(0)[InsertFromIndex], 0);
+    QCOMPARE(insertedSpy.at(0)[InsertToIndex], 2);
+
+    // append to non-empty model
+    insertedSpy.clear();
+    sourceModel.append({4, 42});
+    CHECKMODELCONTENTS(int)(sorted, {1, 2, 3, 4, 42});
+    QCOMPARE(insertedSpy.count(), 1);
+    QCOMPARE(insertedSpy.at(0)[InsertFromIndex], 3);
+    QCOMPARE(insertedSpy.at(0)[InsertToIndex], 4);
+
+    // insert into non-empty model
+    insertedSpy.clear();
+    sourceModel.insert(2, 75);
+    CHECKMODELCONTENTS(int)(sorted, {1, 2, 3, 4, 42, 75});
+    QCOMPARE(insertedSpy.count(), 1);
+    QCOMPARE(insertedSpy.at(0)[InsertFromIndex], 5);
+    QCOMPARE(insertedSpy.at(0)[InsertToIndex], 5);
+}
+
 void SortProxyModelTest::removeSingleValue()
 {
     VectorModel<int> sourceModel{3,9,1,2,4};
@@ -447,6 +482,19 @@ void SortProxyModelTest::strings()
     CHECKMODELCONTENTS(QString)(sorted, {QLatin1String("dew"), QLatin1String("cherry"), QLatin1String("apple"), QLatin1String("Echo"), QLatin1String("Bee")});
 }
 
+void SortProxyModelTest::doubles()
+{
+    VectorModel<double> sourceModel{20.0, 1.1, 42.0, 3.33};
+
+    SortProxyModel sorted;
+    sorted.setSourceModel(&sourceModel);
+
+    CHECKMODELCONTENTS(double)(sorted, {1.1, 3.33, 20.0, 42.0});
+
+    sorted.sort(0, Qt::DescendingOrder);
+    CHECKMODELCONTENTS(double)(sorted, {42.0, 20.0, 3.33, 1.1});
+}
+
 void SortProxyModelTest::sortOnRolesAndColumns()
 {
     QStandardItemModel sourceModel;
@@ -491,7 +539,6 @@ void SortProxyModelTest::sortOnRolesAndColumns()
     //sort on Qt::DisplayRole in column 2
     sorted.setSortRole(Qt::DisplayRole);
     CHECKMODELCONTENTS(int)(sorted, {5, 4, 3, 2, 1});
-
 }
 
 QTEST_MAIN(SortProxyModelTest)

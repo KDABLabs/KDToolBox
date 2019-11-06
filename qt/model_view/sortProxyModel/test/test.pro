@@ -26,8 +26,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         tst_sortproxymodeltest.cpp \
-        ..\sortproxymodel.cpp \
+        $${PWD}/../sortproxymodel.cpp \
 
 HEADERS += \
-        ..\sortproxymodel.h \
+        $${PWD}/../sortproxymodel.h \
         vectormodel.h
