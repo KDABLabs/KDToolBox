@@ -84,8 +84,8 @@ public: //methods
     inline bool operator!=(const DepthFirstIterator& other) {return !operator ==(other);}
 
     inline QModelIndex operator*() {return m_atEnd ? QModelIndex() :
-                                                      m_index.sibling(m_index.row(), m_column);}
-    inline pseudo_ptr operator->() {Q_ASSERT(!m_atEnd); return pseudo_ptr{m_index.sibling(m_index.row(), m_column)};}
+                                                      m_index.siblingAtColumn(m_column);}
+    inline pseudo_ptr operator->() {Q_ASSERT(!m_atEnd); return pseudo_ptr{m_index.siblingAtColumn(m_column)};}
 
     static DepthFirstIterator begin(QAbstractItemModel *model, int column = 0);
     static DepthFirstIterator end(QAbstractItemModel *model, int column = 0);

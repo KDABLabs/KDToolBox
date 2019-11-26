@@ -82,6 +82,34 @@ int main(int argc, char *argv[])
         qDebug() << "Node found:" << *it << it->data() << "\n\n";
     }
 
+    //check if it works on an empty model
+    QStandardItemModel emptyModel(0,2);
+    qDebug() << "empty model count" << emptyModel.rowCount();
+    auto emptyModelTest = [](auto emptyAdaptor) {
+        for (const auto& index: emptyAdaptor) {
+            qDebug() << index.data() << index; //Should not yield anything
+        }
+        auto invalidIt = std::find_if(emptyAdaptor.begin(), emptyAdaptor.end(), [](const QModelIndex& index)
+                                      {
+                                          return index.data().toString() == "test";
+                                      });
+        if (invalidIt == emptyAdaptor.end()) {
+            qDebug() << "   Item not found in empty model.";
+        } else {
+            qWarning() << "   Item found in empty model. That is REALLY strange...";
+        }
+    };
+
+    auto emptyAdapterFlat = ModelAdapter<FlatIterator>(&emptyModel);
+    qDebug() << "Testing empty model with FlatIterator...";
+    emptyModelTest(emptyAdapterFlat);
+
+    auto emptyAdaptorDepthFirst = ModelAdapter<DepthFirstIterator>(&emptyModel);
+    qDebug() << "Testing empty model with DepthFirstIterator...";
+    emptyModelTest(emptyAdaptorDepthFirst);
+
+
+    //DataValueWrapper tests
     auto it2 = DataValueWrapper<DepthFirstIterator, QString>::begin(&model);
     const auto end2 = DataValueWrapper<DepthFirstIterator, QString>::end(&model);
 
