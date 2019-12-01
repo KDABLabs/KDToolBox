@@ -6,7 +6,7 @@ KDAB's collection of miscellaneous useful C++ classes and stuff.
 Tools
 =================
 - [Ui Watchdog](https://github.com/KDAB/KDToolBox/tree/master/qt/ui_watchdog)
-  An _header-only_ tool to break the program when the main-thread event loop is blocked for more than 300ms.
+  A _header-only_ tool to break the program when the main-thread event loop is blocked for more than 300ms.
 - [Qml Stacktrace Helper](https://github.com/KDAB/KDToolBox/tree/master/qt/qml/QmlStackTraceHelper)
   A function for retrieving a QML backtrace with gdb.
 - [Qml PropertySelector](https://github.com/KDAB/KDToolBox/tree/master/qt/qml/PropertySelector)
