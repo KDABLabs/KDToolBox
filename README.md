@@ -6,7 +6,7 @@ KDAB's collection of miscellaneous useful C++ classes and stuff.
 Tools
 =================
 - [Ui Watchdog](https://github.com/KDAB/KDToolBox/tree/master/qt/ui_watchdog)
-  An _header-only_ tool to break the program when the main-thread event loop is blocked for more than 300ms.
+  A _header-only_ tool to break the program when the main-thread event loop is blocked for more than 300ms.
 - [Qml Stacktrace Helper](https://github.com/KDAB/KDToolBox/tree/master/qt/qml/QmlStackTraceHelper)
   A function for retrieving a QML backtrace with gdb.
 - [Qml PropertySelector](https://github.com/KDAB/KDToolBox/tree/master/qt/qml/PropertySelector)
@@ -30,14 +30,14 @@ Other code snippets
 Licensing
 =========
 KDToolBox is (C) 2019, Klarälvdalens Datakonsult AB, and is available under the
-terms of the MIT license (see the LICENSE file in the root of this repository [1]).
+terms of the MIT license (see the LICENSE.MIT.txt file in this repository [1]).
 
 For the "Other code snippets", which are hosted outside of this repo, please consult
 their own license.
 
 Contact KDAB at <info@kdab.com> if you need different licensing options.
 
-[1] [License file] (https://github.com/KDAB/KDToolBox/blob/master/LICENSE)
+[1] [License file] (https://github.com/KDAB/KDToolBox/blob/master/LICENSE.MIT.txt)
 
 Get Involved
 ============
@@ -46,6 +46,9 @@ contributions will require a signed Contributor License Agreement
 (see docs/KDToolBox-CopyrightAssignmentForm.docx).
 
 Contact info@kdab.com for more information.
+
+Please submit your contributions or issue reports from our GitHub space at
+https://github.com/KDAB/KDToolBox
 
 About KDAB
 ==========
@@ -60,4 +63,4 @@ We continue to help develop parts of Qt and are one of the major contributors
 to the Qt Project. We can give advanced or standard trainings anywhere
 around the globe on Qt as well as C++, OpenGL, 3D and more.
 
-Please visit http://www.kdab.com to meet the people who write code like this.
+Please visit https://www.kdab.com to meet the people who write code like this.
