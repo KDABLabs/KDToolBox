@@ -1,7 +1,7 @@
 /****************************************************************************
 **                                MIT License
 **
-** Copyright (c) 2017 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
+** Copyright (C) 2017 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
 ** Author: Sérgio Martins <sergio.martins@kdab.com>
 **
 ** This file is part of KDToolBox (https://github.com/KDAB/KDToolBox).
@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 
     QObject::connect(button, &QPushButton::clicked, [] {
         qDebug() << "Blocking forever!";
-        while(true);
+        while (true);
     });
 
     auto sleepTimer = new QTimer();
