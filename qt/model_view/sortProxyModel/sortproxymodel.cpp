@@ -351,7 +351,7 @@ void SortProxyModel::handleRowsInserted(const QModelIndex &parent, int firstNewR
     auto newIt = newRowsMap.begin();
     auto curIt = m_rowMap.begin();
 
-    while(curIt != m_rowMap.end() && newIt != newRowsMap.end()) {
+    while (curIt != m_rowMap.end() && newIt != newRowsMap.end()) {
         if (lessThan(*newIt, *curIt)) {
             auto firstInsert = newIt;
             //see how many more items we can insert in one go
