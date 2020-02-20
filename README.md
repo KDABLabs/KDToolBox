@@ -19,6 +19,8 @@ Tools
   A template class to make defining a model that sends proper update signals easy
 - [Model/View Table to List Proxy](https://github.com/KDAB/KDToolBox/tree/master/qt/model_view/KDTableToListProxyModel)
   A proxy model flattening a table model into a list model (mainly for Qt Quick 2).
+- [TabWindow widget](https://github.com/KDAB/KDToolBox/tree/master/qt/tabWindow)
+  A tab widget that allows extracting a tab to a new window, like modern web browsers.
 
 
 Other code snippets
