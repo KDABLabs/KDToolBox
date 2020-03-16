@@ -54,6 +54,8 @@ Qt Tools
   A header-only hasher object for using Qt types together with `unordered_map`, `unordered_set`, etc.
 - [NotifyGuard](https://github.com/KDAB/KDToolBox/tree/master/qt/notify_guard)
   A RAII guard object to make sure object notification signals are properly emitted.
+- [asan_assert_fail_qt](https://github.com/KDAB/KDToolBox/tree/master/qt/asan_assert_fail_qt)
+  Intercept `Q_ASSERT` failures with ASAN and print a backtrace.
 
 Other code snippets
 ===================

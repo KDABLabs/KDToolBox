@@ -14,3 +14,7 @@ SUBDIRS += \
 versionAtLeast(QT_VERSION, 5.14):SUBDIRS += \
     stringtokenizer \
 
+linux {
+    SUBDIRS += \
+        asan_assert_fail_qt
+}
