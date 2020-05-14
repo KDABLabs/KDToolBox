@@ -21,6 +21,8 @@ Tools
   A proxy model flattening a table model into a list model (mainly for Qt Quick 2).
 - [TabWindow widget](https://github.com/KDAB/KDToolBox/tree/master/qt/tabWindow)
   A tab widget that allows extracting a tab to a new window, like modern web browsers.
+- [EventFilter](https://github.com/KDAB/KDToolBox/tree/master/qt/eventFilter)
+  A way for "connecting" a QEvent to lambda with two lines of code.
 
 
 Other code snippets
