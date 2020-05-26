@@ -78,9 +78,18 @@ int SortProxyModel::columnCount(const QModelIndex &parent) const
     }
 }
 
+/**
+ * @brief SortProxyModel::sort sorts the model
+ * @param column The colum to sort on.
+ * @param order The order to use when sorting.
+ *
+ * The default @arg order is Qt::Ascending order. As per convention, if you
+ * pass -1 for @arg column the sorting is disabled. The valid range for
+ * @arg column is therefore -1 to columnCount() - 1.
+ */
 void SortProxyModel::sort(int column, Qt::SortOrder order)
 {
-    Q_ASSERT(column >= 0 && column < columnCount());
+    Q_ASSERT(column >= -1 && column < columnCount());
 
     if (m_sortColumn != column || m_order != order) {
         int oldColumn = m_sortColumn;
@@ -259,7 +268,11 @@ void SortProxyModel::reorder()
 
     auto newOrder = m_rowMap; //deep copy
 
-    sortMappingContainer(newOrder);
+    if (m_sortColumn == -1) {
+        std::iota(newOrder.begin(), newOrder.end(), 0);
+    } else {
+        sortMappingContainer(newOrder);
+    }
 
     auto orderedIt = predecessor( newOrder.end() );
     auto unorderedIt = predecessor ( m_rowMap.end() );
@@ -304,6 +317,9 @@ void SortProxyModel::reorder()
 
 void SortProxyModel::sortMappingContainer(std::vector<int> &container)
 {
+    if (m_sortColumn == -1)
+        return;
+
     std::sort(container.begin(), container.end(), [this](int lhs, int rhs){
         return lessThan(lhs, rhs) != (m_order == Qt::DescendingOrder);
     });
@@ -311,6 +327,9 @@ void SortProxyModel::sortMappingContainer(std::vector<int> &container)
 
 bool SortProxyModel::lessThan(int source_left_row, int source_right_row) const
 {
+    if (m_sortColumn == -1)
+        return false;
+
     return lessThan(sourceModel()->index(source_left_row, m_sortColumn),
                     sourceModel()->index(source_right_row, m_sortColumn));
 }

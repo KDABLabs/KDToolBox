@@ -42,8 +42,6 @@
  * The API is similar to that of QSortFilterProxyModel for the sorting parts
  * of the API, so if you used QSortFilterProxyModel only for sorting it
  * should be a drop-in replacement.
- *
- * Note that SortProxyModel always sorts the underlying model.
  */
 class SortProxyModel : public QAbstractProxyModel
 {
@@ -59,7 +57,7 @@ public:
     QModelIndex parent(const QModelIndex &child) const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-    void sort(int column, Qt::SortOrder order) override;
+    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
     QVariant data(const QModelIndex &proxyIndex, int role) const override;
 
     // QAbstractProxyModel interface
@@ -103,7 +101,7 @@ private:
     bool isInvalidedRow(const int row) const;
 
 private:
-    int m_sortColumn = 0;
+    int m_sortColumn = -1;
     Qt::SortOrder m_order = Qt::AscendingOrder;
     int m_sortRole = Qt::DisplayRole;
     Qt::CaseSensitivity m_caseSensitivity = Qt::CaseSensitive;

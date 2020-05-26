@@ -160,6 +160,9 @@ void SortProxyModelTest::basics()
     sorted.setSourceModel(&sourceModel);
 
     QCOMPARE(sorted.columnCount(), 1);
+    CHECKMODELCONTENTS(int)(sorted, {5,4,3,2,1});
+
+    sorted.sort(0);
     CHECKMODELCONTENTS(int)(sorted, {1,2,3,4,5});
 
     sorted.sort(0, Qt::DescendingOrder);
@@ -177,6 +180,7 @@ void SortProxyModelTest::changeSingleValueRight()
     sorted.setSourceModel(&sourceModel);
 
     QCOMPARE(sorted.rowCount(), 5);
+    sorted.sort(0);
     CHECKMODELCONTENTS(int)(sorted, {1,2,3,4,5});
 
     QSignalSpy spy(&sorted, &SortProxyModel::rowsMoved);
@@ -212,6 +216,7 @@ void SortProxyModelTest::changeSingleValueLeft()
     sorted.setSourceModel(&sourceModel);
 
     QCOMPARE(sorted.rowCount(), 5);
+    sorted.sort(0);
     CHECKMODELCONTENTS(int)(sorted, {1,2,3,4,5});
 
     QSignalSpy spy(&sorted, &SortProxyModel::rowsMoved);
@@ -236,6 +241,7 @@ void SortProxyModelTest::changeValueContiniousRange()
     SortProxyModel sorted;
     sorted.setSourceModel(&sourceModel);
 
+    sorted.sort(0);
     QCOMPARE(sorted.rowCount(), 5);
     QCOMPARE(sorted.index(0).data().toInt(), 1);
     QCOMPARE(sorted.index(4).data().toInt(), 5);
@@ -264,6 +270,7 @@ void SortProxyModelTest::changeValueDiscontiniousRange()
     sorted.setSourceModel(&sourceModel);
 
     QCOMPARE(sorted.rowCount(), 5);
+    sorted.sort(0);
     CHECKMODELCONTENTS(int)(sorted, {1, 2, 3, 4, 5});
 
     QSignalSpy spy(&sorted, &SortProxyModel::rowsMoved);
@@ -299,6 +306,7 @@ void SortProxyModelTest::insertSingleValue()
     SortProxyModel sorted;
     sorted.setSourceModel(&sourceModel);
 
+    sorted.sort(0);
     CHECKMODELCONTENTS(int)(sorted, {1, 3, 4, 5});
 
     QSignalSpy movedSpy(&sorted, &SortProxyModel::rowsMoved);
@@ -321,7 +329,7 @@ void SortProxyModelTest::insertMultipleContiniousValues()
     VectorModel<int> sourceModel{3,9,1,2,4};
     SortProxyModel sorted;
     sorted.setSourceModel(&sourceModel);
-
+    sorted.sort(0);
     CHECKMODELCONTENTS(int)(sorted, {1, 2, 3, 4, 9});
 
     QSignalSpy movedSpy(&sorted, &SortProxyModel::rowsMoved);
@@ -341,6 +349,7 @@ void SortProxyModelTest::insertMultipleDiscontiniousValues()
     VectorModel<int> sourceModel{3,9,1,2,4};
     SortProxyModel sorted;
     sorted.setSourceModel(&sourceModel);
+    sorted.sort(0);
 
     CHECKMODELCONTENTS(int)(sorted, {1, 2, 3, 4, 9});
 
@@ -366,6 +375,7 @@ void SortProxyModelTest::insertAtEndOfRange()
     VectorModel<int> sourceModel{};
     SortProxyModel sorted;
     sorted.setSourceModel(&sourceModel);
+    sorted.sort(0);
 
     QCOMPARE(sorted.rowCount(), 0);
     QSignalSpy insertedSpy(&sorted, &SortProxyModel::rowsInserted);
@@ -399,6 +409,7 @@ void SortProxyModelTest::removeSingleValue()
     VectorModel<int> sourceModel{3,9,1,2,4};
     SortProxyModel sorted;
     sorted.setSourceModel(&sourceModel);
+    sorted.sort(0);
 
     CHECKMODELCONTENTS(int)(sorted, {1, 2, 3, 4, 9});
 
@@ -417,6 +428,7 @@ void SortProxyModelTest::removeMultipleContiniousValues()
     VectorModel<int> sourceModel{5,4,3,2,1};
     SortProxyModel sorted;
     sorted.setSourceModel(&sourceModel);
+    sorted.sort(0);
 
     CHECKMODELCONTENTS(int)(sorted, {1, 2, 3, 4, 5});
 
@@ -434,6 +446,7 @@ void SortProxyModelTest::removeMultipleDiscontiniousValues()
     VectorModel<int> sourceModel{3,5,1,2,4};
     SortProxyModel sorted;
     sorted.setSourceModel(&sourceModel);
+    sorted.sort(0);
 
     CHECKMODELCONTENTS(int)(sorted, {1, 2, 3, 4, 5});
 
@@ -472,6 +485,7 @@ void SortProxyModelTest::strings()
     SortProxyModel sorted;
     sorted.setSortCaseSensitivity(Qt::CaseInsensitive);
     sorted.setSourceModel(&sourceModel);
+    sorted.sort(0);
 
     CHECKMODELCONTENTS(QString)(sorted, {QLatin1String("apple"), QLatin1String("Bee"), QLatin1String("cherry"), QLatin1String("dew"), QLatin1String("Echo")});
     sorted.setSortCaseSensitivity(Qt::CaseSensitive);
@@ -488,6 +502,7 @@ void SortProxyModelTest::doubles()
 
     SortProxyModel sorted;
     sorted.setSourceModel(&sourceModel);
+    sorted.sort(0);
 
     CHECKMODELCONTENTS(double)(sorted, {1.1, 3.33, 20.0, 42.0});
 
@@ -529,16 +544,21 @@ void SortProxyModelTest::sortOnRolesAndColumns()
     sorted.setSourceModel(&sourceModel);
     sorted.sort(0, Qt::AscendingOrder);
 
-    //sort on Qt::EditRole in column 0
+    //sort on Qt::UserRole in column 0
     CHECKMODELCONTENTS(int)(sorted, {5, 4, 3, 2, 1});
 
-    //sort on Qt::EditRole in column 1
+    //sort on Qt::UserRole in column 1
     sorted.sort(1, Qt::AscendingOrder);
     CHECKMODELCONTENTS(int)(sorted, {1, 2, 3, 4, 5});
 
     //sort on Qt::DisplayRole in column 2
     sorted.setSortRole(Qt::DisplayRole);
     CHECKMODELCONTENTS(int)(sorted, {5, 4, 3, 2, 1});
+
+    //remove sorting
+    sorted.sort(-1);
+    CHECKMODELCONTENTS(int)(sorted, {1, 2, 3, 4, 5});
+
 }
 
 QTEST_MAIN(SortProxyModelTest)
