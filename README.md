@@ -25,6 +25,8 @@ Tools
   A way for "connecting" a QEvent to lambda with two lines of code.
 - [MessageHandler](https://github.com/KDAB/KDToolBox/tree/master/qt/messagehandler)
   An API to help you intercept the output going through qDebug()/qWarning()/etc.
+- [QStringTokenizer](https://github.com/KDAB/KDToolBox/tree/master/qt/stringtokenizer)
+  A universal, safe, zero-allocation string splitter.
 
 
 Other code snippets
