@@ -80,7 +80,7 @@ int SortProxyModel::columnCount(const QModelIndex &parent) const
 
 /**
  * @brief SortProxyModel::sort sorts the model
- * @param column The colum to sort on.
+ * @param column The column to sort on.
  * @param order The order to use when sorting.
  *
  * The default @arg order is Qt::Ascending order. As per convention, if you
