@@ -4,3 +4,4 @@ debug
 *.pro.user
 *.o
 /qt/ui_watchdog/example/ui_watchdog_example
+*~
