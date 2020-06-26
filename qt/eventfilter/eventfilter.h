@@ -120,7 +120,7 @@ private:
 
     bool eventFilter(QObject *target, QEvent *event) override
     {
-        if (m_target == target && (m_eventType == event->type() || m_eventType == QEvent::None))
+        if (m_eventType == event->type() || m_eventType == QEvent::None)
             return KDToolBoxPrivate::CallbackInvoker<Callback>::invoke(m_callback, target, event);
 
         return QObject::eventFilter(target, event);
