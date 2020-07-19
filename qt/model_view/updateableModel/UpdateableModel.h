@@ -124,7 +124,7 @@ namespace {
     auto insertRange_imp(C& container, InsertIt targetInsertBefore, FwdIt sourceBegin, FwdIt sourceEnd, long, int)
         -> decltype(container.insert(targetInsertBefore, 1, typename C::value_type()), InsertIt())
     {
-        //secondary option: create room for the required number of items in one go, then copy the items in in one go
+        //secondary option: create room for the required number of items in one go, then copy the items in one go
         auto firstNewItem = container.insert(targetInsertBefore, std::distance(sourceBegin, sourceEnd), typename C::value_type());
         return std::copy(sourceBegin, sourceEnd, firstNewItem);
     }
@@ -295,8 +295,9 @@ protected: //methods
     }
 
 protected:
-    //Shadowing the methods in the base model, because MSVC thinks the onRemove and onInsert lambda's in updateData
-    //   are not allowed to access protected member functions BaseClass. GCC thinks that that is not a problem...
+    // Shadowing the methods in the base model, because MSVC thinks the onRemove and onInsert
+    // lambdas in updateData are not allowed to access the protected member functions in BaseClass.
+    // GCC is ok with it...
     void beginInsertRows(int firstRow, int lastRow)
     {
         BaseModel::beginInsertRows(QModelIndex(), firstRow, lastRow);

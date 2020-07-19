@@ -238,7 +238,7 @@ public: //methods
 //
 // Pass the model and optionally column as the constructor arguments.The default column is column 0.
 //
-// General wrapper that returns iterators that dereference to T for role role
+// General wrapper that returns iterators that dereference to T for the specified role
 template <typename ModelIterator, typename T = void, int role = Qt::DisplayRole>
 class ModelAdapter
 {
