@@ -11,3 +11,5 @@ EXCLUDE style
 
 #skip these
 SKIP /examples/|/example/
+#forwardinging headers
+SKIP /qt/stringtokenizer/include/QtCore/
