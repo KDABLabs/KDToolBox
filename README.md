@@ -27,7 +27,8 @@ Tools
   An API to help you intercept the output going through qDebug()/qWarning()/etc.
 - [QStringTokenizer](https://github.com/KDAB/KDToolBox/tree/master/qt/stringtokenizer)
   A universal, safe, zero-allocation string splitter.
-
+- [Single Shot Connect](https://github.com/KDAB/KDToolBox/tree/master/qt/singleshot_connect)
+  A header only version of QObject::connect, that establishes a single shot connection.
 
 Other code snippets
 ===================
