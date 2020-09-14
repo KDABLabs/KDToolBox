@@ -29,6 +29,8 @@ Tools
   A universal, safe, zero-allocation string splitter.
 - [Single Shot Connect](https://github.com/KDAB/KDToolBox/tree/master/qt/singleshot_connect)
   A header only version of QObject::connect, that establishes a single shot connection.
+- [Qt Hasher](https://github.com/KDAB/KDToolBox/tree/master/qt/qt_hasher)
+  A header-only hasher object for using Qt types together with `unordered_map`, `unordered_set`, etc.
 
 Other code snippets
 ===================

@@ -4,6 +4,7 @@ SUBDIRS += \
     messagehandler \
     model_view \
     qml \
+    qt_hasher \
     ui_watchdog \
     tabWindow \
     singleshot_connect \
