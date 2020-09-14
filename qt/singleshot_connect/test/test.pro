@@ -7,4 +7,4 @@ SOURCES += \
     tst_singleshot_connect.cpp \
 
 HEADERS += \
-    ..\singleshot_connect.h
+    ../singleshot_connect.h
