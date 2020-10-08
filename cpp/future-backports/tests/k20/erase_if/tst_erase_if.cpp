@@ -26,11 +26,15 @@
 
 #include <QTest>
 
-#include <k20/vector.h>
+#include <k20/deque.h>
+#include <k20/forward_list.h>
+#include <k20/list.h>
 #include <k20/map.h>
 #include <k20/set.h>
+#include <k20/string.h>
 #include <k20/unordered_map.h>
 #include <k20/unordered_set.h>
+#include <k20/vector.h>
 
 
 class tst_erase_if : public QObject
@@ -45,6 +49,36 @@ private Q_SLOTS:
 
     void erase_vector_int() { erase_impl<std::vector<int>>({1, 0, 2, 1, -3}, 1, 2); }
     void erase_if_vector_int() { erase_if_impl<std::vector<int>>({1, 0, 2, 1, -3}, 2, 1); }
+
+    void erase_empty_deque_int() { erase_impl<std::deque<int>>(); }
+    void erase_empty_deque_string() { erase_impl<std::deque<std::string>>(); }
+    void erase_if_empty_deque_int() { erase_if_impl<std::deque<int>>(); }
+    void erase_if_empty_deque_string() { erase_if_impl<std::deque<std::string>>(); }
+
+    void erase_deque_int() { erase_impl<std::deque<int>>({1, 0, 2, 1, -3}, 1, 2); }
+    void erase_if_deque_int() { erase_if_impl<std::deque<int>>({1, 0, 2, 1, -3}, 2, 1); }
+
+    void erase_empty_list_int() { erase_impl<std::list<int>>(); }
+    void erase_empty_list_string() { erase_impl<std::list<std::string>>(); }
+    void erase_if_empty_list_int() { erase_if_impl<std::list<int>>(); }
+    void erase_if_empty_list_string() { erase_if_impl<std::list<std::string>>(); }
+
+    void erase_list_int() { erase_impl<std::list<int>>({1, 0, 2, 1, -3}, 1, 2); }
+    void erase_if_list_int() { erase_if_impl<std::list<int>>({1, 0, 2, 1, -3}, 2, 1); }
+
+    void erase_empty_forward_list_int() { erase_impl<std::forward_list<int>>(); }
+    void erase_empty_forward_list_string() { erase_impl<std::forward_list<std::string>>(); }
+    void erase_if_empty_forward_list_int() { erase_if_impl<std::forward_list<int>>(); }
+    void erase_if_empty_forward_list_string() { erase_if_impl<std::forward_list<std::string>>(); }
+
+    void erase_forward_list_int() { erase_impl<std::forward_list<int>>({1, 0, 2, 1, -3}, 1, 2); }
+    void erase_if_forward_list_int() { erase_if_impl<std::forward_list<int>>({1, 0, 2, 1, -3}, 2, 1); }
+
+    void erase_empty_string() { erase_impl<std::string>(); }
+    void erase_if_empty_string() { erase_if_impl<std::string>(); }
+
+    void erase_string() { erase_impl<std::string>({'H', 'e', 'l', 'l', 'o'}, 'l', 2); }
+    void erase_if_string() { erase_if_impl<std::string>({'W', 'o', 'r', 'l', 'd'}, 'r', 1); }
 
     void erase_if_empty_map_int_string() { erase_if_impl<std::map<int, std::string>>(); }
     void erase_if_empty_multimap_int_string() { erase_if_impl<std::multimap<int, std::string>>(); }

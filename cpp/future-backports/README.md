@@ -34,3 +34,8 @@ C++11 to C++17, then you can textually replace
 Due to the way the header names and component namespaces are
 constructed, this replacement won't change the layout of the source
 code, preserving as much of the VCS history as possible.
+
+Existing Components
+-------------------
+
+- `k20::erase`: C++20 Uniform Container Erasure
