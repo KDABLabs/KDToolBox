@@ -1,5 +1,3 @@
 TEMPLATE = subdirs
 SUBDIRS += \
-    cpp \
-    qt \
-
+    k20 \

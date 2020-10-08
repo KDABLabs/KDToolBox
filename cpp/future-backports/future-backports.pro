@@ -1,5 +1,5 @@
 TEMPLATE = subdirs
 SUBDIRS += \
-    cpp \
-    qt \
+    include \
+    tests \
 

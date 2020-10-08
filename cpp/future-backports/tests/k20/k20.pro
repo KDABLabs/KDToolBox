@@ -1,5 +1,4 @@
 TEMPLATE = subdirs
 SUBDIRS += \
-    cpp \
-    qt \
+    erase_if \
 

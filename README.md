@@ -3,7 +3,13 @@ KDToolBox
 
 KDAB's collection of miscellaneous useful C++ classes and stuff.
 
-Tools
+C++ Tools
+=================
+- [future-backports](https://github.com/KDAB/KDToolBox/tree/master/cpp/future-backports)
+  Backports of future C++ library components to C++11:
+  - k20::erase/k20::erase_if - C++20's uniform container erasure
+
+Qt Tools
 =================
 - [Ui Watchdog](https://github.com/KDAB/KDToolBox/tree/master/qt/ui_watchdog)
   A _header-only_ tool to break the program when the main-thread event loop is blocked for more than 300ms.
