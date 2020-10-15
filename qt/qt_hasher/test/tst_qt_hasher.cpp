@@ -24,10 +24,10 @@
 ** DEALINGS IN THE SOFTWARE.
 ****************************************************************************/
 
-#include <QtCore>
-#include <QtTest>
 #include "tst_qt_hasher.h"
 #include "../qt_hasher.h"
+
+#include <QtTest>
 
 #include <unordered_map>
 #include <unordered_set>
@@ -79,17 +79,16 @@ void tst_QtHasher::hash()
     QVERIFY(regexpSet.find(QRegularExpression("a|b")) == regexpSet.end());
     QVERIFY(regexpSet.find(QRegularExpression("a+b")) != regexpSet.end());
 
-
     std::unordered_set<QUrl, KDToolBox::QtHasher<QUrl>> urlSet;
-    urlSet.insert(QUrl("http://www.kdab.com"));
-    urlSet.insert(QUrl("http://www.qt.io"));
+    urlSet.insert(QUrl("https://www.kdab.com"));
+    urlSet.insert(QUrl("https://www.qt.io"));
     QCOMPARE(urlSet.size(), std::size_t(2));
 
-    urlSet.insert(QUrl("http://isocpp.org"));
+    urlSet.insert(QUrl("https://isocpp.org"));
     QCOMPARE(urlSet.size(), std::size_t(3));
 
-    QVERIFY(urlSet.find(QUrl("http://www.kdab.com")) != urlSet.end());
-    QVERIFY(urlSet.find(QUrl("http://www.google.com")) == urlSet.end());
+    QVERIFY(urlSet.find(QUrl("https://www.kdab.com")) != urlSet.end());
+    QVERIFY(urlSet.find(QUrl("https://www.google.com")) == urlSet.end());
 }
 
 namespace TestNS

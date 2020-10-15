@@ -73,8 +73,8 @@ void MainWindow::updateData()
             m_data.insert(itAt1, Data{1, QStringLiteral("1"), QTime::currentTime().toString()});
         }
     } else { //otherwise, update the time for every other item.
-        for (int i=0; i<m_data.size(); ++i) {
-            if ((i % 2) == (curTime.second() % 2)) {
+        for (size_t i=0; i<m_data.size(); ++i) {
+            if ((i % 2) == static_cast<size_t>((curTime.second() % 2))) {
                 Data& item = m_data[i];
                 item.value2 = QTime::currentTime().toString();
             }

@@ -24,6 +24,8 @@
 ** DEALINGS IN THE SOFTWARE.
 ****************************************************************************/
 
+#pragma once
+
 #include <QObject>
 
 class tst_QtHasher : public QObject
