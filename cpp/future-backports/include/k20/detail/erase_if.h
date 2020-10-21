@@ -82,8 +82,8 @@ namespace detail {
             if (pred(e)) {
                 // this counting works, because the standard guarantees exactly
                 // one application of the predicate per element:
-                // for list: http://eel.is/c++draft/list#ops-18
-                // for forward_list: http://eel.is/c++draft/forwardlist#ops-16
+                // for list: https://eel.is/c++draft/list#ops-18
+                // for forward_list: https://eel.is/c++draft/forwardlist#ops-16
                 ++count;
                 return true;
             } else {
