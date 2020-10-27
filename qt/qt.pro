@@ -3,11 +3,12 @@ SUBDIRS += \
     eventfilter \
     messagehandler \
     model_view \
+    notify_guard \
     qml \
     qt_hasher \
-    ui_watchdog \
-    tabWindow \
     singleshot_connect \
+    tabWindow \
+    ui_watchdog \
 
 versionAtLeast(QT_VERSION, 5.14):SUBDIRS += \
     stringtokenizer \

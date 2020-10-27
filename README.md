@@ -39,6 +39,8 @@ Qt Tools
   A header only version of QObject::connect, that establishes a single shot connection.
 - [Qt Hasher](https://github.com/KDAB/KDToolBox/tree/master/qt/qt_hasher)
   A header-only hasher object for using Qt types together with `unordered_map`, `unordered_set`, etc.
+- [NotifyGuard](https://github.com/KDAB/KDToolBox/tree/master/qt/notify_guard)
+  A RAII guard object to make sure object notification signals are properly emitted.
 
 Other code snippets
 ===================
