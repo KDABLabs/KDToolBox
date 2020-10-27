@@ -46,6 +46,7 @@ private Q_SLOTS:
     void test_PMFSyntax();
     void test_recursiveScope();
     void test_recursiveScope2();
+    void test_recursiveScopePMF();
     void test_singleScope();
     void test_singleInsideRecursiveScope();
     void test_setResetInRecursiveScope();
@@ -188,6 +189,47 @@ void NotifyGuardTest::test_recursiveScope2()
 
     // only on the outer guard should the signal emit, even though the guard on the changed property is the innerGuard
     QCOMPARE(intSpy.count(), 1);
+}
+
+void NotifyGuardTest::test_recursiveScopePMF()
+{
+    TestClass test;
+    QSignalSpy intSpy(&test, &TestClass::intPropertyChanged);
+    {
+        NotifyGuard outerGuard(&test, &TestClass::intPropertyChanged, NotifyGuard::RecursiveScope);
+        {
+            NotifyGuard innerGuard(&test, &TestClass::intPropertyChanged, NotifyGuard::RecursiveScope);
+            test.m_intProperty2 = 11;
+            test.m_intProperty = 12;
+            // innerGuard should _not_ emit, as intProperty2 uses the same notification signal as intProperty which is already in a scope
+        }
+        QVERIFY(intSpy.isEmpty());
+        test.m_intProperty = 42;
+    }
+
+    // only on the outer guard should the signal emit, even though the guard on the changed property is the innerGuard
+    QCOMPARE(intSpy.count(), 1);
+
+    //test second iteration. Uncovered a bug that caused the implementation to work the first time, but not a second time, so testing for that.
+    test.m_intProperty = 0;
+    test.m_intProperty2 = 0;
+    intSpy.clear();
+
+    {
+        NotifyGuard outerGuard(&test, &TestClass::intPropertyChanged, NotifyGuard::RecursiveScope);
+        {
+            NotifyGuard innerGuard(&test, &TestClass::intPropertyChanged, NotifyGuard::RecursiveScope);
+            test.m_intProperty2 = 11;
+            test.m_intProperty = 12;
+            // innerGuard should _not_ emit, as intProperty2 uses the same notification signal as intProperty which is already in a scope
+        }
+        QVERIFY(intSpy.isEmpty());
+        test.m_intProperty = 42;
+    }
+
+    // only on the outer guard should the signal emit, even though the guard on the changed property is the innerGuard
+    QCOMPARE(intSpy.count(), 1);
+
 }
 
 void NotifyGuardTest::test_singleScope()

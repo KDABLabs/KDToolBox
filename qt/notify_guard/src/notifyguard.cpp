@@ -164,11 +164,17 @@ Internal::SignalDataSPtr getDataObject(QObject* target, const QMetaMethod& notif
 
         auto instanceData = target->property(guardSharedDataPropertyName).value<Internal::InstanceDataPtr>();
         if (instanceData) {
-            const auto it = std::find_if(instanceData->cbegin(), instanceData->cend(),
+            const auto it = std::find_if(instanceData->begin(), instanceData->end(),
                                          [notifySignalIndex](const Internal::SignalIdDataPair& data){return notifySignalIndex == data.id;});
-            if (it != instanceData->cend()) {
+            if (it != instanceData->end()) {
                 if (auto sptr = it->dataWPtr.lock())
                    return sptr;
+
+                //replace the current, no-longer valid entry with a new one
+                auto shared = createSignalData(target, notifySignal);
+                *it = {notifySignalIndex, Internal::SignalDataWPtr(shared)};
+
+                return shared;
             }
         } else {
             instanceData = std::make_shared<Internal::InstanceData>();
