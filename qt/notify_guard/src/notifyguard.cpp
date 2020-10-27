@@ -167,8 +167,9 @@ Internal::SignalDataSPtr getDataObject(QObject* target, const QMetaMethod& notif
             const auto it = std::find_if(instanceData->begin(), instanceData->end(),
                                          [notifySignalIndex](const Internal::SignalIdDataPair& data){return notifySignalIndex == data.id;});
             if (it != instanceData->end()) {
-                if (auto sptr = it->dataWPtr.lock())
-                   return sptr;
+                if (auto sptr = it->dataWPtr.lock()) {
+                    return sptr;
+                }
 
                 //replace the current, no-longer valid entry with a new one
                 auto shared = createSignalData(target, notifySignal);
