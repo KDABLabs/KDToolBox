@@ -58,13 +58,8 @@ int main(int argc, char **argv)
         qDebug() << "Waking up";
     });
 
-    QObject::connect(button2, &QPushButton::clicked, [sleepTimer] {
-        sleepTimer->start();
-    });
-
-    QObject::connect(button3, &QPushButton::clicked, [sleepTimer] {
-        sleepTimer->stop();
-    });
+    QObject::connect(button2, &QPushButton::clicked, sleepTimer, QOverload<>::of(&QTimer::start));
+    QObject::connect(button3, &QPushButton::clicked, sleepTimer, &QTimer::stop);
 
     UiWatchdog dog;
     dog.start();
