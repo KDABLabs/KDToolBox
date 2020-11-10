@@ -30,6 +30,7 @@
 #include <QBasicMutex>
 
 #include <mutex>
+#include <forward_list>
 
 namespace {
 
@@ -53,7 +54,7 @@ std::once_flag oldMessageHandlerFlag;
 QtMessageHandler oldMessageHandler(nullptr);
 
 QBasicMutex mutex; // protects the list
-Q_GLOBAL_STATIC(std::list<RegisteredCallback>, callbacks)
+Q_GLOBAL_STATIC(std::forward_list<RegisteredCallback>, callbacks)
 
 bool isMessageTypeCompatibleWith(QtMsgType in, QtMsgType reference)
 {
@@ -107,9 +108,9 @@ void KDToolBox::Private::registerMessageHandler(QtMsgType type, const QRegularEx
     std::call_once(oldMessageHandlerFlag,
                    []() { oldMessageHandler = qInstallMessageHandler(&ourMessageHandler); });
 
-    std::list<RegisteredCallback> tmp;
-    tmp.push_back({type, pattern, std::move(func)});
+    std::forward_list<RegisteredCallback> tmp;
+    tmp.push_front({type, pattern, std::move(func)});
     std::lock_guard<QBasicMutex> guard(mutex);
     auto &c = *callbacks;
-    c.splice(c.end(), std::move(tmp));
+    c.splice_after(c.before_begin(), std::move(tmp));
 }
