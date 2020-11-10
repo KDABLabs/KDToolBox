@@ -40,16 +40,6 @@ struct RegisteredCallback {
     std::function<void()> callback;
 };
 
-template <typename Mutex>
-class MutexRelocker {
-    MutexRelocker(const MutexRelocker &) = delete;
-    MutexRelocker &operator=(const MutexRelocker &) = delete;
-    Mutex &m;
-public:
-    MutexRelocker(Mutex &m) : m(m) { m.unlock(); }
-    ~MutexRelocker() { m.lock(); }
-};
-
 std::once_flag oldMessageHandlerFlag;
 QtMessageHandler oldMessageHandler(nullptr);
 
@@ -84,18 +74,17 @@ bool isMessageTypeCompatibleWith(QtMsgType in, QtMsgType reference)
 
 void ourMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message)
 {
-    {
-        std::unique_lock<QBasicMutex> lock(mutex);
+    std::unique_lock<QBasicMutex> lock(mutex);
+    const auto &c = *callbacks;
+    const auto beg = c.begin();
+    const auto end = c.end();
+    lock.unlock(); // iterators into forward_list are stable and we never erase_after() anything
 
-        for (const auto &callback : *callbacks) {
-            MutexRelocker<std::unique_lock<QBasicMutex>> l(lock);
-
-            if (!isMessageTypeCompatibleWith(callback.messageType, type))
-                continue;
-
-            if (message.contains(callback.pattern))
-                callback.callback();
-        }
+    for (auto it = beg; it != end; ++it) {
+        if (!isMessageTypeCompatibleWith(it->messageType, type))
+            continue;
+        if (message.contains(it->pattern))
+            it->callback();
     }
 
     oldMessageHandler(type, context, message);
