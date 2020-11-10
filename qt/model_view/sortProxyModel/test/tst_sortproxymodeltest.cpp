@@ -457,7 +457,7 @@ void SortProxyModelTest::removeMultipleDiscontiniousValues()
 
     // We expect to temporariy have some invalid content in the model during the removal operation.
     // These rows will return invalid QVariants
-    connect(&sorted, &SortProxyModel::rowsRemoved, [&]{
+    connect(&sorted, &SortProxyModel::rowsRemoved, &sorted, [&]{
         ++removal;
         switch(removal) {
         case 1:
