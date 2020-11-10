@@ -51,7 +51,7 @@ std::once_flag oldMessageHandlerFlag;
 QtMessageHandler oldMessageHandler(nullptr);
 
 std::mutex mutex; // protects the list
-std::list<RegisteredCallback> callbacks;
+Q_GLOBAL_STATIC(std::list<RegisteredCallback>, callbacks)
 
 bool isMessageTypeCompatibleWith(QtMsgType in, QtMsgType reference)
 {
@@ -84,7 +84,7 @@ void ourMessageHandler(QtMsgType type, const QMessageLogContext &context, const 
     {
         std::unique_lock<std::mutex> lock(mutex);
 
-        for (const auto &callback : callbacks) {
+        for (const auto &callback : *callbacks) {
             MutexRelocker<std::unique_lock<std::mutex>> l(lock);
 
             if (!isMessageTypeCompatibleWith(callback.messageType, type))
@@ -107,5 +107,5 @@ void KDToolBox::Private::registerMessageHandler(QtMsgType type, const QRegularEx
 
     RegisteredCallback r{type, pattern, func};
     std::lock_guard<std::mutex> guard(mutex);
-    callbacks.push_back(std::move(r));
+    callbacks->push_back(std::move(r));
 }
