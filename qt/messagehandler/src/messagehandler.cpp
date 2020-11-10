@@ -102,13 +102,13 @@ void ourMessageHandler(QtMsgType type, const QMessageLogContext &context, const 
 
 } // anonymous namespace
 
-void KDToolBox::Private::registerMessageHandler(QtMsgType type, const QRegularExpression &pattern, const std::function<void()> &func)
+void KDToolBox::Private::registerMessageHandler(QtMsgType type, const QRegularExpression &pattern, std::function<void()> func)
 {
     std::call_once(oldMessageHandlerFlag,
                    []() { oldMessageHandler = qInstallMessageHandler(&ourMessageHandler); });
 
     std::list<RegisteredCallback> tmp;
-    tmp.push_back({type, pattern, func});
+    tmp.push_back({type, pattern, std::move(func)});
     std::lock_guard<QBasicMutex> guard(mutex);
     auto &c = *callbacks;
     c.splice(c.end(), std::move(tmp));

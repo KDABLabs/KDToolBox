@@ -37,7 +37,7 @@
 namespace KDToolBox {
 
 namespace Private {
-void registerMessageHandler(QtMsgType type, const QRegularExpression &pattern, const std::function<void()> &func);
+void registerMessageHandler(QtMsgType type, const QRegularExpression &pattern, std::function<void()> func);
 } // namespace Private
 
 template <typename Callable>
