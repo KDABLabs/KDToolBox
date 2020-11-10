@@ -27,6 +27,8 @@
 
 #include "messagehandler.h"
 
+#include <QBasicMutex>
+
 #include <mutex>
 
 namespace {
@@ -50,7 +52,7 @@ public:
 std::once_flag oldMessageHandlerFlag;
 QtMessageHandler oldMessageHandler(nullptr);
 
-std::mutex mutex; // protects the list
+QBasicMutex mutex; // protects the list
 Q_GLOBAL_STATIC(std::list<RegisteredCallback>, callbacks)
 
 bool isMessageTypeCompatibleWith(QtMsgType in, QtMsgType reference)
@@ -82,10 +84,10 @@ bool isMessageTypeCompatibleWith(QtMsgType in, QtMsgType reference)
 void ourMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message)
 {
     {
-        std::unique_lock<std::mutex> lock(mutex);
+        std::unique_lock<QBasicMutex> lock(mutex);
 
         for (const auto &callback : *callbacks) {
-            MutexRelocker<std::unique_lock<std::mutex>> l(lock);
+            MutexRelocker<std::unique_lock<QBasicMutex>> l(lock);
 
             if (!isMessageTypeCompatibleWith(callback.messageType, type))
                 continue;
@@ -106,6 +108,6 @@ void KDToolBox::Private::registerMessageHandler(QtMsgType type, const QRegularEx
                    []() { oldMessageHandler = qInstallMessageHandler(&ourMessageHandler); });
 
     RegisteredCallback r{type, pattern, func};
-    std::lock_guard<std::mutex> guard(mutex);
+    std::lock_guard<QBasicMutex> guard(mutex);
     callbacks->push_back(std::move(r));
 }
