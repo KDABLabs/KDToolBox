@@ -44,7 +44,7 @@ QString qmlStackTrace(QV4::ExecutionEngine *engine)
 
 void printQmlStackTraces()
 {
-    auto windows = qApp->topLevelWindows();
+    const auto windows = qApp->topLevelWindows();
     for (QWindow *w : windows) {
         if (auto qw = qobject_cast<QQuickWindow*>(w)) {
             QQuickItem *item = qw->contentItem();
