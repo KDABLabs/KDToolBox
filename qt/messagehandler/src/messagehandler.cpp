@@ -107,7 +107,9 @@ void KDToolBox::Private::registerMessageHandler(QtMsgType type, const QRegularEx
     std::call_once(oldMessageHandlerFlag,
                    []() { oldMessageHandler = qInstallMessageHandler(&ourMessageHandler); });
 
-    RegisteredCallback r{type, pattern, func};
+    std::list<RegisteredCallback> tmp;
+    tmp.push_back({type, pattern, func});
     std::lock_guard<QBasicMutex> guard(mutex);
-    callbacks->push_back(std::move(r));
+    auto &c = *callbacks;
+    c.splice(c.end(), std::move(tmp));
 }
