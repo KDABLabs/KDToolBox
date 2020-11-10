@@ -322,7 +322,7 @@ public:
     {
         for (auto e : *this)
             c.push_back(e);
-        return c;
+        return std::forward<Container>(c);
     }
 
     template <typename Container = QVector<value_type>,
@@ -332,7 +332,7 @@ public:
     {
         for (auto e : *this)
             c.push_back(e);
-        return c;
+        return std::forward<Container>(c);
     }
 };
 
