@@ -52,7 +52,7 @@ template <typename Callable>
 void handleMessage(QtMsgType type, const QString &needle, Callable &&callback)
 {
     Private::registerMessageHandler(type,
-                                    QRegularExpression::escape(needle),
+                                    QRegularExpression{QRegularExpression::escape(needle)},
                                     std::forward<Callable>(callback));
 }
 
