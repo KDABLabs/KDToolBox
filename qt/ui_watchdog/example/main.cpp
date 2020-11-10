@@ -50,7 +50,7 @@ int main(int argc, char **argv)
         while (true);
     });
 
-    auto sleepTimer = new QTimer();
+    auto sleepTimer = new QTimer(&w);
     sleepTimer->setInterval(1000);
     QObject::connect(sleepTimer, &QTimer::timeout, [] {
         qDebug() << "Sleeping";
