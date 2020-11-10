@@ -35,6 +35,7 @@
 namespace {
 
 struct RegisteredCallback {
+    const RegisteredCallback *next;
     QtMsgType messageType;
     QRegularExpression pattern;
     std::function<void()> callback;
@@ -43,8 +44,7 @@ struct RegisteredCallback {
 std::once_flag oldMessageHandlerFlag;
 QtMessageHandler oldMessageHandler(nullptr);
 
-QBasicMutex mutex; // protects the list
-Q_GLOBAL_STATIC(std::forward_list<RegisteredCallback>, callbacks)
+std::atomic<const RegisteredCallback*> callbacks;
 
 bool isMessageTypeCompatibleWith(QtMsgType in, QtMsgType reference)
 {
@@ -74,13 +74,7 @@ bool isMessageTypeCompatibleWith(QtMsgType in, QtMsgType reference)
 
 void ourMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message)
 {
-    std::unique_lock<QBasicMutex> lock(mutex);
-    const auto &c = *callbacks;
-    const auto beg = c.begin();
-    const auto end = c.end();
-    lock.unlock(); // iterators into forward_list are stable and we never erase_after() anything
-
-    for (auto it = beg; it != end; ++it) {
+    for (auto it = callbacks.load(std::memory_order_acquire); it; it = it->next) { // synchronizes-with store-release in registerMessageHandler
         if (!isMessageTypeCompatibleWith(it->messageType, type))
             continue;
         if (message.contains(it->pattern))
@@ -97,9 +91,9 @@ void KDToolBox::Private::registerMessageHandler(QtMsgType type, const QRegularEx
     std::call_once(oldMessageHandlerFlag,
                    []() { oldMessageHandler = qInstallMessageHandler(&ourMessageHandler); });
 
-    std::forward_list<RegisteredCallback> tmp;
-    tmp.push_front({type, pattern, std::move(func)});
-    std::lock_guard<QBasicMutex> guard(mutex);
-    auto &c = *callbacks;
-    c.splice_after(c.before_begin(), std::move(tmp));
+    auto tmp = new RegisteredCallback{nullptr, type, pattern, std::move(func)};
+    auto expected = callbacks.load(std::memory_order_relaxed); // just the pointer value
+    do {
+        tmp->next = expected;
+    } while (!callbacks.compare_exchange_weak(expected, tmp, std::memory_order_release)); // synchronizes-with load-acquire in outMessageHandler
 }
