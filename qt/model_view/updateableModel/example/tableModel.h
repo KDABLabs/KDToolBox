@@ -38,6 +38,7 @@
 
 class TableModel : public UpdateableModel<QAbstractTableModel, Data>
 {
+    Q_OBJECT
 public:
     TableModel(QObject* parent = nullptr);
 
