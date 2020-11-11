@@ -1,15 +1,6 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2017-01-17T06:48:10
-#
-#-------------------------------------------------
-
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-TARGET = listUpdateAlgorithm
 TEMPLATE = app
+QT       += core gui widgets
+TARGET = listUpdateAlgorithm
 
 
 SOURCES += main.cpp\
