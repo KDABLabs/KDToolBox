@@ -36,7 +36,7 @@
 template<typename T>
 void addSubtree(T *node, int depth, int count, const QString &text)
 {
-    for (int i(0);i<count; ++i) {
+    for (int i = 0; i < count; ++i) {
         QString itemText = text + "." + QString::number(i);
         auto item = new QStandardItem(itemText);
         if (depth > 1) {
