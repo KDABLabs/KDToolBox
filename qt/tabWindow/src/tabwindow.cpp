@@ -100,7 +100,7 @@ void TabWindowManager::removeWindow(TabWindow *window)
     m_windows.removeOne(window);
 }
 
-TabWindow *TabWindowManager::possibleWindow(TabWindow *currentWindow, const QPoint &globalPos)
+TabWindow *TabWindowManager::possibleWindow(TabWindow *currentWindow, QPoint globalPos)
 {
     for (auto tabWindow: qAsConst(m_windows)) {
         if (tabWindow == currentWindow)

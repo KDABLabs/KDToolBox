@@ -55,7 +55,7 @@ protected:
     void addWindow(TabWindow *window);
     void removeWindow(TabWindow *window);
 
-    TabWindow *possibleWindow(TabWindow *currentWindow, const QPoint &globalPos = QCursor::pos());
+    TabWindow *possibleWindow(TabWindow *currentWindow, QPoint globalPos = QCursor::pos());
 
 private:
     void activateWindow(QWindow *window);
