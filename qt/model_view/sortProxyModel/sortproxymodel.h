@@ -94,7 +94,7 @@ private:
     bool lessThan(int source_left_row, int source_right_row) const;
 
     //source model change handlers
-    void handleDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, QVector<int> roles);
+    void handleDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
     void handleRowsInserted(const QModelIndex &parent, int firstNewRow, int lastNewRow);
     void handleRowsRemoved(const QModelIndex &parent, int firstRemovedRow, int lastRemovedRow);
 

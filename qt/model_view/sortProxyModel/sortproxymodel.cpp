@@ -334,7 +334,7 @@ bool SortProxyModel::lessThan(int source_left_row, int source_right_row) const
                     sourceModel()->index(source_right_row, m_sortColumn));
 }
 
-void SortProxyModel::handleDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, QVector<int> roles)
+void SortProxyModel::handleDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
 {
     Q_UNUSED(topLeft)
     Q_UNUSED(bottomRight)

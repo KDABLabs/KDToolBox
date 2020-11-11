@@ -40,10 +40,10 @@ class Object : public QObject
 {
     Q_OBJECT
 signals:
-    void aSignal(int, QString);
+    void aSignal(int, const QString&);
 
 public slots:
-    void aSlot(int i, QString s)
+    void aSlot(int i, const QString& s)
     {
         ++m_slotCounter;
         m_i = i;
@@ -109,7 +109,7 @@ void tst_SingleShot_Connect::singleshot()
             MoveOnlyFunctor(MoveOnlyFunctor &&) = default;
             MoveOnlyFunctor &operator=(MoveOnlyFunctor &&) = default;
             ~MoveOnlyFunctor() = default;
-            void operator()(int i, QString s) {
+            void operator()(int i, const QString &s) {
                 ri = i;
                 rs = s;
             }
