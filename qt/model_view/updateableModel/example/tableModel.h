@@ -40,7 +40,8 @@ class TableModel : public UpdateableModel<QAbstractTableModel, Data>
 {
     Q_OBJECT
 public:
-    TableModel(QObject* parent = nullptr);
+    explicit TableModel(QObject* parent = nullptr);
+    ~TableModel() override;
 
     Q_SLOT void update(const DataContainer& updatedData);
 

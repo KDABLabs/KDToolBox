@@ -34,6 +34,8 @@ TableModel::TableModel(QObject *parent)
 
 }
 
+TableModel::~TableModel() = default;
+
 // Implementing this model is the crux of the example of using UpdateableModel
 void TableModel::update(const DataContainer &updatedData)
 {
