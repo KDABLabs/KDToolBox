@@ -42,8 +42,7 @@ struct RegisteredCallback {
 };
 
 std::once_flag oldMessageHandlerFlag;
-QtMessageHandler oldMessageHandler(nullptr);
-
+std::atomic<QtMessageHandler> oldMessageHandler;
 std::atomic<const RegisteredCallback*> callbacks;
 
 bool isMessageTypeCompatibleWith(QtMsgType in, QtMsgType reference)
@@ -81,15 +80,19 @@ void ourMessageHandler(QtMsgType type, const QMessageLogContext &context, const 
             it->callback();
     }
 
-    oldMessageHandler(type, context, message);
+    if (auto h = oldMessageHandler.load(std::memory_order_acquire)) // synchronizes-with the store-release in installOurMessageHandler()
+        h(type, context, message);
 }
 
 } // anonymous namespace
 
 void KDToolBox::Private::registerMessageHandler(QtMsgType type, const QRegularExpression &pattern, std::function<void()> func)
 {
-    std::call_once(oldMessageHandlerFlag,
-                   []() { oldMessageHandler = qInstallMessageHandler(&ourMessageHandler); });
+    const auto installOurMessageHandler = [] {
+        oldMessageHandler.store(qInstallMessageHandler(&ourMessageHandler),
+                                std::memory_order_release); // synchronizes-with the load-acquire in ourMessageHandler()
+    };
+    std::call_once(oldMessageHandlerFlag, installOurMessageHandler);
 
     auto tmp = new RegisteredCallback{nullptr, type, pattern, std::move(func)};
     auto expected = callbacks.load(std::memory_order_relaxed); // just the pointer value
