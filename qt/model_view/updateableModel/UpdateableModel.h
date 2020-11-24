@@ -29,6 +29,7 @@
 #ifndef UPDATEABLEMODEL_H
 #define UPDATEABLEMODEL_H
 
+#include <QModelIndex>
 #include <QSet>
 #include <QVector>
 #include <functional>
@@ -327,7 +328,7 @@ private:
         //reconstruct vector of changed roles
         QVector<int> roles;
         roles.reserve(m_changedRoles.count());
-        for (int role: m_changedRoles) {
+        for (int role: qAsConst(m_changedRoles)) {
             roles.append(role);
         }
 
@@ -342,9 +343,9 @@ private:
             }
             return ranges;
         };
-        ColumnRanges ranges = std::accumulate(m_changedColumns.cbegin(), m_changedColumns.cend(), ColumnRanges(), accumulator);
+        const auto ranges = std::accumulate(m_changedColumns.cbegin(), m_changedColumns.cend(), ColumnRanges(), accumulator);
 
-        for (const auto columnRange: ranges) {
+        for (const auto &columnRange: ranges) {
             QModelIndex topLeft = BaseModel::index(m_firstChangedRow, columnRange.first);
             QModelIndex bottomRight = BaseModel::index(m_lastChangedRow, columnRange.second);
             Q_EMIT BaseModel::dataChanged(topLeft, bottomRight, roles);
