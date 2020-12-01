@@ -8,6 +8,9 @@ C++ Tools
 - [future-backports](https://github.com/KDAB/KDToolBox/tree/master/cpp/future-backports)
   Backports of future C++ library components to C++11:
   - k20::erase/k20::erase_if - C++20's uniform container erasure
+- [DuplicateTracker](https://github.com/KDAB/KDToolBox/tree/master/cpp/duplicatetracker)
+  A wrapper around `std::unordered_set`, that transparently uses `std::pmr::monotonic_buffer_resource`,
+  where available, to improve the set's memory allocation pattern.
 
 Qt Tools
 =================
