@@ -26,6 +26,7 @@
 
 #pragma once
 
+#include <algorithm> // for std::max
 #include <cstddef>   // for std::max_align_t
 #include <unordered_set>
 #ifdef __has_include
@@ -99,9 +100,9 @@ protected:
 
     explicit DuplicateTrackerBase(std::size_t numBuckets, const Hash& h, const Equal& e)
 #ifdef __cpp_lib_memory_resource
-        : Base(this->m_buffer, sizeof(this->m_buffer), numBuckets, h, e) {}
+        : Base(this->m_buffer, sizeof(this->m_buffer), std::max(numBuckets, Prealloc), h, e) {}
 #else
-        : Base(numBuckets, h, e) {}
+        : Base(std::max(numBuckets, Prealloc), h, e) {}
 #endif
     ~DuplicateTrackerBase() = default;
 
