@@ -79,13 +79,13 @@ std::unique_ptr<QStandardItemModel> createCountriesModel()
 
     for (const auto &country : countries) {
         QList<QStandardItem *> row;
-        row << new QStandardItem(country.name);
+        row << new QStandardItem(QString::fromUtf8(country.name));
 
         auto populationItem = new QStandardItem;
         populationItem->setData(country.population, Qt::DisplayRole);
         row << populationItem;
 
-        row << new QStandardItem(country.flag);
+        row << new QStandardItem(QString::fromUtf8(country.flag));
 
         countriesModel->appendRow(row);
     }
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 
     // Load and show some Qt Quick content
     QQuickView view;
-    view.setTitle("Countries of the European Union");
+    view.setTitle(QStringLiteral("Countries of the European Union"));
     view.setResizeMode(QQuickView::SizeRootObjectToView);
     view.engine()->rootContext()->setContextProperty(QStringLiteral("_filter"), &filterProxyModel);
     view.engine()->rootContext()->setContextProperty(QStringLiteral("_model"), &tableToListProxyModel);

@@ -34,10 +34,10 @@ int main(int argc, char *argv[])
 
 
     TabWindow w;
-    w.addTab(new QWidget, "Tab 1");
-    w.addTab(new QWidget, "Tab 2");
-    w.addTab(new QWidget, "Tab 3");
-    w.addTab(new QWidget, "Tab 4");
+    w.addTab(new QWidget, QStringLiteral("Tab 1"));
+    w.addTab(new QWidget, QStringLiteral("Tab 2"));
+    w.addTab(new QWidget, QStringLiteral("Tab 3"));
+    w.addTab(new QWidget, QStringLiteral("Tab 4"));
     w.show();
 
     return a.exec();

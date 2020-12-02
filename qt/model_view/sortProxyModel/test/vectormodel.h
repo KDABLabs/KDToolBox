@@ -51,7 +51,7 @@ public:
         if (contents[row] != value) {
             contents[row] = value;
             const auto idx = index(row);
-            emit dataChanged(idx, idx, QVector<int>{Qt::DisplayRole});
+            Q_EMIT dataChanged(idx, idx, QVector<int>{Qt::DisplayRole});
         }
     }
 

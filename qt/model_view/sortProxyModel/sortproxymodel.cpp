@@ -101,9 +101,9 @@ void SortProxyModel::sort(int column, Qt::SortOrder order)
         reorder();
 
         if (oldOrder != m_order)
-            emit sortOrderChanged();
+            Q_EMIT sortOrderChanged();
         if (oldColumn != m_sortColumn)
-            emit sortColumnChanged();
+            Q_EMIT sortColumnChanged();
     }
 }
 
@@ -161,7 +161,7 @@ void SortProxyModel::setSortRole(int role)
 {
     if (m_sortRole != role) {
         m_sortRole = role;
-        emit sortRoleChanged();
+        Q_EMIT sortRoleChanged();
         reorder();
     }
 }
@@ -175,7 +175,7 @@ void SortProxyModel::setSortCaseSensitivity(Qt::CaseSensitivity sensitivity)
 {
     if (m_caseSensitivity != sensitivity) {
         m_caseSensitivity = sensitivity;
-        emit sortCaseSensitivityChanged();
+        Q_EMIT sortCaseSensitivityChanged();
         reorder();
     }
 }
@@ -425,7 +425,7 @@ void SortProxyModel::handleRowsRemoved(const QModelIndex &parent, int firstRemov
     //iterates backwards through the list of rows to remove so the indices in removedRows stay
     //  correct during the iteration
     auto it = predecessor(removedRows.end());
-    forever {
+    for (;;) {
         auto lastRowToRemove = *it;
         //see if we have consecutive rows we can remove in one go
         while (it != removedRows.begin() && *predecessor(it) == *it - 1) --it;

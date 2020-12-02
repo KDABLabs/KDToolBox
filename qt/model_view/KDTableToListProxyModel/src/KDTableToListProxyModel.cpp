@@ -407,7 +407,7 @@ void KDTableToListProxyModel::dataChangedInSourceModel(const QModelIndex &topLef
 
     const int firstRow = topLeft.row();
     const int lastRow = bottomRight.row();
-    emit dataChanged(index(firstRow, 0), index(lastRow, 0), mappedRolesChanged);
+    Q_EMIT dataChanged(index(firstRow, 0), index(lastRow, 0), mappedRolesChanged);
 }
 
 void KDTableToListProxyModel::headerDataChangedInSourceModel(Qt::Orientation orientation, int first, int last)
@@ -416,7 +416,7 @@ void KDTableToListProxyModel::headerDataChangedInSourceModel(Qt::Orientation ori
     case Qt::Horizontal:
         break;
     case Qt::Vertical:
-        emit headerDataChanged(orientation, first, last);
+        Q_EMIT headerDataChanged(orientation, first, last);
         break;
     }
 }
@@ -460,7 +460,7 @@ void KDTableToListProxyModel::layoutAboutToBeChangedInSourceModel(const QList<QP
         // just create persistent indexes to column 0. We will be only
         // interested in their movement.
 
-        emit layoutAboutToBeChanged({}, hint);
+        Q_EMIT layoutAboutToBeChanged({}, hint);
 
         m_ownPersistentIndexesForLayoutChange = persistentIndexList();
 
@@ -523,7 +523,7 @@ void KDTableToListProxyModel::layoutChangedInSourceModel(const QList<QPersistent
 
         changePersistentIndexList(m_ownPersistentIndexesForLayoutChange, newOwnPersistentIndexes);
 
-        emit layoutChanged({}, hint);
+        Q_EMIT layoutChanged({}, hint);
         m_ownPersistentIndexesForLayoutChange.clear();
         m_sourcePersistentIndexesForLayoutChange.clear();
         break;
@@ -647,7 +647,7 @@ void KDTableToListProxyModel::columnsRemovedInSourceModel(const QModelIndex &par
 
     if (!mappedRolesChanged.isEmpty()) {
         // all rows havechanged
-        emit dataChanged(index(0, 0), index(rowCount() - 1, 0), mappedRolesChanged);
+        Q_EMIT dataChanged(index(0, 0), index(rowCount() - 1, 0), mappedRolesChanged);
     }
 }
 

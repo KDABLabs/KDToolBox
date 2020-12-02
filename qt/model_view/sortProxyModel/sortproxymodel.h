@@ -75,7 +75,7 @@ public:
     int sortColumn() const;
     Qt::SortOrder sortOrder() const;
 
-signals:
+Q_SIGNALS:
     void sortRoleChanged();
     void sortCaseSensitivityChanged();
     void sortColumnChanged();
@@ -84,7 +84,7 @@ signals:
 protected:
     bool lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const;
 
-protected slots:
+protected Q_SLOTS:
     void resetInternalData();
 
 private:

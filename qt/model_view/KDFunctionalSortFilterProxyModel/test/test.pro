@@ -11,7 +11,3 @@ contains(QT_CONFIG, c++2a):CONFIG *= c++2a
 
 SOURCES += \
     tst_kdfunctionalsortfilterproxymodel.cpp \
-
-DEFINES +=\
-    QT_NO_CAST_FROM_ASCII \
-    QT_NO_CAST_TO_ASCII \

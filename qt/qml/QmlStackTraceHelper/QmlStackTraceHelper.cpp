@@ -39,7 +39,7 @@ namespace KDAB {
 
 QString qmlStackTrace(QV4::ExecutionEngine *engine)
 {
-    return QString(qt_v4StackTrace(engine->currentContext()));
+    return QString::fromUtf8(qt_v4StackTrace(engine->currentContext()));
 }
 
 void printQmlStackTraces()

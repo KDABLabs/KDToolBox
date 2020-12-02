@@ -32,17 +32,17 @@ class tst_SingleShot_Connect : public QObject
 {
     Q_OBJECT
 
-private slots:
+private Q_SLOTS:
     void singleshot();
 };
 
 class Object : public QObject
 {
     Q_OBJECT
-signals:
+Q_SIGNALS:
     void aSignal(int, const QString&);
 
-public slots:
+public Q_SLOTS:
     void aSlot(int i, const QString& s)
     {
         ++m_slotCounter;

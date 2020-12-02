@@ -251,7 +251,7 @@ void SortProxyModelTest::changeValueContiniousRange()
     //change two rows
     sourceModel.contents[2] = 7; //changed from 3
     sourceModel.contents[3] = 6; //changed from 2
-    emit sourceModel.dataChanged(sourceModel.index(2), sourceModel.index(3));
+    Q_EMIT sourceModel.dataChanged(sourceModel.index(2), sourceModel.index(3));
 
     //check sorted model contents
     CHECKMODELCONTENTS(int)(sorted, {1, 4, 5, 6, 7});
@@ -279,7 +279,7 @@ void SortProxyModelTest::changeValueDiscontiniousRange()
     sourceModel.contents[4] = 7; //changed from 4
     sourceModel.contents[1] = 6; //changed from 1
      //we trigger only one dataChanged signal for both changes
-    emit sourceModel.dataChanged(sourceModel.index(2), sourceModel.index(4));
+    Q_EMIT sourceModel.dataChanged(sourceModel.index(2), sourceModel.index(4));
 
     //contents before change        {1, 2, 3, 4, 5}
     // after change, before reorder {6, 2, 3, 7, 5}
