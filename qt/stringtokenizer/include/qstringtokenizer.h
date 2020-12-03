@@ -244,7 +244,7 @@ namespace Tok {
     {
         using Pinning<T>::Pinning;
         template <typename Arg>
-        constexpr auto needleView(Arg &&a) noexcept
+        constexpr auto needleView(Arg &&a) const noexcept
             -> decltype(this->view(std::forward<Arg>(a)))
         { return this->view(std::forward<Arg>(a)); }
     };
@@ -254,7 +254,7 @@ namespace Tok {
     {
         using Pinning<T>::Pinning;
         template <typename Arg>
-        constexpr auto haystackView(Arg &&a) noexcept
+        constexpr auto haystackView(Arg &&a) const noexcept
             -> decltype(this->view(std::forward<Arg>(a)))
         { return this->view(std::forward<Arg>(a)); }
     };
