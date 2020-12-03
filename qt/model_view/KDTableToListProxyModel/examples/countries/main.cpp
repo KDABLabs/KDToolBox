@@ -37,7 +37,6 @@
 #include <KDTableToListProxyModel.h>
 
 #include <memory>
-#include <chrono>
 
 struct Country {
     const char *name;
@@ -94,7 +93,7 @@ std::unique_ptr<QStandardItemModel> createCountriesModel()
     return countriesModel;
 }
 
-static const auto POPULATION_INCREASE_INTERVAL = std::chrono::seconds(3);
+static const auto POPULATION_INCREASE_INTERVAL = 3000; // <chono> doesn't exist for QTimer in MSVC 2015
 
 int main(int argc, char **argv)
 {
