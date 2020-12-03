@@ -29,6 +29,7 @@
 
 #include <QBasicMutex>
 
+#include <atomic>
 #include <mutex>
 #include <forward_list>
 
