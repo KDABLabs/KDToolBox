@@ -43,7 +43,7 @@ class QStringTokenizerBaseBase
 {
 protected:
     ~QStringTokenizerBaseBase() = default;
-    constexpr QStringTokenizerBaseBase(Qt::SplitBehavior sb, Qt::CaseSensitivity cs) noexcept
+    Q_DECL_CONSTEXPR QStringTokenizerBaseBase(Qt::SplitBehavior sb, Qt::CaseSensitivity cs) noexcept
         : m_sb{sb}, m_cs{cs} {}
 
     struct tokenizer_state {
@@ -151,7 +151,7 @@ private:
 namespace QtPrivate {
 namespace Tok {
 
-    constexpr qsizetype size(QChar) noexcept { return 1; }
+    Q_DECL_CONSTEXPR qsizetype size(QChar) noexcept { return 1; }
     template <typename String>
     constexpr qsizetype size(const String &s) noexcept { return static_cast<qsizetype>(s.size()); }
 

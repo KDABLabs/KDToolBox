@@ -71,6 +71,7 @@ QStringList toQStringList(const Container &c)
 
 void tst_QStringTokenizer::constExpr() const
 {
+#ifdef Q_COMPILER_CONSTEXPR
     // compile-time checks
     {
         constexpr auto tok = qTokenize(u"a,b,c", u",");
@@ -80,6 +81,9 @@ void tst_QStringTokenizer::constExpr() const
         constexpr auto tok = qTokenize(u"a,b,c", u',');
         Q_UNUSED(tok);
     }
+#else
+    QSKIP("This test requires C++11 constexpr support enabled in the compiler.");
+#endif
 }
 
 void tst_QStringTokenizer::basics_data() const
