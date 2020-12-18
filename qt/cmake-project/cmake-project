@@ -1,0 +1,37 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: 2020 Klaravdalens Datakonsult AB (KDAB), author David Faure <david.faure@kdab.com>
+# SPDX-License-Identifier: MIT
+
+# Generate a CMakeLists.txt based on the .cpp files in the current directory
+# Similar to qmake -project, in essence.
+
+if [ -f CMakeLists.txt ]; then
+    echo "CMakeLists.txt already exists, aborting for safety reasons"
+    exit 1
+fi
+FILES="`ls -Q *.cpp`"
+if [ -z "$FILES" ]; then
+    echo "No cpp files found in the current directory"
+    exit 1
+fi
+PROJECTNAME=`basename "$PWD" | sed -e 's/ /_/g'`
+TARGET="$PROJECTNAME"
+QT=Qt5
+QTLIBS="Core Gui"
+QTTARGETS="$QT::Core $QT::Gui"
+if [ -n "`grep QApplication *.cpp`" ]; then
+    QTLIBS="$QTLIBS Widgets"
+    QTTARGETS="$QTTARGETS $QT::Widgets"
+fi
+
+cat > CMakeLists.txt <<EOF
+project($PROJECTNAME)
+cmake_minimum_required(VERSION 3.9)
+set(CMAKE_CXX_STANDARD 11)
+find_package(Qt5 CONFIG REQUIRED COMPONENTS $QTLIBS)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC TRUE)
+add_executable($PROJECTNAME $FILES)
+target_link_libraries($PROJECTNAME $QTTARGETS)
+EOF
+
