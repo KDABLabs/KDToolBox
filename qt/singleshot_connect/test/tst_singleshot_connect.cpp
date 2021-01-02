@@ -24,7 +24,7 @@
 ** DEALINGS IN THE SOFTWARE.
 ****************************************************************************/
 
-#include <QtTest>
+#include <QTest>
 
 #include "../singleshot_connect.h"
 

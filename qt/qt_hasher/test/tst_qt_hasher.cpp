@@ -27,7 +27,9 @@
 #include "tst_qt_hasher.h"
 #include "../qt_hasher.h"
 
-#include <QtTest>
+#include <QTest>
+#include <QRegularExpression>
+#include <QFont>
 
 #include <unordered_map>
 #include <unordered_set>

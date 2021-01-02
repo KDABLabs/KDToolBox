@@ -26,7 +26,7 @@
 ****************************************************************************/
 
 #include <QString>
-#include <QtTest>
+#include <QTest>
 #include <QCoreApplication>
 #include <QSignalSpy>
 #include "../sortproxymodel.h"
