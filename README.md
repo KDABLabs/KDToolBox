@@ -67,7 +67,7 @@ Get Involved
 ============
 KDAB will happily accept external contributions; however, **all**
 contributions will require a signed Contributor License Agreement
-(see docs/KDToolBox-CopyrightAssignmentForm.docx).
+(see docs/KDToolBox-CopyrightAssignmentForm.pdf).
 
 Contact info@kdab.com for more information.
 
