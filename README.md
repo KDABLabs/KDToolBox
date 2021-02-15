@@ -38,6 +38,8 @@ Qt Tools
   An API to help you intercept the output going through qDebug()/qWarning()/etc.
 - [QStringTokenizer](https://github.com/KDAB/KDToolBox/tree/master/qt/stringtokenizer)
   A universal, safe, zero-allocation string splitter.
+- [Signal/Slot Connection Throttlers](https://github.com/KDAB/KDToolBox/tree/master/qt/KDSignalThrottler)
+  An implementation of throttler/debouncer classes for signal/slot connections.
 - [Single Shot Connect](https://github.com/KDAB/KDToolBox/tree/master/qt/singleshot_connect)
   A header only version of QObject::connect, that establishes a single shot connection.
 - [Qt Hasher](https://github.com/KDAB/KDToolBox/tree/master/qt/qt_hasher)
