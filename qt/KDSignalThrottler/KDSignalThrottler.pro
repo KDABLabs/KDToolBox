@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 SUBDIRS += \
-    example \
+    examples \
     test \
 
 OTHER_FILES += \
