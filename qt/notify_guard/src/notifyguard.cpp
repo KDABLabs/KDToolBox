@@ -29,12 +29,17 @@
 #include <QObject>
 #include <QMetaObject>
 #include <QMetaProperty>
+#include <QLoggingCategory>
 #include <QDebug>
 #include <QVarLengthArray>
 #include <vector>
 #include <unordered_map>
 
 static const char guardSharedDataPropertyName[] = "__NotifyGuardSharedData__";
+namespace {
+Q_DECLARE_LOGGING_CATEGORY(cat)
+Q_LOGGING_CATEGORY(cat, "KDToolBox.NotifyGuard", QtWarningMsg);
+}
 
 namespace KDToolBox {
 namespace Internal {
@@ -76,19 +81,21 @@ static Internal::SignalDataSPtr getDataObject(QObject* target, const QMetaMethod
 NotifyGuard::NotifyGuard(QObject* target, const char* property, GuardOptions options)
 {
     Q_ASSERT(target);
+    qCDebug(cat) << "Creating NotifyGuard from property on" << property;
+
 
     auto metaObject = target->metaObject();
     int propertyIndex = metaObject->indexOfProperty(property);
 
     if (propertyIndex < 0) {
-        qWarning() << "Error: Constructing NotifyGuard on non-existent property" << property << "on target" << target;
+        qCWarning(cat) << "Error: Constructing NotifyGuard on non-existent property" << property << "on target" << target;
         return;
     }
 
     const QMetaProperty prop = metaObject->property(propertyIndex);
     auto signal = prop.notifySignal();
     if (!signal.isValid()) {
-        qWarning() << "Error: Constructing NotifyGuard on property `" << property << "` on target" << target
+        qCWarning(cat) << "Error: Constructing NotifyGuard on property `" << property << "` on target" << target
                    << "that does not have a notify signal";
         return;
     }
@@ -96,12 +103,12 @@ NotifyGuard::NotifyGuard(QObject* target, const char* property, GuardOptions opt
     //fixme: we need some way to determine if the type is comparable or not
     const auto parameterCount = signal.parameterCount();
     if (parameterCount > 1) {
-        qWarning() << "Error: Constructing NotifyGuard on property `" << property << "` on target" << target
+        qCWarning(cat) << "Error: Constructing NotifyGuard on property `" << property << "` on target" << target
                    << "with a notify signal with too many parameters";
         return;
     } else if (parameterCount == 1) {
         if (signal.parameterType(0) != prop.userType()) {
-            qWarning() << "Error: Constructing NotifyGuard on property `" << property << "` on target" << target
+            qCWarning(cat) << "Error: Constructing NotifyGuard on property `" << property << "` on target" << target
                        << "with a notify signal that has a different parameter type than the property itself";
             return;
         }
@@ -115,6 +122,11 @@ NotifyGuard::NotifyGuard(QObject* target, const char* property, GuardOptions opt
     }
 }
 
+NotifyGuard::~NotifyGuard()
+{
+    qCDebug(cat) << "Destroying NotifyGuard. signalData object" << m_signalData.get();
+}
+
 /**
  * @brief NotifyGuard::NotifyGuard constructs a property guard on the given target and property
  * @param target the object to monitor. Usually `this`
@@ -125,8 +137,9 @@ NotifyGuard::NotifyGuard(QObject* target, const char* property, GuardOptions opt
  */
 NotifyGuard::NotifyGuard(QObject* target, const QMetaMethod& notifySignal, NotifyGuard::GuardOptions options)
 {
+    qCDebug(cat) << "Creating NotifyGuard from signal" << notifySignal.name() << "on object" << target;
     if (!notifySignal.isValid()) {
-        qWarning() << "Error: Constructing NotifyGuard on invalid signal on target" << target;
+        qCWarning(cat) << "Error: Constructing NotifyGuard on invalid signal on target" << target;
         return;
     }
 
@@ -146,7 +159,7 @@ NotifyGuard::NotifyGuard(QObject* target, const QMetaMethod& notifySignal, Notif
     }
 
     if (!foundProperties) {
-        qWarning() << "Error: Constructing NotifyGuard on signal that is not used for any properties.";
+        qCWarning(cat) << "Error: Constructing NotifyGuard on signal that is not used for any properties.";
     }
 }
 
@@ -162,30 +175,40 @@ Internal::SignalDataSPtr getDataObject(QObject* target, const QMetaMethod& notif
     if (options == NotifyGuard::RecursiveScope) {
         const auto notifySignalIndex = notifySignal.methodIndex();
 
+        qCDebug(cat)<< "custom properties on target" << target << target->dynamicPropertyNames() << "looking for signal id" << notifySignalIndex;
+
         auto instanceData = target->property(guardSharedDataPropertyName).value<Internal::InstanceDataPtr>();
         if (instanceData) {
+            qCDebug(cat) << "instance data ptr found and valid";
             const auto it = std::find_if(instanceData->begin(), instanceData->end(),
                                          [notifySignalIndex](const Internal::SignalIdDataPair& data){return notifySignalIndex == data.id;});
             if (it != instanceData->end()) {
                 if (auto sptr = it->dataWPtr.lock()) {
+                    qCDebug(cat) << "re-using shared instanceData for" << notifySignal.name() << sptr.get();
                     return sptr;
                 }
+
+                qCDebug(cat) << "found shared instance, but unable to lock it";
 
                 //replace the current, no-longer valid entry with a new one
                 auto shared = createSignalData(target, notifySignal);
                 *it = {notifySignalIndex, Internal::SignalDataWPtr(shared)};
+                qCDebug(cat) << "created new shared instanceData for" << notifySignal.name() << shared.get();
 
                 return shared;
             }
         } else {
+            qCDebug(cat) << "instance data ptr not found";
             instanceData = std::make_shared<Internal::InstanceData>();
             target->setProperty(guardSharedDataPropertyName, QVariant::fromValue(instanceData));
         }
 
         auto shared = createSignalData(target, notifySignal);
         instanceData->push_back({notifySignalIndex, Internal::SignalDataWPtr(shared)});
+        qCDebug(cat) << "created new shared instanceData for" << notifySignal.name() << shared.get();
         return shared;
     } else {
+        qCDebug(cat) << "created new non-shared instanceData for" << notifySignal.name();
         return createSignalData(target, notifySignal);
     }
 }
@@ -209,6 +232,7 @@ Internal::SignalDataSPtr getDataObject(QObject* target, const QMetaMethod& notif
  */
 Internal::SignalData::~SignalData()
 {
+    qCDebug(cat) << "Destroying SignalData object" << this << "on signal" << signal.name();
     for (const auto& pp: properties) {
         const auto currentValue = pp.property.read(target);
         if (currentValue == pp.startValue)
@@ -220,6 +244,7 @@ Internal::SignalData::~SignalData()
             signal.invoke(target, Qt::DirectConnection,
                           QGenericArgument(signal.parameterTypes().constFirst().data(), currentValue.data()));
         }
+        qCDebug(cat) << "... emitted signal";
         break;
     }
 }

@@ -84,7 +84,7 @@ public:
     NotifyGuard(NotifyGuard&&) = default;
     NotifyGuard& operator=(NotifyGuard&&) = default;
 
-    ~NotifyGuard() = default;
+    ~NotifyGuard();
 
 private: //methods
     Q_DISABLE_COPY(NotifyGuard)
