@@ -9,8 +9,9 @@ C++ Tools
   Backports of future C++ library components to C++11:
   - k20::erase/k20::erase_if - C++20's uniform container erasure
 - [DuplicateTracker](https://github.com/KDAB/KDToolBox/tree/master/cpp/duplicatetracker)
-  A wrapper around `std::unordered_set`, that transparently uses `std::pmr::monotonic_buffer_resource`,
-  where available, to improve the set's memory allocation pattern.
+  A helper class to keep track of "seen" elements, e.g. to avoid processing duplicate elements
+  in a collection. It transparently uses `std::pmr::monotonic_buffer_resource` to improve
+  its memory usage (compared to a 'plain' set implementation).
 - [toContainer](https://github.com/KDAB/KDToolBox/tree/master/cpp/toContainer)
   Helper functions to convert a container to another container, using a convenient pipeline style.
 
