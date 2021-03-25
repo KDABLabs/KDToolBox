@@ -11,6 +11,8 @@ C++ Tools
 - [DuplicateTracker](https://github.com/KDAB/KDToolBox/tree/master/cpp/duplicatetracker)
   A wrapper around `std::unordered_set`, that transparently uses `std::pmr::monotonic_buffer_resource`,
   where available, to improve the set's memory allocation pattern.
+- [toContainer](https://github.com/KDAB/KDToolBox/tree/master/cpp/toContainer)
+  Helper functions to convert a container to another container, using a convenient pipeline style.
 
 Qt Tools
 =================
