@@ -30,6 +30,8 @@
 
 #include <QAbstractProxyModel>
 
+class SortProxyModelTest;
+
 /**
  * @brief The SortProxyModel class provides sorting with row move support
  *
@@ -92,6 +94,7 @@ private:
     void reorder();
     void sortMappingContainer(std::vector<int> &container);
     bool lessThan(int source_left_row, int source_right_row) const;
+    int mapToProxyRow(int sourceRow) const;
 
     //source model change handlers
     void handleDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
@@ -106,8 +109,11 @@ private:
     int m_sortRole = Qt::DisplayRole;
     Qt::CaseSensitivity m_caseSensitivity = Qt::CaseSensitive;
 
-    std::vector<int> m_rowMap;
+    std::vector<int> m_proxyToSourceMap;
+    std::vector<int> m_sourceToProxyMap;
     std::pair<std::vector<int>::iterator, std::vector<int>::iterator> m_invalidatedRows;
+
+    friend class SortProxyModelTest;
 };
 
 #endif // SORTPROXYMODEL_H

@@ -39,13 +39,19 @@ enum RowMovedArguments {
     SourceFromIndex = 1,
     SourceToIndex = 2,
     ToParent = 3,
-    ToIndex = 4,
+    ToIndex = 4
 };
 
 enum RowsInsertedArguments {
     InsertParent = 0,
     InsertFromIndex = 1,
     InsertToIndex = 2
+};
+
+enum DataChangedArguments {
+    TopLeftIndex = 0,
+    BottomRightIndex = 1,
+    ChangedRoles = 2
 };
 
 class SortProxyModelTest : public QObject
@@ -56,6 +62,9 @@ class SortProxyModelTest : public QObject
 
 public:
     using QObject::QObject;
+
+private:
+    bool verifyInternalMapping(SortProxyModel *model);
 
 private Q_SLOTS:
     void vectorModel();
@@ -76,6 +85,18 @@ private Q_SLOTS:
     void doubles();
     void sortOnRolesAndColumns();
 };
+
+bool SortProxyModelTest::verifyInternalMapping(SortProxyModel* model)
+{
+    for (unsigned long i = 0; i < model->m_proxyToSourceMap.size(); ++i) {
+        unsigned long sourceRow = model->m_proxyToSourceMap[i];
+        unsigned long proxyRow = model->m_sourceToProxyMap[sourceRow];
+        if (proxyRow != i) {
+            return false;
+        }
+    }
+    return true;
+}
 
 template <int line, typename value_type>
 void checkModelContents(const QAbstractItemModel &model, std::initializer_list<value_type> values)
@@ -180,6 +201,7 @@ void SortProxyModelTest::changeSingleValueRight()
     CHECKMODELCONTENTS(int)(sorted, {1,2,3,4,5});
 
     QSignalSpy spy(&sorted, &SortProxyModel::rowsMoved);
+    QSignalSpy changedSpy(&sorted, &SortProxyModel::dataChanged);
 
     //change single value: changed item should move right
     sourceModel.setValue(4, 6);
@@ -192,6 +214,8 @@ void SortProxyModelTest::changeSingleValueRight()
     QCOMPARE(spy.at(0)[SourceFromIndex], 0);
     QCOMPARE(spy.at(0)[SourceToIndex], 0);
     QCOMPARE(spy.at(0)[ToIndex], 5);
+    QCOMPARE(changedSpy.count(), 1);
+    QCOMPARE(changedSpy.at(0)[TopLeftIndex].value<QModelIndex>().row(), 0);
 }
 
 void SortProxyModelTest::dumpModelContents(QAbstractItemModel &model)
@@ -215,7 +239,10 @@ void SortProxyModelTest::changeSingleValueLeft()
     sorted.sort(0);
     CHECKMODELCONTENTS(int)(sorted, {1,2,3,4,5});
 
+    QVERIFY(verifyInternalMapping(&sorted));
+
     QSignalSpy spy(&sorted, &SortProxyModel::rowsMoved);
+    QSignalSpy changedSpy(&sorted, &SortProxyModel::dataChanged);
 
     //change single value: changed item should move left
     const auto indexToChange = 1;
@@ -229,6 +256,9 @@ void SortProxyModelTest::changeSingleValueLeft()
     QCOMPARE(spy.at(0)[SourceFromIndex], 0);
     QCOMPARE(spy.at(0)[SourceToIndex], 2);
     QCOMPARE(spy.at(0)[ToIndex], 4);
+    QCOMPARE(changedSpy.count(), 1);
+    QCOMPARE(changedSpy.at(0)[TopLeftIndex].value<QModelIndex>().row(), 3);
+    QVERIFY(verifyInternalMapping(&sorted));
 }
 
 void SortProxyModelTest::changeValueContiniousRange()
@@ -241,8 +271,10 @@ void SortProxyModelTest::changeValueContiniousRange()
     QCOMPARE(sorted.rowCount(), 5);
     QCOMPARE(sorted.index(0).data().toInt(), 1);
     QCOMPARE(sorted.index(4).data().toInt(), 5);
+    QVERIFY(verifyInternalMapping(&sorted));
 
     QSignalSpy spy(&sorted, &SortProxyModel::rowsMoved);
+    QSignalSpy changedSpy(&sorted, &SortProxyModel::dataChanged);
 
     //change two rows
     sourceModel.contents[2] = 7; //changed from 3
@@ -257,6 +289,11 @@ void SortProxyModelTest::changeValueContiniousRange()
     QCOMPARE(spy.at(0)[SourceFromIndex], 1);
     QCOMPARE(spy.at(0)[SourceToIndex], 2);
     QCOMPARE(spy.at(0)[ToIndex], 5);
+
+    QCOMPARE(changedSpy.count(), 1);
+    QCOMPARE(changedSpy.at(0)[TopLeftIndex].value<QModelIndex>().row(), 1);
+    QCOMPARE(changedSpy.at(0)[BottomRightIndex].value<QModelIndex>().row(), 2);
+    QVERIFY(verifyInternalMapping(&sorted));
 }
 
 void SortProxyModelTest::changeValueDiscontiniousRange()
@@ -269,13 +306,14 @@ void SortProxyModelTest::changeValueDiscontiniousRange()
     sorted.sort(0);
     CHECKMODELCONTENTS(int)(sorted, {1, 2, 3, 4, 5});
 
+    QSignalSpy changedSpy(&sorted, &SortProxyModel::dataChanged);
     QSignalSpy spy(&sorted, &SortProxyModel::rowsMoved);
 
     //change two rows, will result in two different moves in the sorted model
     sourceModel.contents[4] = 7; //changed from 4
     sourceModel.contents[1] = 6; //changed from 1
      //we trigger only one dataChanged signal for both changes
-    Q_EMIT sourceModel.dataChanged(sourceModel.index(2), sourceModel.index(4));
+    Q_EMIT sourceModel.dataChanged(sourceModel.index(1), sourceModel.index(4));
 
     //contents before change        {1, 2, 3, 4, 5}
     // after change, before reorder {6, 2, 3, 7, 5}
@@ -284,7 +322,13 @@ void SortProxyModelTest::changeValueDiscontiniousRange()
     //check sorted model contents after reorder
     CHECKMODELCONTENTS(int)(sorted, {2, 3, 5, 6, 7});
 
-    //signal emissions
+    //signal emissions: changed signals
+    QCOMPARE(changedSpy.count(), 2); //we expect two data Changed signals, though the source model emitted only one
+    QCOMPARE(changedSpy.at(0)[TopLeftIndex].value<QModelIndex>().row(), 0);
+    QCOMPARE(changedSpy.at(0)[BottomRightIndex].value<QModelIndex>().row(), 1);
+    QCOMPARE(changedSpy.at(1)[TopLeftIndex].value<QModelIndex>().row(), 3);
+    QCOMPARE(changedSpy.at(1)[BottomRightIndex].value<QModelIndex>().row(), 4);
+    //row move signals
     QCOMPARE(spy.count(), 2);
     //move item 3 (7) to item 5
     QCOMPARE(spy.at(0)[SourceFromIndex], 3);
@@ -304,6 +348,7 @@ void SortProxyModelTest::insertSingleValue()
 
     sorted.sort(0);
     CHECKMODELCONTENTS(int)(sorted, {1, 3, 4, 5});
+    QVERIFY(verifyInternalMapping(&sorted));
 
     QSignalSpy movedSpy(&sorted, &SortProxyModel::rowsMoved);
     QSignalSpy insertedSpy(&sorted, &SortProxyModel::rowsInserted);
@@ -318,6 +363,7 @@ void SortProxyModelTest::insertSingleValue()
     CHECKMODELCONTENTS(int)(sorted, {1, 2, 2, 3, 4, 5});
     QCOMPARE(movedSpy.count(), 0);
     QCOMPARE(insertedSpy.count(), 2);
+    QVERIFY(verifyInternalMapping(&sorted));
 }
 
 void SortProxyModelTest::insertMultipleContiniousValues()
@@ -338,6 +384,7 @@ void SortProxyModelTest::insertMultipleContiniousValues()
     QCOMPARE(insertedSpy.count(), 1); //we expect the insert to be handled in one single insert
     QCOMPARE(insertedSpy.at(0)[InsertFromIndex], 4);
     QCOMPARE(insertedSpy.at(0)[InsertToIndex], 6);
+    QVERIFY(verifyInternalMapping(&sorted));
 }
 
 void SortProxyModelTest::insertMultipleDiscontiniousValues()
@@ -364,6 +411,8 @@ void SortProxyModelTest::insertMultipleDiscontiniousValues()
     QCOMPARE(insertedSpy.at(1)[InsertToIndex], 4);
     QCOMPARE(insertedSpy.at(2)[InsertFromIndex], 6);
     QCOMPARE(insertedSpy.at(2)[InsertToIndex], 6);
+
+    QVERIFY(verifyInternalMapping(&sorted));
 }
 
 void SortProxyModelTest::insertAtEndOfRange()
