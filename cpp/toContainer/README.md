@@ -58,7 +58,7 @@ altering the source container), then use
 and so on.
 
 **It's highly recommended to use ranges-v3 instead of this.**
-The implementation offered here is knowlingly incomplete in some cases.
+The implementation offered here is knowingly incomplete in some cases.
 Use this only if ranges-v3 doesn't work for you.
 
 Requires a C++14 capable compiler.
