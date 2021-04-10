@@ -2,6 +2,7 @@ TEMPLATE = subdirs
 SUBDIRS += \
     eventfilter \
     KDSignalThrottler \
+    KDSqlDatabaseTransaction \
     messagehandler \
     model_view \
     notify_guard \

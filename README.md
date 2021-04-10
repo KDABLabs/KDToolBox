@@ -56,6 +56,8 @@ Qt Tools
   A RAII guard object to make sure object notification signals are properly emitted.
 - [asan_assert_fail_qt](https://github.com/KDAB/KDToolBox/tree/master/qt/asan_assert_fail_qt)
   Intercept `Q_ASSERT` failures with ASAN and print a backtrace.
+- [KDSqlDatabaseTransaction](https://github.com/KDAB/KDToolBox/tree/master/qt/KDSqlDatabaseTransaction)
+  A RAII wrapper for database transactions when using the Qt SQL APIs.
 
 Other code snippets
 ===================
