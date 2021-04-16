@@ -86,6 +86,8 @@ public:
 
     ~NotifyGuard();
 
+    inline bool isActive() const {return bool(m_signalData);}
+
 private: //methods
     Q_DISABLE_COPY(NotifyGuard)
     explicit NotifyGuard(QObject* target, const QMetaMethod& notifySignal, GuardOptions options);

@@ -100,7 +100,13 @@ NotifyGuard::NotifyGuard(QObject* target, const char* property, GuardOptions opt
         return;
     }
 
-    //fixme: we need some way to determine if the type is comparable or not
+    if (prop.type() == QVariant::UserType && !QMetaType::hasRegisteredComparators(prop.userType())) {
+        qCWarning(cat) << "Error: Constructing NotifyGuard on property" << prop.name()
+                  << "which is of a user-defined type" << prop.typeName() << "that does not have a comparison operator registered. "
+                     "Register a comparison operator for this type using QMetaType::registerEqualsComparator<" << prop.typeName() << ">().";
+        return;
+    }
+
     const auto parameterCount = signal.parameterCount();
     if (parameterCount > 1) {
         qCWarning(cat) << "Error: Constructing NotifyGuard on property `" << property << "` on target" << target
@@ -128,6 +134,17 @@ NotifyGuard::~NotifyGuard()
 }
 
 /**
+ * @fn NotifyGuard::isActive() const
+ * @brief NotifyGuard::isActive indicates whether the NotifyGuard is active
+ *
+ * A NotifyGuard is active if it is actively monitoring one or more properties.
+ * Normally, a NotifyGuard would be active. It can be inactive if it was created
+ * on an invalid property or signal.
+ *
+ * @returns true if the NotifyGuard is active, false if not.
+ */
+
+/**
  * @brief NotifyGuard::NotifyGuard constructs a property guard on the given target and property
  * @param target the object to monitor. Usually `this`
  * @param notifySignal The notifySignal for the property or properties to monitor.
@@ -145,21 +162,41 @@ NotifyGuard::NotifyGuard(QObject* target, const QMetaMethod& notifySignal, Notif
 
     auto metaObject = target->metaObject();
 
-    m_signalData = getDataObject(target, notifySignal, options);
+    auto data = getDataObject(target, notifySignal, options);
 
     bool foundProperties = false;
+    bool foundUncomparableProperties = false;
     for (int i = 0; i < metaObject->propertyCount(); ++i) {
         const auto property = metaObject->property(i);
         if (property.notifySignal() == notifySignal) {
-            foundProperties = true;
-            if (!m_signalData->contains(property)) {
-                m_signalData->properties.push_back({property, property.read(target)});
+            //check if the types are comparable
+            if (property.type() != QVariant::UserType || QMetaType::hasRegisteredComparators(property.userType())) {
+                foundProperties = true;
+                if (!data->contains(property)) {
+                    data->properties.push_back({property, property.read(target)});
+                }
+            } else {
+                qCWarning(cat) << "Warning: Constructing NotifyGuard on signal"
+                          << notifySignal.name() << "that is used for property" << property.name()
+                          << "which is of a user-defined type" << property.typeName() << "that does not have a comparison operator registered. "
+                             "Register a comparison operator for this type using QMetaType::registerEqualsComparator<" << property.typeName() << ">(). "
+                             "Property" << property.name() << "will not be used.";
+                foundUncomparableProperties = true;
             }
         }
     }
 
-    if (!foundProperties) {
-        qCWarning(cat) << "Error: Constructing NotifyGuard on signal that is not used for any properties.";
+    if (foundProperties) {
+        m_signalData = std::move(data);
+    } else {
+        if (foundUncomparableProperties) {
+            qCWarning(cat) << "Error: Constructing NotifyGuard on signal"
+                       << notifySignal.name() << "failed because all properties using this notification signal have "
+                        "custom types that don't have a registered comparison operator.";
+        } else {
+            qCWarning(cat) << "Error: Constructing NotifyGuard on signal"
+                       << notifySignal.name() << "failed as there are no properties using this signal as a notification signal.";
+        }
     }
 }
 
