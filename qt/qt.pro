@@ -3,6 +3,7 @@ SUBDIRS += \
     eventfilter \
     KDSignalThrottler \
     KDSqlDatabaseTransaction \
+    KDStlContainerAdaptor \
     messagehandler \
     model_view \
     notify_guard \

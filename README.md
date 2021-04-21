@@ -70,6 +70,8 @@ Qt Tools
   A script to add inclusion of moc files to all .cpp files in the project.
 - [qt6_natvis](https://github.com/KDAB/KDToolBox/tree/master/qt/qt6_natvis)
   Natvis file for Qt6 debugging with Visual Studio and VS Code, with a test project.
+- [KDStlContainerAdaptor](https://github.com/KDAB/KDToolBox/tree/master/qt/KDStlContainerAdaptor)
+  Classes to ease the transition from Qt containers to the C++ Standard Library containers.
 
 Other Code Snippets
 ===================
