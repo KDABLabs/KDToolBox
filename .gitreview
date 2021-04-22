@@ -1,0 +1,4 @@
+[gerrit]
+host=codereview.kdab.com
+port=29418
+project=kdab/KDToolBox
