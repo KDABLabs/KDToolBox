@@ -29,6 +29,7 @@
 #ifndef UPDATEABLEMODEL_H
 #define UPDATEABLEMODEL_H
 
+#include <QModelIndex>
 #include <QSet>
 #include <QVector>
 #include <functional>
@@ -52,6 +53,7 @@ void updateCollection(const FwdIt srcBegin, const FwdIt srcEnd, TargetCollection
                       OnChanged onChanged, OnInsert onInsert, OnRemove onRemove, OnEqual onEqual)
 {
     auto srcIt = srcBegin;
+    target.reserve(std::distance(srcBegin, srcEnd));
     auto targetIt = std::begin(target);
 
     while (srcIt != srcEnd) {
@@ -111,55 +113,81 @@ namespace {
         return set;
     }
 
-    //insert range into container
+    //helper for manual overload ranking
+    //  highest rank is selected first
+    template <size_t Rank> struct OverloadRanker;
+    template <> struct OverloadRanker<0> {};
+    template <size_t Rank> struct OverloadRanker : OverloadRanker<Rank - 1> {};
+
+    //insert range into container, 2 overloads (using SFINAE) with manual ranking in case of multiple matches
+    constexpr size_t BestInsertRangeOverloadRank = 1;
+
     template<Container C, RandomIt InsertIt, ForwardIt FwdIt>
-    auto insertRange_imp(C& container, InsertIt targetInsertBefore, FwdIt sourceBegin, FwdIt sourceEnd, int, int)
+    auto insertRange_imp(C& container, InsertIt targetInsertBefore, FwdIt sourceBegin, FwdIt sourceEnd, OverloadRanker<1>)  //Best match
         -> decltype(container.insert(targetInsertBefore, sourceBegin, sourceEnd), InsertIt())
     {
         //primary option: use insert with a whole range directly
-        return std::next(container.insert(targetInsertBefore, sourceBegin, sourceEnd));
+        InsertIt it = std::next(container.insert(targetInsertBefore, sourceBegin, sourceEnd), std::distance(sourceBegin, sourceEnd));
+        return it;
     }
 
     template<Container C, RandomIt InsertIt, ForwardIt FwdIt>
-    auto insertRange_imp(C& container, InsertIt targetInsertBefore, FwdIt sourceBegin, FwdIt sourceEnd, long, int)
-        -> decltype(container.insert(targetInsertBefore, 1, typename C::value_type()), InsertIt())
+    auto insertRange_imp(C& container, InsertIt targetInsertBefore, FwdIt sourceBegin, FwdIt sourceEnd, OverloadRanker<0>)  //Fallback
+        -> InsertIt
     {
-        //secondary option: create room for the required number of items in one go, then copy the items in one go
-        auto firstNewItem = container.insert(targetInsertBefore, std::distance(sourceBegin, sourceEnd), typename C::value_type());
-        return std::copy(sourceBegin, sourceEnd, firstNewItem);
+#if (QT_VERSION < QT_VERSION_CHECK(5, 13, 0))
+        //Check if, when using QVector in Qt , the value type is default constructable
+        static_assert(!std::is_same<QVector<typename C::value_type>, C>::value || std::is_default_constructible<typename C::value_type>::value,
+                "When using QVector as your container type, the value type must be default-contructible. Consider using std::vector instead or use a more recent Qt version.");
+#endif
+
+        //store the location and the length of the inserted items
+        const auto location = std::distance(std::begin(container), targetInsertBefore);
+        const auto originalCount = container.size();
+
+        //append the new items to the container
+        std::copy(sourceBegin, sourceEnd, std::back_inserter(container));
+
+        //move the items into the right position in the container
+        const auto b = std::begin(container);
+        targetInsertBefore = std::next(b, location);
+        const InsertIt originalEnd = std::next(b, originalCount);
+        return std::rotate(targetInsertBefore, originalEnd, std::end(container));
     }
 
-    template<Container C, RandomIt InsertIt, ForwardIt FwdIt>
-    auto insertRange_imp(C& container, InsertIt targetInsertBefore, FwdIt sourceBegin, FwdIt sourceEnd, long, long)
-        -> decltype(container.insert(targetInsertBefore, typename C::value_type()), InsertIt())
-    {
-        //last option (needed for QList): insert the items one by one
-        while (sourceBegin != sourceEnd) {
-            targetInsertBefore = container.insert(targetInsertBefore, *sourceBegin);
-            ++targetInsertBefore;
-            ++sourceBegin;
-        }
-        return targetInsertBefore;
-    }
 
+    /**
+     *  Inserts a range into the target container
+     *  @returns an interator pointing one item past the last item inserted
+     *  @param container is the target container
+     *  @param targetInsertBefore iterator to the item the new items should be inserted before
+     *  @param sourceBegin iterator to the first item to insert into @arg container
+     *  @param sourceEnd iterator to the item past the last item to insert into @arg container
+     *
+     *  Implementation is done using SFINEA to select an efficient method for the type of
+     *  container used.
+     */
+
+    // "public API"
     template<Container C, RandomIt InsertIt, ForwardIt FwdIt>
-    auto insertRange(C& container, InsertIt targetInsertBefore, FwdIt sourceBegin, FwdIt sourceEnd)
-        -> decltype(insertRange_imp(container, targetInsertBefore, sourceBegin, sourceEnd, 0, 0), InsertIt())
+    InsertIt insertRange(C& container, InsertIt targetInsertBefore, FwdIt sourceBegin, FwdIt sourceEnd)
     {
-        return insertRange_imp(container, targetInsertBefore, sourceBegin, sourceEnd, 0, 0);
+        return insertRange_imp(container, targetInsertBefore, sourceBegin, sourceEnd, OverloadRanker<BestInsertRangeOverloadRank>{});
     }
 
 
     //less than on data type
+    constexpr size_t BestDataLessThanOverloadRank = 1;
+
     template<typename T>
-    auto dataLessThan_imp(const T& lhs, const T& rhs, int)
+    auto dataLessThan_imp(const T& lhs, const T& rhs, OverloadRanker<1>)
         -> decltype(operator<(lhs, rhs), bool())
     {
         return operator<(lhs, rhs);
     }
 
     template<typename T>
-    auto dataLessThan_imp(const T& lhs, const T& rhs, long)
+    auto dataLessThan_imp(const T& lhs, const T& rhs, OverloadRanker<0>)
         -> decltype(bool())
     {
         //fake implementation to stop the compiler from whining. User is probably providing his own via function pointer
@@ -169,10 +197,9 @@ namespace {
     }
 
     template<typename T>
-    auto dataLessThan(const T& lhs, const T& rhs)
-        -> decltype(dataLessThan_imp(lhs, rhs, 0), bool())
+    bool dataLessThan(const T& lhs, const T& rhs)
     {
-        return dataLessThan_imp(lhs, rhs, 0);
+        return dataLessThan_imp(lhs, rhs, OverloadRanker<BestDataLessThanOverloadRank>{});
     }
 }
 

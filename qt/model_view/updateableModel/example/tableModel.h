@@ -54,9 +54,9 @@ protected:    //QAIM API
 private:
     //should work with any random-access container with index-based access:
 
-//    DataContainer m_data; // QVector, that is
-//    std::vector<Data> m_data;
-    QList<Data> m_data;
+//    QVector<Data> m_data;  // if you use QVector, you also need to enable the default constructor of Data in Data.h
+    std::vector<Data> m_data;
+//    QList<Data> m_data;
 };
 
 #endif // TABLEMODEL_H
