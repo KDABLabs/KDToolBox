@@ -6,6 +6,7 @@ SUBDIRS += \
     messagehandler \
     model_view \
     notify_guard \
+    pointer_cast \
     qml \
     qt_hasher \
     singleshot_connect \

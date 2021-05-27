@@ -58,6 +58,8 @@ Qt Tools
   Intercept `Q_ASSERT` failures with ASAN and print a backtrace.
 - [KDSqlDatabaseTransaction](https://github.com/KDAB/KDToolBox/tree/master/qt/KDSqlDatabaseTransaction)
   A RAII wrapper for database transactions when using the Qt SQL APIs.
+- [pointer_cast](https://github.com/KDAB/KDToolBox/tree/master/qt/pointer_cast)
+  Tools to ease migrating from `QSharedPointer` to `std::shared_ptr`.
 
 Other code snippets
 ===================
