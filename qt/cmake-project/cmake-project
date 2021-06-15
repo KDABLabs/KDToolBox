@@ -9,7 +9,7 @@ if [ -f CMakeLists.txt ]; then
     echo "CMakeLists.txt already exists, aborting for safety reasons"
     exit 1
 fi
-FILES="`ls -Q *.cpp`"
+FILES="`find -name '*.cpp' -o -name '*.qrc' -o -name '*.ui' | sed -e 's,\.\/,  ,'`"
 if [ -z "$FILES" ]; then
     echo "No cpp files found in the current directory"
     exit 1
@@ -22,6 +22,7 @@ QTTARGETS="$QT::Core $QT::Gui"
 if [ -n "`grep QApplication *.cpp`" ]; then
     QTLIBS="$QTLIBS Widgets"
     QTTARGETS="$QTTARGETS $QT::Widgets"
+    AUTOUIC="set(CMAKE_AUTOUIC TRUE)"
 fi
 
 cat > CMakeLists.txt <<EOF
@@ -31,7 +32,10 @@ set(CMAKE_CXX_STANDARD 11)
 find_package(Qt5 CONFIG REQUIRED COMPONENTS $QTLIBS)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC TRUE)
-add_executable($PROJECTNAME $FILES)
+set(CMAKE_AUTORCC TRUE)
+$AUTOUIC
+add_executable($PROJECTNAME
+$FILES
+)
 target_link_libraries($PROJECTNAME $QTTARGETS)
 EOF
-
