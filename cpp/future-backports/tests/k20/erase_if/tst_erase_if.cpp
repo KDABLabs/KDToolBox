@@ -129,7 +129,7 @@ private:
         const Container c = il;
         {
             Container copy = c;
-            QCOMPARE(k20::erase_if(copy, [&](const auto &e) { return e == v; }), expected);
+            QCOMPARE(k20::erase_if(copy, [&](const value_type<Container> &e) { return e == v; }), expected);
             if (expected > 0)
                 QVERIFY(copy != c);
             else
