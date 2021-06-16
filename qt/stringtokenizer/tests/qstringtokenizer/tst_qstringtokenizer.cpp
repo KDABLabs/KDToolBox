@@ -36,6 +36,8 @@ Q_DECLARE_METATYPE(Qt::SplitBehavior)
 class tst_QStringTokenizer : public QObject
 {
     Q_OBJECT
+public:
+    using QObject::QObject;
 
 private Q_SLOTS:
     void constExpr() const;

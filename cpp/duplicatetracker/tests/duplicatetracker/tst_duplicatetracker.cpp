@@ -42,6 +42,8 @@ struct prealloc<DuplicateTracker<T, Prealloc, H, Eq>>
 class tst_DuplicateTracker : public QObject
 {
     Q_OBJECT
+public:
+    using QObject::QObject;
 
 private Q_SLOTS:
     void defaultCtor();

@@ -40,6 +40,8 @@
 class tst_erase_if : public QObject
 {
     Q_OBJECT
+public:
+    using QObject::QObject;
 
 private Q_SLOTS:
     void erase_empty_vector_int() { erase_impl<std::vector<int>>(); }

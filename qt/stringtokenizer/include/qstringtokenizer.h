@@ -48,9 +48,9 @@ protected:
 
     struct tokenizer_state {
         qsizetype start, end, extra;
-        friend constexpr bool operator==(tokenizer_state lhs, tokenizer_state rhs) noexcept
+        friend constexpr bool operator==(tokenizer_state lhs, tokenizer_state rhs) noexcept // clazy:exclude=function-args-by-ref
         { return lhs.start == rhs.start && lhs.end == rhs.end && lhs.extra == rhs.extra; }
-        friend constexpr bool operator!=(tokenizer_state lhs, tokenizer_state rhs) noexcept
+        friend constexpr bool operator!=(tokenizer_state lhs, tokenizer_state rhs) noexcept // clazy:exclude=function-args-by-ref
         { return !operator==(lhs, rhs); }
     };
 
