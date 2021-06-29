@@ -142,11 +142,11 @@ public:
     inline FlatIterator operator++(int) {FlatIterator tmp(*this); operator++(); return tmp;}
     inline FlatIterator& operator--() {return operator-=(1);}
     inline FlatIterator operator--(int) {FlatIterator tmp(*this); operator--(); return tmp;}
-    inline difference_type operator-(const FlatIterator& other) const {Q_ASSERT(canCompare(*this, other)); return row() - other.row();}
+    inline difference_type operator-(const FlatIterator& other) const {Q_ASSERT(FlatIterator::canCompare(*this, other)); return row() - other.row();}
 
     inline bool operator==(const FlatIterator& other) {return m_index == other.m_index && m_atEnd == other.m_atEnd;}
     inline bool operator!=(const FlatIterator& other) {return !operator==(other);}
-    inline friend bool operator<(const FlatIterator& lhs, const FlatIterator& rhs) {Q_ASSERT(canCompare(lhs, rhs)); return lhs.row() < rhs.row();}
+    inline friend bool operator<(const FlatIterator& lhs, const FlatIterator& rhs) {Q_ASSERT(FlatIterator::canCompare(lhs, rhs)); return lhs.row() < rhs.row();}
     inline friend bool operator>(const FlatIterator& lhs, const FlatIterator& rhs) {return operator<(rhs, lhs);}
     inline friend bool operator<=(const FlatIterator& lhs, const FlatIterator& rhs) {return !operator>(lhs, rhs);}
     inline friend bool operator>=(const FlatIterator& lhs, const FlatIterator& rhs) {return !operator<(lhs, rhs);}
@@ -160,7 +160,7 @@ public:
 private:
     inline const QAbstractItemModel *model() const {return m_index.model();}
     inline int row() const {int row = m_index.row(); if (m_atEnd) ++row; return row;}
-    inline friend bool canCompare(const FlatIterator& it1, const FlatIterator& it2) {
+    inline static bool canCompare(const FlatIterator& it1, const FlatIterator& it2) {
         return it1.m_index.model() == it2.m_index.model() &&
                it1.m_index.column() == it2.m_index.column() &&
                it1.m_index.parent() == it2.m_index.parent();
