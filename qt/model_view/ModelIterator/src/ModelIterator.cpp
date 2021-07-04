@@ -28,10 +28,10 @@
 #include "ModelIterator.h"
 
 DepthFirstIterator::DepthFirstIterator(const QModelIndex &index, int column):
-    m_column(column)
+    m_index{index.siblingAtColumn(0)},
+    m_column{column},
+    m_atEnd{!index.isValid()}
 {
-    m_index = index.siblingAtColumn(0);
-    m_atEnd = !index.isValid();
 }
 
 DepthFirstIterator &DepthFirstIterator::operator++()
@@ -132,9 +132,9 @@ DepthFirstIterator DepthFirstIterator::end(QAbstractItemModel *model, int column
 ////////////// FlatIterator /////////////////
 
 FlatIterator::FlatIterator(const QModelIndex &index, int column)
+    : m_index{index.siblingAtColumn(column)},
+      m_atEnd{!index.isValid()}
 {
-    m_index = index.siblingAtColumn(column);
-    m_atEnd = !index.isValid();
 }
 
 FlatIterator &FlatIterator::operator+=(int step)
