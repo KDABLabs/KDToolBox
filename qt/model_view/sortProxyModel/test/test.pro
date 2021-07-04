@@ -1,3 +1,4 @@
+CONFIG += testcase
 QT       += testlib
 
 TARGET = tst_sortproxymodeltest
