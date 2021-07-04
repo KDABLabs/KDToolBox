@@ -25,10 +25,11 @@
 ** DEALINGS IN THE SOFTWARE.
 ****************************************************************************/
 
-#ifndef VECTORMODEL_H
-#define VECTORMODEL_H
+#pragma once
+
 #include <QAbstractListModel>
-#include <algorithm>
+
+#include <vector>
 
 /**
  * Simple vector-based test model for the unit tests. It is templated so it can operate on different
@@ -36,49 +37,50 @@
  * This class obviously does not have production quality, it is only meant to provide a source model
  * for unit testing.
  */
-template <class value_type>
+template <class T>
 class VectorModel: public QAbstractListModel
 {
     //cannot use Q_OBJECT but that's ok here
 
+    int size() const noexcept { return static_cast<int>(contents.size()); }
 public:
-    VectorModel(std::initializer_list<value_type> initialContents) {
-        contents.reserve(static_cast<int>(initialContents.size()));
-        std::copy(initialContents.begin(), initialContents.end(), std::back_inserter(contents));
+    VectorModel(std::initializer_list<T> initialContents)
+        : QAbstractListModel(),
+          contents(initialContents)
+    {
     }
 
-    void setValue(int row, value_type value) {
-        if (contents[row] != value) {
-            contents[row] = value;
+    void setValue(int row, const T& value) {
+        auto &e = contents[row];
+        if (e != value) {
+            e = value;
             const auto idx = index(row);
             Q_EMIT dataChanged(idx, idx, QVector<int>{Qt::DisplayRole});
         }
     }
 
-    void append(value_type value) {
-        beginInsertRows(QModelIndex(), contents.count(), contents.count());
-        contents.append(value);
+    void append(const T &value) {
+        beginInsertRows(QModelIndex(), size(), size());
+        contents.push_back(value);
         endInsertRows();
     }
 
-    void append(std::initializer_list<value_type> values) {
-        beginInsertRows(QModelIndex(), contents.count(), contents.count() + static_cast<int>(values.size()) -1);
-        contents.append(values);
+    void append(std::initializer_list<T> values) {
+        beginInsertRows(QModelIndex(), size(), size() + static_cast<int>(values.size()) -1);
+
+        contents.insert(contents.end(), values);
         endInsertRows();
     }
 
-    void insert(int row, value_type value) {
+    void insert(int row, const T& value) {
         beginInsertRows({}, row, row);
-        contents.insert(row, value);
+        contents.insert(contents.begin() + row, value);
         endInsertRows();
     }
 
-    void insert(int row, std::initializer_list<value_type> values) {
+    void insert(int row, std::initializer_list<T> values) {
         beginInsertRows({}, row, row +  static_cast<int>(values.size()) -1);
-        contents.reserve( contents.size() + static_cast<int>(values.size()));
-        auto oldEnd = contents.end();
-        contents.append(values);
-        std::rotate(contents.begin() + row, oldEnd, contents.end());
+        contents.insert(contents.begin() + row, values);
         endInsertRows();
     }
 
@@ -89,7 +91,7 @@ public:
         if (parent.isValid())
             return 0;
 
-        return contents.count();
+        return size();
     }
 
     QVariant data(const QModelIndex &index, int role) const override
@@ -103,21 +105,20 @@ public:
 
     bool removeRows(int row, int count, const QModelIndex &parent = {}) override
     {
-        if (row < 0 || count < 0 || row + count >= contents.count())
+        if (row < 0 || count < 0 || row + count >= size())
             return false;
 
         beginRemoveRows(parent, row, row + count -1);
-        auto it = std::rotate(contents.begin() + row, contents.begin() + row + count, contents.end());
-        contents.erase(it, contents.end());
+        const auto first = contents.begin() + row;
+        const auto last = first + count;
+        contents.erase(first, last);
         endRemoveRows();
 
         return true;
     }
 
 public:
-    QVector<value_type> contents;
+    std::vector<T> contents;
 
     // QAbstractItemModel interface
 };
-
-#endif // VECTORMODEL_H
