@@ -370,7 +370,7 @@ void PropertySelectorCustomParser::parseBinding(PropertySelector *selector, QStr
 {
     QVariant simpleValue;
 
-    const QString name = selector->m_compilationUnit->stringAt(binding->propertyNameIndex);
+    QString name = selector->m_compilationUnit->stringAt(binding->propertyNameIndex);
 
     switch (binding->type) {
     case QV4::CompiledData::Binding::Type_Boolean:
@@ -389,8 +389,7 @@ void PropertySelectorCustomParser::parseBinding(PropertySelector *selector, QStr
             simpleValue = enumValue;
             break;
         } else {
-            PropertySelector::Rule rule{conditions, name, binding, binding->location};
-            selector->m_ruleList.append(rule);
+            selector->m_ruleList.append({std::move(conditions), std::move(name), binding, binding->location});
             return;
         }
     }
@@ -418,8 +417,7 @@ void PropertySelectorCustomParser::parseBinding(PropertySelector *selector, QStr
         return;
     }
 
-    PropertySelector::Rule rule{conditions, name, simpleValue, binding->location};
-    selector->m_ruleList.append(rule);
+    selector->m_ruleList.push_back({std::move(conditions), std::move(name), simpleValue, binding->location});
 }
 
 ///@brief Compare operator on Rule struct to make them sortable

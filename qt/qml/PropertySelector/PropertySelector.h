@@ -66,10 +66,10 @@ private: //types
     struct Rule {
         Rule() {}
         Rule(QStringList conditions, QString property, QVariant simpleValue, QV4::CompiledData::Location location)
-            :conditions(conditions), property(property), simpleValue(simpleValue), location(location), binding(nullptr)
+            :conditions(std::move(conditions)), property(std::move(property)), simpleValue(simpleValue), location(location), binding(nullptr)
         {}
         Rule(QStringList conditions, QString property, const QV4::CompiledData::Binding *binding, QV4::CompiledData::Location location)
-            :conditions(conditions), property(property), location(location), binding(binding), id(binding->value.compiledScriptIndex)
+             :conditions(std::move(conditions)), property(std::move(property)), location(location), binding(binding), id(binding->value.compiledScriptIndex)
         {}
 
         QStringList conditions;
