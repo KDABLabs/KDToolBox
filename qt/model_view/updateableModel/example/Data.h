@@ -27,8 +27,10 @@
 
 #ifndef DATA_H
 #define DATA_H
+
 #include <QString>
 #include <QVector>
+
 #include <vector>
 
 struct Data {
@@ -36,7 +38,7 @@ struct Data {
 //    Data(): id(-1) {}
 
     Data(int id, QString value1, QString value2):
-        id(id), value1(value1), value2(value2) {}
+        id(id), value1(std::move(value1)), value2(std::move(value2)) {}
 
 
     int id;
