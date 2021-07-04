@@ -205,9 +205,9 @@ public: //methods
     inline DataValueWrapper operator+(int step) {return DataValueWrapper(it + step);}
     inline DataValueWrapper operator-(int step) {return DataValueWrapper(it - step);}
 
-    inline DataValueWrapper& operator++() {it++; return *this;}
+    DataValueWrapper& operator++() { ++it; return *this; }
     inline DataValueWrapper operator++(int) {DataValueWrapper tmp(*this); operator++(); return tmp;}
-    inline DataValueWrapper& operator--() {it--; return *this;}
+    DataValueWrapper& operator--() { --it; return *this; }
     inline DataValueWrapper operator--(int) {DataValueWrapper tmp(*this); operator--(); return tmp;}
 
     inline bool operator==(const DataValueWrapper& other) {return it == other.it;}
