@@ -380,9 +380,9 @@ private:
         m_firstChangedRow = -1;
     }
 
-    void addChange(int row, const QVector<int>& columns, const QVector<int> roles)
+    void addChange(int row, const QVector<int>& columns, const QVector<int>& roles)
     {
-        auto mergeColumns = [this](QVector<int> columns) {
+        auto mergeColumns = [this](const QVector<int>& columns) {
             QVector<int> columnUnion;
             //we have to cast this to QAbstractItemModel, to work around QAbstractListModel making columnCount private
             columnUnion.reserve(static_cast<QAbstractItemModel*>(this)->columnCount());
@@ -390,7 +390,7 @@ private:
             std::set_union(m_changedColumns.cbegin(), m_changedColumns.cend(),
                            columns.cbegin(), columns.cend(),
                            inserter);
-            m_changedColumns = columnUnion;
+            m_changedColumns = std::move(columnUnion);
         };
 
         if (m_firstChangedRow > -1) {
