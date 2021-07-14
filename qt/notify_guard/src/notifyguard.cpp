@@ -54,7 +54,9 @@ struct SignalData {
     QMetaMethod signal;
     QVarLengthArray<PropertyPair, 2> properties;
 
+    SignalData() = default;
     ~SignalData();
+    Q_DISABLE_COPY(SignalData)
     bool contains(const QMetaProperty& property) const;
 };
 using SignalDataWPtr = std::weak_ptr<SignalData>;
