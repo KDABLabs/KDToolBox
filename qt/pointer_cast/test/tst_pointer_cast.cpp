@@ -42,6 +42,9 @@ private Q_SLOTS:
 namespace {
 
 struct B {
+    B() = default;
+    B(const B&) = delete;
+    B& operator=(const B&) = delete;
     virtual ~B() = default;
 };
 
