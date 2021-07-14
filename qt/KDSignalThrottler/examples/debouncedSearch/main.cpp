@@ -33,6 +33,7 @@
 
 class Widget : public QWidget
 {
+    Q_OBJECT
 public:
     explicit Widget(QWidget *parent = nullptr)
         : QWidget(parent)
@@ -94,3 +95,5 @@ int main(int argc, char **argv)
     w.show();
     return app.exec();
 }
+
+#include "main.moc"
