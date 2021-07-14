@@ -90,7 +90,7 @@ public:
 
 private: //methods
     Q_DISABLE_COPY(NotifyGuard)
-    explicit NotifyGuard(QObject* target, const QMetaMethod& notifySignal, GuardOptions options);
+    explicit NotifyGuard(QObject* target, QMetaMethod notifySignal, GuardOptions options);
 
 private: //members
     Internal::SignalDataSPtr m_signalData;

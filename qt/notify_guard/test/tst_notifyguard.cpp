@@ -56,8 +56,10 @@ private Q_SLOTS:
 
 struct CustomType {
     int iValue;
-    inline bool operator==(const CustomType& other) const {return iValue == other.iValue;}
-    inline bool operator!=(const CustomType& other) const {return iValue != other.iValue;}
+    friend bool operator==(CustomType lhs, CustomType rhs) noexcept
+    { return lhs.iValue == rhs.iValue; }
+    friend bool operator!=(CustomType lhs, CustomType rhs) noexcept
+    { return lhs.iValue != rhs.iValue; }
 };
 
 Q_DECLARE_METATYPE(CustomType);

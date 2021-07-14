@@ -68,7 +68,7 @@ using InstanceDataPtr = std::shared_ptr<InstanceData>;
 }
 
 
-static Internal::SignalDataSPtr getDataObject(QObject* target, const QMetaMethod& notifySignal, NotifyGuard::GuardOptions options);
+static Internal::SignalDataSPtr getDataObject(QObject* target, QMetaMethod notifySignal, NotifyGuard::GuardOptions options);
 
 /**
  * @brief NotifyGuard::NotifyGuard constructs a property guard on the given target and property
@@ -152,7 +152,7 @@ NotifyGuard::~NotifyGuard()
  *
  * By default, NotifyGuard uses RecursiveScope for @arg options.
  */
-NotifyGuard::NotifyGuard(QObject* target, const QMetaMethod& notifySignal, NotifyGuard::GuardOptions options)
+NotifyGuard::NotifyGuard(QObject* target, QMetaMethod notifySignal, NotifyGuard::GuardOptions options)
 {
     qCDebug(cat) << "Creating NotifyGuard from signal" << notifySignal.name() << "on object" << target;
     if (!notifySignal.isValid()) {
@@ -200,9 +200,9 @@ NotifyGuard::NotifyGuard(QObject* target, const QMetaMethod& notifySignal, Notif
     }
 }
 
-Internal::SignalDataSPtr getDataObject(QObject* target, const QMetaMethod& notifySignal, NotifyGuard::GuardOptions options)
+Internal::SignalDataSPtr getDataObject(QObject* target, QMetaMethod notifySignal, NotifyGuard::GuardOptions options)
 {
-    auto createSignalData = [](QObject* target, const QMetaMethod& notifySignal) {
+    auto createSignalData = [](QObject* target, QMetaMethod notifySignal) {
         Internal::SignalDataSPtr shared = std::make_shared<Internal::SignalData>();
         shared->target = target;
         shared->signal = notifySignal;
