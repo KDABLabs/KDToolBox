@@ -203,7 +203,10 @@ bool SortProxyModel::lessThan(const QModelIndex &source_left, const QModelIndex 
     if (lhs.type() == QVariant::String && rhs.type() == QVariant::String) {
         return QString::compare(lhs.toString(), rhs.toString(), m_caseSensitivity) < 0;
     } else {
+        QT_WARNING_PUSH
+        QT_WARNING_DISABLE_DEPRECATED
         return lhs < rhs;
+        QT_WARNING_POP
     }
 }
 
