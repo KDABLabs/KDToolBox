@@ -55,7 +55,7 @@ class SortProxyModelTest : public QObject
     void dumpModelContents(QAbstractItemModel &model);
 
 public:
-    SortProxyModelTest();
+    using QObject::QObject;
 
 private Q_SLOTS:
     void vectorModel();
@@ -76,10 +76,6 @@ private Q_SLOTS:
     void doubles();
     void sortOnRolesAndColumns();
 };
-
-SortProxyModelTest::SortProxyModelTest()
-{
-}
 
 template <int line, typename value_type>
 void checkModelContents(const QAbstractItemModel &model, std::initializer_list<value_type> values)

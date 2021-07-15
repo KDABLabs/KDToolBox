@@ -31,6 +31,8 @@
 class tst_QtHasher : public QObject
 {
     Q_OBJECT
+public:
+    using QObject::QObject;
 
 private Q_SLOTS:
     void hash();

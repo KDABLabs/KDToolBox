@@ -37,6 +37,8 @@
 class tst_KDFunctionalSortFilterProxyModel : public QObject
 {
     Q_OBJECT
+public:
+    using QObject::QObject;
 
 private Q_SLOTS:
     void filterAcceptsRows();

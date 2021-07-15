@@ -36,6 +36,8 @@
 class tst_MessageHandler : public QObject
 {
     Q_OBJECT
+public:
+    using QObject::QObject;
 
 private Q_SLOTS:
     void threading();

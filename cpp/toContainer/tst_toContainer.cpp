@@ -44,6 +44,8 @@ using namespace KDToolBox::Ranges;
 class tst_toContainer : public QObject
 {
     Q_OBJECT
+public:
+    using QObject::QObject;
 
 private Q_SLOTS:
     void initTestCase();

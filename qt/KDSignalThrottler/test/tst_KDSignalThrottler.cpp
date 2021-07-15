@@ -36,6 +36,8 @@ using namespace KDToolBox;
 class tst_KDSignalThrottler : public QObject
 {
     Q_OBJECT
+public:
+    using QObject::QObject;
 
     static constexpr int Timeout = 50;
 

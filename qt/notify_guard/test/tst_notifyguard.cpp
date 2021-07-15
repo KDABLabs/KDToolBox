@@ -35,9 +35,8 @@ using namespace KDToolBox;
 class NotifyGuardTest : public QObject
 {
     Q_OBJECT
-
 public:
-    NotifyGuardTest();
+    using QObject::QObject;
 
 private Q_SLOTS:
     void test_noChange();
@@ -73,6 +72,8 @@ class TestClass: public QObject
     Q_PROPERTY (CustomType customProperty MEMBER m_customProperty NOTIFY customPropertyChanged)
 
 public:
+    using QObject::QObject;
+
     int intProperty() const {return m_intProperty;}
 
 Q_SIGNALS:
@@ -87,10 +88,6 @@ public:
     int m_intProperty2 = 0;
     CustomType m_customProperty{0};
 };
-
-NotifyGuardTest::NotifyGuardTest()
-{
-}
 
 void NotifyGuardTest::test_noChange()
 {

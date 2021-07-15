@@ -40,6 +40,8 @@
 class tst_KDTableToListProxyModel : public QObject
 {
     Q_OBJECT
+public:
+    using QObject::QObject;
 
 private Q_SLOTS:
     void initTestCase();
