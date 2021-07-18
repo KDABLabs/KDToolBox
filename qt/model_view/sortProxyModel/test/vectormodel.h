@@ -44,8 +44,8 @@ class VectorModel: public QAbstractListModel
 
     int size() const noexcept { return static_cast<int>(contents.size()); }
 public:
-    VectorModel(std::initializer_list<T> initialContents)
-        : QAbstractListModel(),
+    explicit VectorModel(std::initializer_list<T> initialContents, QObject *parent = nullptr)
+        : QAbstractListModel(parent),
           contents(initialContents)
     {
     }

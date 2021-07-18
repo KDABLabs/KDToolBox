@@ -33,6 +33,8 @@ class Controller : public QObject
 {
     Q_OBJECT
 public:
+    using QObject::QObject;
+
     Q_INVOKABLE void crash() {
         delete this; delete this;
     }

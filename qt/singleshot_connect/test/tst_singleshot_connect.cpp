@@ -41,6 +41,9 @@ private Q_SLOTS:
 class Object : public QObject
 {
     Q_OBJECT
+public:
+    using QObject::QObject;
+
 Q_SIGNALS:
     void aSignal(int, const QString&);
 

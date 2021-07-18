@@ -62,7 +62,8 @@ private:
     void requestCloseTab(int index);
 
 private:
-    explicit TabWindowManager();
+    using QObject::QObject;
+    TabWindowManager();
 
     friend class TabWindow;
     QList<TabWindow*> m_windows;
