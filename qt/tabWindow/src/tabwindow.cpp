@@ -60,7 +60,7 @@ int distance(QRect r, QPoint p)
 
 TabWindowManager::TabWindowManager()
 {
-    connect(static_cast<QApplication*>(qApp), &QApplication::focusWindowChanged,
+    connect(qApp, &QApplication::focusWindowChanged,
             this, &TabWindowManager::activateWindow);
 }
 
