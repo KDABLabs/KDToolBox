@@ -77,14 +77,14 @@ QList<TabWindow *> TabWindowManager::windows() const
 
 TabWindow *TabWindowManager::currentWindow() const
 {
-    if (m_windows.count())
+    if (!m_windows.isEmpty())
         return m_windows.first();
     return nullptr;
 }
 
 QWidget *TabWindowManager::currentWidget() const
 {
-    if (m_windows.count())
+    if (!m_windows.isEmpty())
         return m_windows.first()->currentWidget();
     return nullptr;
 }
