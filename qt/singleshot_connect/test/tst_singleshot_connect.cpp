@@ -105,18 +105,15 @@ void tst_SingleShot_Connect::singleshot()
     }
     {
         struct MoveOnlyFunctor {
-            int &ri;
-            QString &rs;
+            struct noop_deleter { void operator()(const void*) const noexcept {} };
+            std::unique_ptr<int, noop_deleter> ri;
+            std::unique_ptr<QString, noop_deleter> rs;
 
-            MoveOnlyFunctor(int &i, QString &s) :
-                ri(i), rs(s) {}
-            Q_DISABLE_COPY(MoveOnlyFunctor);
-            MoveOnlyFunctor(MoveOnlyFunctor &&) = default;
-            MoveOnlyFunctor &operator=(MoveOnlyFunctor &&) = default;
-            ~MoveOnlyFunctor() = default;
+            explicit MoveOnlyFunctor(int &i, QString &s) : ri(&i), rs(&s) {}
+
             void operator()(int i, const QString &s) {
-                ri = i;
-                rs = s;
+                *ri = i;
+                *rs = s;
             }
         };
 
