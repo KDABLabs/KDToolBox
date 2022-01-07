@@ -52,6 +52,11 @@ public:
     void setLessThanFunction(LessThanFunction function);
     void clearLessThanFunction();
 
+public Q_SLOTS:
+    // invalidate is already public; let's make invalidateFilter public too
+    // (and a slot, while at it)
+    void invalidateFilter();
+
 protected:
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
     bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const override;

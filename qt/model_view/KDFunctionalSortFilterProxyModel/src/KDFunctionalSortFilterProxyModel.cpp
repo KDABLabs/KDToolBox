@@ -66,6 +66,11 @@ void KDFunctionalSortFilterProxyModel::clearLessThanFunction()
     setLessThanFunction({});
 }
 
+void KDFunctionalSortFilterProxyModel::invalidateFilter()
+{
+    QSortFilterProxyModel::invalidateFilter();
+}
+
 bool KDFunctionalSortFilterProxyModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
 {
     if (m_acceptsRowFunction && !m_acceptsRowFunction(sourceModel(), source_row, source_parent))
