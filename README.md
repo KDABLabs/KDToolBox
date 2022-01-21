@@ -69,7 +69,7 @@ Other code snippets
 
 Licensing
 =========
-KDToolBox is (C) 2019-2021, Klarälvdalens Datakonsult AB, and is available under the
+KDToolBox is (C) 2019-2022, Klarälvdalens Datakonsult AB, and is available under the
 terms of the MIT license (see the LICENSE.MIT.txt file in this repository [1]).
 
 For the "Other code snippets", which are hosted outside of this repo, please consult
