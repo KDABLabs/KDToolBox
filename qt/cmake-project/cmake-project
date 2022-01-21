@@ -56,8 +56,8 @@ if [ "$QTVERSION" != "none" ]; then
 fi
 
 cat > CMakeLists.txt <<EOF
-project($PROJECTNAME)
 cmake_minimum_required(VERSION 3.9)
+project($PROJECTNAME)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 EOF
