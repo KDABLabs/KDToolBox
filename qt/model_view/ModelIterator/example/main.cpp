@@ -71,6 +71,9 @@ int main(int argc, char *argv[])
         qDebug() << index.data() << index;
     }
 
+    // The following should not compile, as adaptor2 wraps a DepthFirstIterator that doesn't support getting the size
+    // qDebug() << "node count:" << adapter2.size();
+
     qDebug() << "\n\nDepth-first iterator, std::find_if:";
     auto it = std::find_if(adapter2.begin(), adapter2.end(), [](const QModelIndex& index)
     {
@@ -143,5 +146,6 @@ int main(int argc, char *argv[])
         qDebug() << "no, not all visited!";
     }
 
+    qDebug() << "We visited" << adapter3.size() << "nodes";
     return 0;
 }

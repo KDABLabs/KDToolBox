@@ -129,6 +129,7 @@ public: //types
     using difference_type = int;
     using pointer = value_type*;
     using reference = value_type&;
+    using size_type = uint;
 
 public:
     explicit FlatIterator(const QModelIndex& index, int column = 0);
@@ -156,6 +157,7 @@ public:
 
     static FlatIterator begin(QAbstractItemModel *model, int column = 0);
     static FlatIterator end(QAbstractItemModel *model, int column = 0);
+    static size_type size(QAbstractItemModel *model);
 
 private:
     inline const QAbstractItemModel *model() const {return m_index.model();}
@@ -226,6 +228,24 @@ public: //methods
     static DataValueWrapper end(QAbstractItemModel *model, int column = 0) {auto it = ModelIterator::end(model, column); return DataValueWrapper(it);}
 };
 
+// Base for ModelAdaptor to prevent having to repeat ourselves for the template specialization
+template <typename ModelIterator>
+class ModelAdapterBase
+{
+public: //methods
+    explicit ModelAdapterBase(QAbstractItemModel *model, int column = 0) : m_model(model), m_column(column) {}
+
+    template <typename Base = ModelIterator>
+    typename Base::size_type
+    size() const {
+        return ModelIterator::size(m_model);
+    }
+
+protected:
+    QAbstractItemModel *m_model;
+    int m_column;
+};
+
 // Adaptor class for QAIM to make it useable in contexts where a container is exected that
 // provides an adaptor pair via begin() and end(). This template class allows you to use
 // standard algorithms and ranged for loops on QAbstractItemModels.
@@ -240,7 +260,7 @@ public: //methods
 //
 // General wrapper that returns iterators that dereference to T for the specified role
 template <typename ModelIterator, typename T = void, int role = Qt::DisplayRole>
-class ModelAdapter
+class ModelAdapter: public ModelAdapterBase<ModelIterator>
 {
 public: //types
     using Wrapper = DataValueWrapper<ModelIterator, T, role>;
@@ -249,21 +269,17 @@ public: //types
     using const_iterator = Wrapper;
 
 public:
-    explicit ModelAdapter(QAbstractItemModel *model, int column = 0) : m_model(model), m_column(column) {}
+    using ModelAdapterBase<ModelIterator>::ModelAdapterBase;
 
-    Wrapper begin() const {return Wrapper::begin(m_model, m_column);}
-    Wrapper end() const {return Wrapper::end(m_model, m_column);}
-
-private:
-    QAbstractItemModel *m_model;
-    int m_column;
+    Wrapper begin() const {return Wrapper::begin(this->m_model, this->m_column);}
+    Wrapper end() const {return Wrapper::end(this->m_model, this->m_column);}
 };
 
 /**
  * Partial template specialization that returns iterators that dereference to a QModelIndex
  */
 template <typename ModelIterator>
-class ModelAdapter<ModelIterator, void>
+class ModelAdapter<ModelIterator, void>: public ModelAdapterBase<ModelIterator>
 {
 public: //types
     using value_type = typename ModelIterator::value_type;
@@ -271,12 +287,8 @@ public: //types
     using const_iterator = ModelIterator;
 
 public:
-    explicit ModelAdapter(QAbstractItemModel *model, int column = 0) : m_model(model), m_column(column) {}
+    using ModelAdapterBase<ModelIterator>::ModelAdapterBase;
 
-    ModelIterator begin() const {return ModelIterator::begin(m_model, m_column);}
-    ModelIterator end() const {return ModelIterator::end(m_model, m_column);}
-
-private:
-    QAbstractItemModel *m_model;
-    int m_column;
+    ModelIterator begin() const {return ModelIterator::begin(this->m_model, this->m_column);}
+    ModelIterator end() const {return ModelIterator::end(this->m_model, this->m_column);}
 };

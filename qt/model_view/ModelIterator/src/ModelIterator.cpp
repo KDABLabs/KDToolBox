@@ -191,3 +191,9 @@ FlatIterator FlatIterator::end(QAbstractItemModel *model, int column)
     it.m_atEnd = true;
     return it;
 }
+
+FlatIterator::size_type FlatIterator::size(QAbstractItemModel *model)
+{
+    Q_ASSERT(model);
+    return model->rowCount({});
+}
