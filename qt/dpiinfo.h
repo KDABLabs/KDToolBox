@@ -34,6 +34,10 @@
 #include <QString>
 #include <QStringList>
 
+#ifdef Q_OS_WIN
+# include "shellscalingapi.h"
+#endif
+
 namespace KDToolBox {
 
 inline QString hdpiInfo()
@@ -71,6 +75,22 @@ inline QString hdpiInfo()
                       .arg(screen->logicalDotsPerInch())
                       .arg(screen->devicePixelRatio());
     }
+
+#ifdef Q_OS_WIN
+
+    PROCESS_DPI_AWARENESS pda;
+    auto res = GetProcessDpiAwareness(NULL, &pda);
+    if (res == S_OK) {
+         result += QStringLiteral("\nDPI AWARENESS = %1 (%2)").arg((pda == PROCESS_DPI_UNAWARE) ? QStringLiteral("PROCESS_DPI_UNAWARE")
+                                                                      : (pda == PROCESS_SYSTEM_DPI_AWARE) ? QStringLiteral("PROCESS_SYSTEM_DPI_AWARE")
+                                                                      : (pda == PROCESS_PER_MONITOR_DPI_AWARE) ? QStringLiteral("PROCESS_PER_MONITOR_DPI_AWARE")
+                                                                      : QStringLiteral("Unknown")).arg(pda);
+    } else {
+        result += "Error while retrieving DPI awareness setting";
+    }
+
+
+#endif
 
     return result;
 }
