@@ -80,8 +80,10 @@ public: //methods
     DepthFirstIterator& operator--();
     inline DepthFirstIterator operator--(int) {DepthFirstIterator tmp(*this); operator--(); return tmp;}
 
-    inline bool operator==(const DepthFirstIterator& other) {return m_index == other.m_index && m_column == other.m_column && m_atEnd == other.m_atEnd;}
-    inline bool operator!=(const DepthFirstIterator& other) {return !operator ==(other);}
+    inline friend bool operator==(const DepthFirstIterator& lhs, const DepthFirstIterator& rhs)
+    {return lhs.m_index == rhs.m_index && lhs.m_column == rhs.m_column && lhs.m_atEnd == rhs.m_atEnd;}
+    inline friend bool operator!=(const DepthFirstIterator& lhs, const DepthFirstIterator& rhs)
+    {return !(lhs == rhs);}
 
     inline QModelIndex operator*() {return m_atEnd ? QModelIndex() :
                                                       m_index.siblingAtColumn(m_column);}
@@ -145,8 +147,10 @@ public:
     inline FlatIterator operator--(int) {FlatIterator tmp(*this); operator--(); return tmp;}
     inline difference_type operator-(const FlatIterator& other) const {Q_ASSERT(canCompareTo(other)); return row() - other.row();}
 
-    inline bool operator==(const FlatIterator& other) {return m_index == other.m_index && m_atEnd == other.m_atEnd;}
-    inline bool operator!=(const FlatIterator& other) {return !operator==(other);}
+    inline friend bool operator==(const FlatIterator& lhs, const FlatIterator& rhs)
+    {return lhs.m_index == rhs.m_index && lhs.m_atEnd == rhs.m_atEnd;}
+    inline friend bool operator!=(const FlatIterator& lhs, const FlatIterator& rhs)
+    {return !(lhs == rhs);}
     inline friend bool operator<(const FlatIterator& lhs, const FlatIterator& rhs) {Q_ASSERT(lhs.canCompareTo(rhs)); return lhs.row() < rhs.row();}
     inline friend bool operator>(const FlatIterator& lhs, const FlatIterator& rhs) {return operator<(rhs, lhs);}
     inline friend bool operator<=(const FlatIterator& lhs, const FlatIterator& rhs) {return !operator>(lhs, rhs);}
@@ -212,8 +216,8 @@ public: //methods
     DataValueWrapper& operator--() { --it; return *this; }
     inline DataValueWrapper operator--(int) {DataValueWrapper tmp(*this); operator--(); return tmp;}
 
-    inline bool operator==(const DataValueWrapper& other) {return it == other.it;}
-    inline bool operator!=(const DataValueWrapper& other) {return it != other.it;}
+    inline friend bool operator==(const DataValueWrapper& lhs, const DataValueWrapper& rhs) {return lhs.it == rhs.it;}
+    inline friend bool operator!=(const DataValueWrapper& lhs, const DataValueWrapper& rhs) {return lhs.it != rhs.it;}
     inline friend bool operator<(const DataValueWrapper& lhs, const DataValueWrapper& rhs) {return lhs.it < rhs.it;}
     inline friend bool operator>(const DataValueWrapper& lhs, const DataValueWrapper& rhs) {return lhs.it > rhs.it;}
     inline friend bool operator<=(const DataValueWrapper& lhs, const DataValueWrapper& rhs) {return lhs.it <= rhs.it;}
