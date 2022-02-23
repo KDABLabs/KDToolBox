@@ -13,3 +13,4 @@ EXCLUDE style
 SKIP /examples/|/example/
 #forwardinging headers
 SKIP /qt/stringtokenizer/include/QtCore/
+SKIP /squish/tests\.json

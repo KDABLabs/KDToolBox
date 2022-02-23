@@ -63,10 +63,17 @@ Qt Tools
 - [qt_fmt](https://github.com/KDAB/KDToolBox/tree/master/qt/qt_fmt)
   Convenience for printing Qt classes through [libfmt](https://github.com/fmtlib/fmt).
 
-Other code snippets
+
+Other Code Snippets
 ===================
 - [Integrating Qt Quick 2 with OpenGL](https://github.com/KDAB/integrating-qq2-with-opengl)
   Code for Giuseppe D'Angelo's talk at the Qt World Summit 2015, QtCon 2016, Qt World Summit 2017.
+
+
+Squish Tools
+============
+- [kdrunsquish.py](https://github.com/KDAB/KDToolBox/tree/master/squish/kdrunsquish.py)
+  Runs squish tests in parallel via the Qt offscreen QPA.
 
 
 Licensing

@@ -1,0 +1,27 @@
+{
+    "tests": [
+        {
+            "suite": "mysuite1",
+            "name": "tst_myfeature1"
+        },
+        {
+            "suite": "mysuite1",
+            "name": "tst_myfeature2"
+        },
+        {
+            "suite": "mysuite1",
+            "name": "tst_myfeature3",
+            "supports_offscreen": false
+        },
+        {
+            "suite": "mysuite1",
+            "name": "tst_myfeature4",
+            "disabled": false
+        },
+        {
+            "suite": "mysuite1",
+            "name": "tst_myfeature5",
+            "failure_expected": true
+        }
+    ]
+}
