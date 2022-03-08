@@ -31,6 +31,8 @@ import argparse
 import json
 import multiprocessing
 import psutil
+import asyncio
+import re
 
 TESTS_JSON_FILENAME = 'tests.json'
 
@@ -81,7 +83,7 @@ s_maxFlakyRuns = 1
 os.environ['SQUISH_NO_CAPTURE_OUTPUT'] = '1'  # fixes corrupt output by squish
 s_startTime = time.time()
 s_autPath = ''
-
+s_outputFilers = []
 
 def run_command_sync(args):
     ''' Runs a command and blocks. Returns true if the command executed successfully'''
@@ -95,14 +97,13 @@ def run_command_sync(args):
         sys.exit(1)
 
 
-def run_command_async(args):
+async def run_command_async(args):
     '''Starts a child process and returns immediately'''
     if s_verbose:
         print("Running: " + " ".join(args))
 
     try:
-        return subprocess.Popen(args, stdout=subprocess.PIPE,
-                                stderr=subprocess.STDOUT, start_new_session=True)
+        return await asyncio.create_subprocess_exec(*args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
     except FileNotFoundError as e:
         print("ERROR: %s probably not found in PATH! %s" % (args[0], e))
         sys.exit(1)
@@ -122,6 +123,15 @@ def kill_process(proc):
         except Exception as e:
             print("ERROR: Could not kill process %s: %s" % (p.name, e))
 
+def ignore_line(line):
+    for filter in s_outputFilers:
+        if filter.match(line):
+            return True
+
+    return False
+
+def filter_output(output):
+    return "\n".join([line for line in output.splitlines() if not ignore_line(line)])
 
 class SquishTest:
     '''Represents a single squish test'''
@@ -138,6 +148,8 @@ class SquishTest:
         self.__maxFlakyRuns = s_maxFlakyRuns
         self.__numRuns = 0
         self.__wasSkipped = False
+        self.serverStdout = None
+        self.runnerStdout = None
 
         ''' The number of times this test failed'''
         self.numFailures = 0
@@ -201,6 +213,9 @@ class SquishTest:
         return self.numSuccesses > 0 and self.numFailures > 0
 
     def run(self):
+        return asyncio.run(self._runAsync())
+
+    async def _runAsync(self):
 
         if self.remainingRuns() <= 0:
             # Doesn't happen
@@ -210,22 +225,27 @@ class SquishTest:
 
         self.__numRuns = self.__numRuns + 1
 
-        self.serverProc = run_command_async(self.squishserver_args())
-        self.runnerProc = run_command_async(self.squishrunner_args())
+        self.serverProc = await run_command_async(self.squishserver_args())
+        self.runnerProc = await run_command_async(self.squishrunner_args())
 
-        returncode = self.runnerProc.wait()
+        self.runnerStdout, _ = await self.runnerProc.communicate()
+
+        returncode = self.runnerProc.returncode
+
         kill_process(self.serverProc)
 
-        serverStdout = self.serverProc.stdout.read()
-        runnerStdout = self.runnerProc.stdout.read()
+        self.serverStdout, _ = await self.serverProc.communicate()
+
+        self.runnerStdout = filter_output(self.runnerStdout.decode('utf-8'))
+        self.serverStdout = filter_output(self.serverStdout.decode('utf-8'))
 
         global s_resultdir
         if s_resultdir:
             f = open('/%s/%s.out' % (s_resultdir, self.name), 'wb')
             f.write(str.encode('\nServer output for test %s\n' % self.name))
-            f.write(serverStdout)
+            f.write(str.encode(self.serverStdout))
             f.write(str.encode('\nRunner output for test %s\n' % self.name))
-            f.write(runnerStdout)
+            f.write(str.encode(self.runnerStdout))
             f.close()
 
         passed_expectedly = returncode == 0 and not self.failure_expected
@@ -238,8 +258,8 @@ class SquishTest:
         # Print squish's output if needed:
         if s_verbose or returncode != 0:
             with s_stdoutLock:
-                print(serverStdout.decode('utf-8'))
-                print(runnerStdout.decode('utf-8'))
+                print(self.serverStdout)
+                print(self.runnerStdout)
 
         if passed_unexpectedly:
             tag = '[XOK ]'
@@ -324,6 +344,11 @@ class SquishRunner:
         if 'env' in decoded:
             for key in decoded['env']:
                 os.environ[key] = decoded['env'][key]
+
+        if 'outputFilters' in decoded:
+            outputFilters = decoded['outputFilters']
+            for filter in outputFilters:
+                s_outputFilers.append(re.compile(filter))
 
         jsonTests = decoded['tests']
         for jsonTest in jsonTests:
