@@ -22,6 +22,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE
 
+"""
+This script runs squish tests in parallel via the Qt offscreen QPA
+"""
+
 import time
 import sys
 import threading
@@ -30,10 +34,11 @@ import os
 import argparse
 import json
 import multiprocessing
-import psutil
-import asyncio
 import re
+import asyncio
+import psutil
 
+#pylint: disable=invalid-name
 TESTS_JSON_FILENAME = 'tests.json'
 
 INSTRUCTIONS = '''
@@ -72,77 +77,80 @@ Example usage:
   See complete help with --help
 ''' % (TESTS_JSON_FILENAME, TESTS_JSON_FILENAME)
 
-s_num_cpus = multiprocessing.cpu_count()
+s_numCPUs = multiprocessing.cpu_count()
 s_verbose = False
 s_nextId = 1
 s_isOffscreen = False
-s_resultdir = ''
+s_resultDir = ''
 s_stdoutLock = threading.Lock()
 s_squishServerStartPort = 50000  # TODO: make configurable
 s_maxFlakyRuns = 1
 os.environ['SQUISH_NO_CAPTURE_OUTPUT'] = '1'  # fixes corrupt output by squish
 s_startTime = time.time()
 s_autPath = ''
-s_outputFilers = []
+s_outputFilters = []
+#pylint: enable=invalid-name
 
-def run_command_sync(args):
+def runCommandSync(cmdArgs):
     ''' Runs a command and blocks. Returns true if the command executed successfully'''
     if s_verbose:
-        print("Running: " + " ".join(args))
+        print("Running: " + " ".join(cmdArgs))
 
     try:
-        return subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        #pylint: disable=subprocess-run-check
+        return subprocess.run(cmdArgs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     except FileNotFoundError as e:
-        print("ERROR: %s probably not found in PATH! %s" % (args[0], e))
+        print("ERROR: %s probably not found in PATH! %s" % (cmdArgs[0], e))
         sys.exit(1)
 
 
-async def run_command_async(args):
+async def runCommandASync(cmdArgs):
     '''Starts a child process and returns immediately'''
     if s_verbose:
-        print("Running: " + " ".join(args))
+        print("Running: " + " ".join(cmdArgs))
 
     try:
-        return await asyncio.create_subprocess_exec(*args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
+        return await asyncio.create_subprocess_exec(*cmdArgs,
+                                                    stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
     except FileNotFoundError as e:
-        print("ERROR: %s probably not found in PATH! %s" % (args[0], e))
+        print("ERROR: %s probably not found in PATH! %s" % (cmdArgs[0], e))
         sys.exit(1)
 
 
-def kill_process(proc):
+def killProcess(proc):
     '''kills a process and its children'''
-
+    # pylint: disable=no-member
     try:
         processes = psutil.Process(proc.pid).children(recursive=True) + [proc]
     except Exception as e:
         return
-
     for p in processes:
         try:
             p.kill()
         except Exception as e:
             print("ERROR: Could not kill process %s: %s" % (p.name, e))
 
-def ignore_line(line):
-    for filter in s_outputFilers:
-        if filter.match(line):
+def ignoreLine(line):
+    for outputFilter in s_outputFilters:
+        if outputFilter.match(line):
             return True
 
     return False
 
-def filter_output(output):
-    return "\n".join([line for line in output.splitlines() if not ignore_line(line)])
+def filterOutput(output):
+    return "\n".join([line for line in output.splitlines() if not ignoreLine(line)])
 
 class SquishTest:
     '''Represents a single squish test'''
 
-    def __init__(self, name, suite, id):
+    #pylint: disable=too-many-instance-attributes
+    def __init__(self, name, suite, testId):
         self.name = name
         self.suite = suite
-        self.id = id
+        self.testId = testId
         self.disabled = False
         self.supportsOffscreen = True
-        self.failure_expected = False
+        self.failureExpected = False
         self.serverProc = None
         self.runnerProc = None
         self.__maxFlakyRuns = s_maxFlakyRuns
@@ -158,34 +166,34 @@ class SquishTest:
         self.numSuccesses = 0
 
     @staticmethod
-    def fromJson(json):
+    def fromJson(jsonTest):
         global s_nextId
         s_nextId += 1
-        test = SquishTest(json['name'], json['suite'], s_nextId)
+        squishTest = SquishTest(jsonTest['name'], jsonTest['suite'], s_nextId)
 
-        if 'supports_offscreen' in json:
-            test.supportsOffscreen = json['supports_offscreen']
-        if 'disabled' in json:
-            test.disabled = json['disabled']
-        if 'failure_expected' in json:
-            test.failure_expected = json['failure_expected']
+        if 'supports_offscreen' in jsonTest:
+            squishTest.supportsOffscreen = jsonTest['supports_offscreen']
+        if 'disabled' in jsonTest:
+            squishTest.disabled = jsonTest['disabled']
+        if 'failure_expected' in jsonTest:
+            squishTest.failureExpected = jsonTest['failure_expected']
 
-        return test
+        return squishTest
 
     def remainingRuns(self):
         return self.__maxFlakyRuns - self.__numRuns
 
     def serverPort(self):
-        return str(15000 + self.id)
+        return str(15000 + self.testId)
 
-    def squishserver_args(self):
-        args = ['squishserver',
-                '--port',
-                self.serverPort(),
-                '--configfile', "server.ini"]
-        return args
+    def squishserverArgs(self):
+        serverArgs = ['squishserver',
+                      '--port',
+                      self.serverPort(),
+                      '--configfile', "server.ini"]
+        return serverArgs
 
-    def squishrunner_args(self):
+    def squishrunnerArgs(self):
         '''Returns the arguments to be passed to the squishrunner binary'''
         return ['squishrunner',
                 '--port',
@@ -199,7 +207,7 @@ class SquishTest:
                 '--testcase',
                 self.name,
                 '--scriptargs',
-                str(self.id)
+                str(self.testId)
                 ]
 
     def markSkipped(self):
@@ -225,35 +233,34 @@ class SquishTest:
 
         self.__numRuns = self.__numRuns + 1
 
-        self.serverProc = await run_command_async(self.squishserver_args())
-        self.runnerProc = await run_command_async(self.squishrunner_args())
+        self.serverProc = await runCommandASync(self.squishserverArgs())
+        self.runnerProc = await runCommandASync(self.squishrunnerArgs())
 
         self.runnerStdout, _ = await self.runnerProc.communicate()
 
         returncode = self.runnerProc.returncode
 
-        kill_process(self.serverProc)
+        killProcess(self.serverProc)
 
         self.serverStdout, _ = await self.serverProc.communicate()
 
-        self.runnerStdout = filter_output(self.runnerStdout.decode('utf-8'))
-        self.serverStdout = filter_output(self.serverStdout.decode('utf-8'))
+        self.runnerStdout = filterOutput(self.runnerStdout.decode('utf-8'))
+        self.serverStdout = filterOutput(self.serverStdout.decode('utf-8'))
 
-        global s_resultdir
-        if s_resultdir:
-            f = open('/%s/%s.out' % (s_resultdir, self.name), 'wb')
-            f.write(str.encode('\nServer output for test %s\n' % self.name))
-            f.write(str.encode(self.serverStdout))
-            f.write(str.encode('\nRunner output for test %s\n' % self.name))
-            f.write(str.encode(self.runnerStdout))
-            f.close()
+        global s_resultDir
+        if s_resultDir:
+            with open('/%s/%s.out' % (s_resultDir, self.name), 'wb') as f:
+                f.write(str.encode('\nServer output for test %s\n' % self.name))
+                f.write(str.encode(self.serverStdout))
+                f.write(str.encode('\nRunner output for test %s\n' % self.name))
+                f.write(str.encode(self.runnerStdout))
 
-        passed_expectedly = returncode == 0 and not self.failure_expected
-        passed_unexpectedly = returncode == 0 and self.failure_expected
-        failed_expectedly = returncode != 0 and self.failure_expected
-        failed_unexpectedly = returncode != 0 and not self.failure_expected
+        passedExpectedly = returncode == 0 and not self.failureExpected
+        passedUnexpectedly = returncode == 0 and self.failureExpected
+        failedExpectedly = returncode != 0 and self.failureExpected
+        failedUnexpectedly = returncode != 0 and not self.failureExpected
 
-        success = passed_expectedly or failed_expectedly
+        success = passedExpectedly or failedExpectedly
 
         # Print squish's output if needed:
         if s_verbose or returncode != 0:
@@ -261,13 +268,13 @@ class SquishTest:
                 print(self.serverStdout)
                 print(self.runnerStdout)
 
-        if passed_unexpectedly:
+        if passedUnexpectedly:
             tag = '[XOK ]'
-        elif passed_expectedly:
+        elif passedExpectedly:
             tag = '[OK  ]'
-        elif failed_expectedly:
+        elif failedExpectedly:
             tag = '[XFAIL ]'
-        elif failed_unexpectedly:
+        elif failedUnexpectedly:
             tag = '[FAIL]'
 
         print('%s %s' % (tag, self.name))
@@ -284,22 +291,22 @@ class Statistics:
     '''Simple struct just to contain the result of the test run'''
 
     def __init__(self, tests) -> None:
-        self.__wasSuccessful = True
+        #self.__wasSuccessful = True currently unused
         self.__numTestsRan = 0
         self.__numTestsSkipped = 0
         self.__flakyTestNames = []
         self.__failedTestNames = []
 
-        for test in tests:
-            if test.wasSkipped():
+        for squishTest in tests:
+            if squishTest.wasSkipped():
                 self.__numTestsSkipped += 1
             else:
                 self.__numTestsRan += 1
 
-                if test.wasFlaky():
-                    self.__flakyTestNames.append(test.name)
-                elif test.numFailures > 0:
-                    self.__failedTestNames.append(test.name)
+                if squishTest.wasFlaky():
+                    self.__flakyTestNames.append(squishTest.name)
+                elif squishTest.numFailures > 0:
+                    self.__failedTestNames.append(squishTest.name)
 
     def wasSucessful(self):
         '''Returns whether all tests were successful'''
@@ -324,10 +331,9 @@ class SquishRunner:
     def loadTests(self):
         contents = ''
         try:
-            f = open(TESTS_JSON_FILENAME, 'r')
-            contents = f.read()
-            f.close()
-        except Exception as e:
+            with open(TESTS_JSON_FILENAME, 'r') as f:
+                contents = f.read()
+        except OSError as e:
             print("Failed to read %s because: %s" % (TESTS_JSON_FILENAME, e))
             sys.exit(-1)
 
@@ -347,47 +353,49 @@ class SquishRunner:
 
         if 'outputFilters' in decoded:
             outputFilters = decoded['outputFilters']
-            for filter in outputFilters:
-                s_outputFilers.append(re.compile(filter))
+            for outputFilter in outputFilters:
+                s_outputFilters.append(re.compile(outputFilter))
 
         jsonTests = decoded['tests']
         for jsonTest in jsonTests:
-            test = SquishTest.fromJson(jsonTest)
-            test.globalScriptDir = self.globalScriptDir
+            squishTest = SquishTest.fromJson(jsonTest)
 
-            if not test.disabled:
-                self.tests.append(test)
+            if not squishTest.disabled:
+                self.tests.append(squishTest)
 
         if not self.aut:
             print("ERROR: aut attribute not found in %s" % TESTS_JSON_FILENAME)
             sys.exit(1)
 
-    def chunks(self, num_chunks: int, requested_tests):
-        '''Splits the list of requested tests into chunks. Returns a list of list of tests. At most num_chunks lists are returned'''
-        list_of_chunks = [[] for x in range(num_chunks)]
-        i = num_chunks
-        for test in requested_tests:
-            i = (i + 1) % num_chunks
-            list_of_chunks[i].append(test)
+    #pylint: disable=no-self-use
+    def chunks(self, numChunks: int, requestedTestsList):
+        '''Splits the list of requested tests into chunks. Returns a list of tests.
+           At most numChunks lists are returned
+        '''
+        chunksList = [[] for x in range(numChunks)]
+        i = numChunks
+        for squishTest in requestedTestsList:
+            i = (i + 1) % numChunks
+            chunksList[i].append(squishTest)
 
-        return list_of_chunks
+        return chunksList
 
-    def run_in_parallel(self, num_jobs, requested_tests):
+    def runInParallell(self, numJobs, requestedTestsList):
         '''Runs the requested tests, in parallel.'''
 
         self.createINIFiles()
-        chunks = self.chunks(num_jobs, requested_tests)
+        chunks = self.chunks(numJobs, requestedTestsList)
 
         # Discard empty lists
         chunks = list(filter(lambda chunk: len(chunk) > 0, chunks))
 
         if s_verbose:
             print("Running a total of %d tests split through %d threads" %
-                  (len(requested_tests), len(chunks)))
+                  (len(requestedTestsList), len(chunks)))
 
         threads = []
         for chunk in chunks:
-            t = threading.Thread(target=self.run_in_sequence, args=(chunk,))
+            t = threading.Thread(target=self.runInSequence, args=(chunk,))
             t.start()
             threads.append(t)
 
@@ -400,42 +408,44 @@ class SquishRunner:
         if s_verbose:
             print("All threads finished.")
 
-    def run_in_sequence(self, requested_tests):
+    def runInSequence(self, requestedTestsList):
         '''Runs the requested tests in sequence.'''
 
         if s_verbose:
-            names = list(map(lambda test: test.name, requested_tests))
+            names = list(map(lambda test: test.name, requestedTestsList))
             print("Starting Thread to run: %d tests (%s)" %
-                  (len(requested_tests), ",".join(names)))
+                  (len(requestedTestsList), ",".join(names)))
 
-        for test in requested_tests:
-            test_success = self.run_single_test(test)
+        for squishTest in requestedTestsList:
+            self.runSingleTest(squishTest)
 
         if s_verbose:
             print("Finished thread for (%s)." % (",".join(names)))
 
-    def run_single_test(self, test: SquishTest) -> bool:
+    def runSingleTest(self, squishTest: SquishTest) -> bool:
 
-        (accepted, skipReason) = self.acceptsTest(test)
+        (accepted, skipReason) = self.acceptsTest(squishTest)
         if not accepted:
-            print('[SKIP] %s (%s)' % (test.name, skipReason))
-            test.markSkipped()
+            print('[SKIP] %s (%s)' % (squishTest.name, skipReason))
+            squishTest.markSkipped()
             return True
 
         self.prepareEnv()
-        while test.remainingRuns() > 0:  # if --maxFlakyRuns is passed, we'll execute until it passes
-            success = test.run()
+        while squishTest.remainingRuns() > 0:  # if --maxFlakyRuns is passed, we'll execute until it passes
+            success = squishTest.run()
             if success:
                 break
 
-        # print("Finished running %s" % test.name)
+        # print("Finished running %s" % squishTest.name)
         return success
 
     def createINIFiles(self):
 
         # Create ~/.squish/ver1/paths.ini - I don't see a way for it not to be global though.
         if self.globalScriptDir:
-            if run_command_sync(['squishrunner', '--config', 'setGlobalScriptDirs', self.globalScriptDir]).returncode != 0:
+            if runCommandSync(['squishrunner',
+                                 '--config', 'setGlobalScriptDirs',
+                                 self.globalScriptDir]).returncode != 0:
                 print("ERROR: Could not set globalScriptDir")
                 sys.exit(1)
 
@@ -457,78 +467,76 @@ class SquishRunner:
             sys.exit(1)
 
         commonArgs = ['squishserver', '--configfile', 'server.ini']
-        if run_command_sync(commonArgs + ['--config', 'setCursorAnimation', 'off']).returncode != 0:
+        if runCommandSync(commonArgs + ['--config', 'setCursorAnimation', 'off']).returncode != 0:
             print("ERROR: Could not set cursor animation off")
             sys.exit(1)
 
-        if run_command_sync(commonArgs + ['--config', 'addAUT', self.aut, s_autPath]).returncode != 0:
+        if runCommandSync(commonArgs + ['--config', 'addAUT', self.aut, s_autPath]).returncode != 0:
             print("ERROR: Could not set AUT %s/%s" % (self.aut, s_autPath))
             sys.exit(1)
 
     def printTests(self):
-        for test in self.tests:
-            print(test.name)
+        for squishTest in self.tests:
+            print(squishTest.name)
 
     def testByName(self, name):
-        for test in self.tests:
-            if test.name == name:
-                return test
+        for squishTest in self.tests:
+            if squishTest.name == name:
+                return squishTest
         return None
 
     def killChildProcesses(self):
-        for test in self.tests:
-            if test.runnerProc:
-                kill_process(test.runnerProc)
-            if test.serverProc:
-                kill_process(test.serverProc)
+        for squishTest in self.tests:
+            if squishTest.runnerProc:
+                killProcess(squishTest.runnerProc)
+            if squishTest.serverProc:
+                killProcess(squishTest.serverProc)
 
 
 class OffscreenSquishRunner(SquishRunner):
+    #pylint: disable=no-self-use, useless-super-delegation
     def __init__(self):
         super().__init__()
 
     def prepareEnv(self):
         os.environ['QT_QPA_PLATFORM'] = 'offscreen'
 
-    def acceptsTest(self, test: SquishTest):
-        return (test.supportsOffscreen, 'Test does not support offscreen')
+    def acceptsTest(self, squishTest: SquishTest):
+        return (squishTest.supportsOffscreen, 'Test does not support offscreen')
 
 
 class NativeSquishRunner(SquishRunner):
+    #pylint: disable=no-self-use, useless-super-delegation
     def __init__(self):
         super().__init__()
 
-    def acceptsTest(self, test: SquishTest):
+    #pylint: disable=unused-argument
+    def acceptsTest(self, squishTest: SquishTest):
         return (True, '')
 
     def prepareEnv(self):
         os.environ['QT_QPA_PLATFORM'] = ''
 
-
 parser = argparse.ArgumentParser(description=INSTRUCTIONS)
-parser.add_argument('-v', '--verbose', help='Verbose mode',
-                    action='store_true', required=False)
-parser.add_argument('-l', '--list', help='Lists all tests',
-                    action='store_true', required=False)
-parser.add_argument(
-    '-t', '--tests', help='Comma separated list of test names to run', required=False)
-parser.add_argument('--native', help='Uses the native QPA instead of offscreen',
-                    action='store_true', required=False)
-
-parser.add_argument(
-    '-o', '--outputdir', help='Directory to store the tests output.', required=False)
-
-parser.add_argument(
-    '-a', '--autPath', help='Directory containing the AUT. Required the first time only, since it will be written to server.ini', required=False)
-
+parser.add_argument('-v', '--verbose', action='store_true', required=False,
+                     help='Verbose mode')
+parser.add_argument('-l', '--list', action='store_true', required=False,
+                    help='Lists all tests')
+parser.add_argument('-t', '--tests', required=False,
+                    help='Comma separated list of test names to run')
+parser.add_argument('--native', action='store_true', required=False,
+                    help='Uses the native QPA instead of offscreen')
+parser.add_argument('-o', '--outputdir', required=False,
+                    help='Directory to store the tests output.')
+parser.add_argument('-a', '--autPath', required=False,
+                    help='Directory containing the AUT. Required the first time only, '
+                          'since it will be written to server.ini')
 parser.add_argument('squishdir', metavar='<Squish Directory>', nargs=1,
                     help='squish directory containing your tests and the %s file' % TESTS_JSON_FILENAME)
-
-parser.add_argument(
-    '-j', '--jobs', help='Number of squishrunner sessions to be run in parallel', required=False, type=int)
-
-parser.add_argument(
-    '--maxFlakyRuns', help='Runs a test at most N times until it passes.', required=False, type=int, default=1)
+parser.add_argument('-j', '--jobs', required=False, type=int,
+                    help='Number of squishrunner sessions to be run in parallel')
+parser.add_argument('--maxFlakyRuns', required=False, type=int, default=1,
+                    help='Runs a test at most N times until it passes.')
 
 args = parser.parse_args()
 
@@ -563,7 +571,7 @@ if args.list:
     sys.exit(0)
 
 if args.outputdir:
-    s_resultdir = args.outputdir
+    s_resultDir = args.outputdir
     if not os.path.isdir(args.outputdir):
         print("Did not find directory %s" % args.outputdir)
         sys.exit(1)
@@ -587,10 +595,10 @@ if args.jobs:
     num_jobs = args.jobs
 else:
     # When running on Native, we don't support paralellism
-    num_jobs = s_num_cpus * 2 if s_isOffscreen else 1
+    num_jobs = s_numCPUs * 2 if s_isOffscreen else 1
 
 try:
-    plat.run_in_parallel(num_jobs, requestedTests)
+    plat.runInParallell(num_jobs, requestedTests)
 except KeyboardInterrupt:
     print("Interrupted...")
     plat.killChildProcesses()
