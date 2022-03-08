@@ -91,6 +91,7 @@ s_autPath = ''
 s_outputFilters = []
 #pylint: enable=invalid-name
 
+
 def runCommandSync(cmdArgs):
     ''' Runs a command and blocks. Returns true if the command executed successfully'''
     if s_verbose:
@@ -130,6 +131,20 @@ def killProcess(proc):
         except Exception as e:
             print("ERROR: Could not kill process %s: %s" % (p.name, e))
 
+
+def killProcessByPort(name, port):
+    '''Kills the process with the specified named if it's listening on the specified port'''
+    try:
+        connections = list(filter(lambda p: p.laddr and p.laddr[1] == port,
+                                  psutil.net_connections(kind='tcp4')))
+        if connections:
+            proc = psutil.Process(connections[0].pid)
+            if proc.name() == name:
+                killProcess(proc)
+    except Exception as e:
+        print("ERROR: Could not kill process by port %s: %s" % (name, e))
+
+
 def ignoreLine(line):
     for outputFilter in s_outputFilters:
         if outputFilter.match(line):
@@ -137,8 +152,10 @@ def ignoreLine(line):
 
     return False
 
+
 def filterOutput(output):
     return "\n".join([line for line in output.splitlines() if not ignoreLine(line)])
+
 
 class SquishTest:
     '''Represents a single squish test'''
@@ -221,6 +238,8 @@ class SquishTest:
         return self.numSuccesses > 0 and self.numFailures > 0
 
     def run(self):
+        killProcessByPort('_squishserver', int(self.serverPort()))
+
         return asyncio.run(self._runAsync())
 
     async def _runAsync(self):
@@ -291,7 +310,7 @@ class Statistics:
     '''Simple struct just to contain the result of the test run'''
 
     def __init__(self, tests) -> None:
-        #self.__wasSuccessful = True currently unused
+        # self.__wasSuccessful = True currently unused
         self.__numTestsRan = 0
         self.__numTestsSkipped = 0
         self.__flakyTestNames = []
@@ -444,8 +463,8 @@ class SquishRunner:
         # Create ~/.squish/ver1/paths.ini - I don't see a way for it not to be global though.
         if self.globalScriptDir:
             if runCommandSync(['squishrunner',
-                                 '--config', 'setGlobalScriptDirs',
-                                 self.globalScriptDir]).returncode != 0:
+                               '--config', 'setGlobalScriptDirs',
+                               self.globalScriptDir]).returncode != 0:
                 print("ERROR: Could not set globalScriptDir")
                 sys.exit(1)
 
@@ -517,9 +536,10 @@ class NativeSquishRunner(SquishRunner):
     def prepareEnv(self):
         os.environ['QT_QPA_PLATFORM'] = ''
 
+
 parser = argparse.ArgumentParser(description=INSTRUCTIONS)
 parser.add_argument('-v', '--verbose', action='store_true', required=False,
-                     help='Verbose mode')
+                    help='Verbose mode')
 parser.add_argument('-l', '--list', action='store_true', required=False,
                     help='Lists all tests')
 parser.add_argument('-t', '--tests', required=False,
