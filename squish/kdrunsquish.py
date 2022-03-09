@@ -36,8 +36,8 @@ import json
 import multiprocessing
 import re
 import asyncio
-import psutil
 import io
+import psutil
 
 #pylint: disable=invalid-name
 TESTS_JSON_FILENAME = 'tests.json'
@@ -105,17 +105,17 @@ def runCommandSync(cmdArgs):
         print("ERROR: %s probably not found in PATH! %s" % (cmdArgs[0], e))
         sys.exit(1)
 
-def _ignore_line(line):
+def _ignoreLine(line):
     for outputFilter in s_outputFilters:
         if outputFilter.match(line):
             return True
 
     return False
 
-async def _handle_stdout(process, output):
+async def _handleStdout(process, output):
     async for data in process.stdout:
         line = data.decode('utf-8')
-        if not _ignore_line(line):
+        if not _ignoreLine(line):
             output.write(line)
 
 async def runCommandASync(cmdArgs, output):
@@ -127,7 +127,7 @@ async def runCommandASync(cmdArgs, output):
         process =  await asyncio.create_subprocess_exec(*cmdArgs,
                                                     stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
         #Create a task to read and filter process output and stop the pipe becoming full
-        s_allOutputTasks.append(asyncio.create_task(_handle_stdout(process, output)))
+        s_allOutputTasks.append(asyncio.create_task(_handleStdout(process, output)))
         return process
 
     except FileNotFoundError as e:
@@ -137,7 +137,7 @@ async def runCommandASync(cmdArgs, output):
 
 def killProcess(proc):
     '''kills a process and its children'''
-    # pylint: disable=no-member
+    # pylint: disable=no-member #don't complain about missing check= option
     try:
         processes = psutil.Process(proc.pid).children(recursive=True) + [proc]
     except Exception:
@@ -285,9 +285,10 @@ class SquishTest:
         #Wait on all background tasks to finish reading
         await asyncio.gather(*asyncio.all_tasks(asyncio.get_running_loop()) - {asyncio.current_task()})
 
+        #pylint: disable=global-statement,invalid-name,global-variable-not-assigned
         global s_resultDir
         if s_resultDir:
-            with open('/%s/%s.out' % (s_resultDir, self.name), 'w') as f:
+            with open('/%s/%s.out' % (s_resultDir, self.name), 'w', encoding="utf8",) as f:
                 f.write('\nServer output for test %s\n' % self.name)
                 f.write(self.serverStdout.getvalue())
                 f.write('\nRunner output for test %s\n' % self.name)
@@ -411,8 +412,8 @@ class SquishRunner:
             print("ERROR: aut attribute not found in %s" % TESTS_JSON_FILENAME)
             sys.exit(1)
 
-    #pylint: disable=no-self-use
-    def chunks(self, numChunks: int, requestedTestsList):
+    @staticmethod
+    def chunks(numChunks: int, requestedTestsList):
         '''Splits the list of requested tests into chunks. Returns a list of tests.
            At most numChunks lists are returned
         '''
