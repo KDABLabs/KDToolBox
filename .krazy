@@ -14,3 +14,5 @@ SKIP /examples/|/example/
 #forwardinging headers
 SKIP /qt/stringtokenizer/include/QtCore/
 SKIP /squish/tests\.json
+#3rdparty
+SKIP /qt/qt_fmt/fmt
