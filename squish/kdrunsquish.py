@@ -347,6 +347,12 @@ class SquishRunner:
         self.globalScriptDir = ''
         self.loadTests()
 
+    def prepareEnv(self):
+        raise NotImplementedError()
+
+    def acceptsTest(self, squishTest: SquishTest):
+        raise NotImplementedError()
+
     def loadTests(self):
         contents = ''
         try:
