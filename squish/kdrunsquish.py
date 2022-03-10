@@ -79,7 +79,6 @@ Example usage:
 
 s_numCPUs = multiprocessing.cpu_count()
 s_verbose = False
-s_nextId = 1
 s_isOffscreen = False
 s_resultDir = ''
 s_stdoutLock = threading.Lock()
@@ -160,6 +159,8 @@ def filterOutput(output):
 class SquishTest:
     '''Represents a single squish test'''
 
+    s_nextId = 1
+
     #pylint: disable=too-many-instance-attributes
     def __init__(self, name, suite, testId):
         self.name = name
@@ -184,9 +185,9 @@ class SquishTest:
 
     @staticmethod
     def fromJson(jsonTest):
-        global s_nextId
-        s_nextId += 1
-        squishTest = SquishTest(jsonTest['name'], jsonTest['suite'], s_nextId)
+        SquishTest.s_nextId += 1
+        squishTest = SquishTest(
+            jsonTest['name'], jsonTest['suite'], SquishTest.s_nextId)
 
         if 'supports_offscreen' in jsonTest:
             squishTest.supportsOffscreen = jsonTest['supports_offscreen']
