@@ -511,6 +511,10 @@ class SquishRunner:
                 return squishTest
         return None
 
+    def testsBySuite(self, suiteName):
+        '''Returns all tests from the specified suite'''
+        return list(filter(lambda test: test.suite == suiteName, self.tests))
+
     def killChildProcesses(self):
         for squishTest in self.tests:
             if squishTest.runnerProc:
@@ -551,6 +555,8 @@ parser.add_argument('-l', '--list', action='store_true', required=False,
                     help='Lists all tests')
 parser.add_argument('-t', '--tests', required=False,
                     help='Comma separated list of test names to run')
+parser.add_argument('-s', '--suites', required=False,
+                    help='Comma separated list of test suites to run')
 parser.add_argument('--native', action='store_true', required=False,
                     help='Uses the native QPA instead of offscreen')
 parser.add_argument('-o', '--outputdir', required=False,
@@ -614,7 +620,14 @@ if args.tests:
             sys.exit(-1)
 
         requestedTests.append(test)
-else:
+
+if args.suites:
+    requestedSuiteNames = args.suites.split(",")
+    for requestedSuiteName in requestedSuiteNames:
+        requestedTests += plat.testsBySuite(requestedSuiteName)
+
+if not args.tests and not args.suites:
+    # Test everything
     requestedTests = plat.tests
 
 
