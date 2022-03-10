@@ -123,7 +123,7 @@ def killProcess(proc):
     # pylint: disable=no-member
     try:
         processes = psutil.Process(proc.pid).children(recursive=True) + [proc]
-    except Exception as e:
+    except Exception:
         return
     for p in processes:
         try:
