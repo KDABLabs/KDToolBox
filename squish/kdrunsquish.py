@@ -646,7 +646,7 @@ if args.jobs:
     num_jobs = args.jobs
 else:
     # When running on Native, we don't support paralellism
-    num_jobs = s_numCPUs * 2 if s_isOffscreen else 1
+    num_jobs = s_numCPUs if s_isOffscreen else 1
 
 try:
     plat.runInParallell(num_jobs, requestedTests)
