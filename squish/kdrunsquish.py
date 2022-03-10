@@ -357,7 +357,7 @@ class SquishRunner:
     def loadTests(self):
         contents = ''
         try:
-            with open(TESTS_JSON_FILENAME, 'r') as f:
+            with open(TESTS_JSON_FILENAME, 'r', encoding='utf8') as f:
                 contents = f.read()
         except OSError as e:
             print("Failed to read %s because: %s" % (TESTS_JSON_FILENAME, e))
