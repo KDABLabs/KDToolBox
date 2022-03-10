@@ -501,9 +501,17 @@ class SquishRunner:
             print("ERROR: Could not set AUT %s/%s" % (self.aut, s_autPath))
             sys.exit(1)
 
+    def suiteNames(self):
+        suites = map(lambda test: test.suite, self.tests)
+        return list(set(suites))
+
     def printTests(self):
         for squishTest in self.tests:
             print(squishTest.name)
+
+    def printSuites(self):
+        for suite in self.suiteNames():
+            print(suite)
 
     def testByName(self, name):
         for squishTest in self.tests:
@@ -600,7 +608,10 @@ s_isOffscreen = not args.native
 plat = OffscreenSquishRunner() if s_isOffscreen else NativeSquishRunner()
 
 if args.list:
+    print("Tests:")
     plat.printTests()
+    print("\nSuites:")
+    plat.printSuites()
     sys.exit(0)
 
 if args.outputdir:
