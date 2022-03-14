@@ -37,6 +37,7 @@ import multiprocessing
 import re
 import asyncio
 import psutil
+import io
 
 #pylint: disable=invalid-name
 TESTS_JSON_FILENAME = 'tests.json'
@@ -88,6 +89,7 @@ os.environ['SQUISH_NO_CAPTURE_OUTPUT'] = '1'  # fixes corrupt output by squish
 s_startTime = time.time()
 s_autPath = ''
 s_outputFilters = []
+s_allOutputTasks = []
 #pylint: enable=invalid-name
 
 
@@ -103,15 +105,31 @@ def runCommandSync(cmdArgs):
         print("ERROR: %s probably not found in PATH! %s" % (cmdArgs[0], e))
         sys.exit(1)
 
+def _ignore_line(line):
+    for outputFilter in s_outputFilters:
+        if outputFilter.match(line):
+            return True
 
-async def runCommandASync(cmdArgs):
+    return False
+
+async def _handle_stdout(process, output):
+    async for data in process.stdout:
+        line = data.decode('utf-8')
+        if not _ignore_line(line):
+            output.write(line)
+
+async def runCommandASync(cmdArgs, output):
     '''Starts a child process and returns immediately'''
     if s_verbose:
         print("Running: " + " ".join(cmdArgs))
 
     try:
-        return await asyncio.create_subprocess_exec(*cmdArgs,
+        process =  await asyncio.create_subprocess_exec(*cmdArgs,
                                                     stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
+        #Create a task to read and filter process output and stop the pipe becoming full
+        s_allOutputTasks.append(asyncio.create_task(_handle_stdout(process, output)))
+        return process
+
     except FileNotFoundError as e:
         print("ERROR: %s probably not found in PATH! %s" % (cmdArgs[0], e))
         sys.exit(1)
@@ -128,33 +146,24 @@ def killProcess(proc):
         try:
             p.kill()
         except Exception as e:
-            print("ERROR: Could not kill process %s: %s" % (p.name, e))
-
+            print("ERROR: Could not kill process %s: %s" % (p.name(), e))
 
 def killProcessByPort(name, port):
     '''Kills the process with the specified named if it's listening on the specified port'''
     try:
-        connections = list(filter(lambda p: p.laddr and p.laddr[1] == port,
+        try:
+            connections = list(filter(lambda p: p.laddr and p.laddr[1] == port,
                                   psutil.net_connections(kind='tcp4')))
+        except:
+            print("ERROR: Could not list process by port %s: %s, requires root privileges" % (name, port))
+            return
+
         if connections:
             proc = psutil.Process(connections[0].pid)
             if proc.name() == name:
                 killProcess(proc)
     except Exception as e:
         print("ERROR: Could not kill process by port %s: %s" % (name, e))
-
-
-def ignoreLine(line):
-    for outputFilter in s_outputFilters:
-        if outputFilter.match(line):
-            return True
-
-    return False
-
-
-def filterOutput(output):
-    return "\n".join([line for line in output.splitlines() if not ignoreLine(line)])
-
 
 class SquishTest:
     '''Represents a single squish test'''
@@ -174,8 +183,8 @@ class SquishTest:
         self.__maxFlakyRuns = s_maxFlakyRuns
         self.__numRuns = 0
         self.__wasSkipped = False
-        self.serverStdout = None
-        self.runnerStdout = None
+        self.serverStdout = io.StringIO()
+        self.runnerStdout = io.StringIO()
 
         ''' The number of times this test failed'''
         self.numFailures = 0
@@ -241,7 +250,11 @@ class SquishTest:
     def run(self):
         killProcessByPort('_squishserver', int(self.serverPort()))
 
-        return asyncio.run(self._runAsync())
+        loop = asyncio.new_event_loop()
+        returncode = loop.run_until_complete(self._runAsync())
+        loop.close()
+
+        return returncode
 
     async def _runAsync(self):
 
@@ -253,27 +266,25 @@ class SquishTest:
 
         self.__numRuns = self.__numRuns + 1
 
-        self.serverProc = await runCommandASync(self.squishserverArgs())
-        self.runnerProc = await runCommandASync(self.squishrunnerArgs())
+        self.serverProc = await runCommandASync(self.squishserverArgs(), self.serverStdout)
+        self.runnerProc = await runCommandASync(self.squishrunnerArgs(), self.runnerStdout)
 
-        self.runnerStdout, _ = await self.runnerProc.communicate()
-
-        returncode = self.runnerProc.returncode
+        returncode = await self.runnerProc.wait()
 
         killProcess(self.serverProc)
 
-        self.serverStdout, _ = await self.serverProc.communicate()
+        await self.serverProc.wait()
 
-        self.runnerStdout = filterOutput(self.runnerStdout.decode('utf-8'))
-        self.serverStdout = filterOutput(self.serverStdout.decode('utf-8'))
+        #Wait on all background tasks to finish reading
+        await asyncio.gather(*asyncio.all_tasks(asyncio.get_running_loop()) - {asyncio.current_task()})
 
         global s_resultDir
         if s_resultDir:
-            with open('/%s/%s.out' % (s_resultDir, self.name), 'wb') as f:
-                f.write(str.encode('\nServer output for test %s\n' % self.name))
-                f.write(str.encode(self.serverStdout))
-                f.write(str.encode('\nRunner output for test %s\n' % self.name))
-                f.write(str.encode(self.runnerStdout))
+            with open('/%s/%s.out' % (s_resultDir, self.name), 'w') as f:
+                f.write('\nServer output for test %s\n' % self.name)
+                f.write(self.serverStdout.getvalue())
+                f.write('\nRunner output for test %s\n' % self.name)
+                f.write(self.runnerStdout.getvalue())
 
         passedExpectedly = returncode == 0 and not self.failureExpected
         passedUnexpectedly = returncode == 0 and self.failureExpected
@@ -285,8 +296,8 @@ class SquishTest:
         # Print squish's output if needed:
         if s_verbose or returncode != 0:
             with s_stdoutLock:
-                print(self.serverStdout)
-                print(self.runnerStdout)
+                print(self.serverStdout.getvalue())
+                print(self.runnerStdout.getvalue())
 
         if passedUnexpectedly:
             tag = '[XOK ]'
