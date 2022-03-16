@@ -145,8 +145,15 @@ def killProcess(proc):
     for p in processes:
         try:
             p.kill()
+        except ProcessLookupError:
+            pass
         except Exception as e:
-            print("ERROR: Could not kill process %s: %s" % (p.name(), e))
+            try:
+                print("ERROR: Could not kill process %s: %s" %
+                      (proc.name(), e))
+            except:
+                print("ERROR: Could not kill process %s: %s" % (proc.pid, e))
+
 
 def killProcessByPort(name, port):
     '''Kills the process with the specified named if it's listening on the specified port'''
