@@ -346,7 +346,7 @@ class Statistics:
                 elif squishTest.numFailures > 0:
                     self.__failedTestNames.append(squishTest.name)
 
-    def wasSucessful(self):
+    def wasSuccessful(self):
         '''Returns whether all tests were successful'''
         return len(self.__failedTestNames) == 0
 
@@ -663,7 +663,7 @@ if not args.tests and not args.suites:
 if args.jobs:
     num_jobs = args.jobs
 else:
-    # When running on Native, we don't support paralellism
+    # When running on Native, we don't support parallelism
     num_jobs = s_numCPUs if s_isOffscreen else 1
 
 try:
@@ -678,9 +678,9 @@ results.printStats()
 
 print("Took %s seconds" % (int(time.time() - s_startTime)))
 
-if results.wasSucessful():
+if results.wasSuccessful():
     print("Success!")
 
 plat.killChildProcesses()
 
-sys.exit(0 if results.wasSucessful() else 1)
+sys.exit(0 if results.wasSuccessful() else 1)
