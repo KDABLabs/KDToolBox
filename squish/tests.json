@@ -22,6 +22,16 @@
             "suite": "mysuite1",
             "name": "tst_myfeature5",
             "failure_expected": true
+        },
+        {
+            "suite": "mysuite1",
+            "name": "tst_myfeature6",
+            "failure_expected": "linux"
+        },
+        {
+            "suite": "mysuite1",
+            "name": "tst_myfeature6",
+            "supports_offscreen": ["macos","windows"]
         }
     ]
 }

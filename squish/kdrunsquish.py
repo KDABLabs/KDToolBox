@@ -37,6 +37,7 @@ import multiprocessing
 import re
 import asyncio
 import io
+import platform
 import psutil
 
 #pylint: disable=invalid-name
@@ -117,6 +118,32 @@ async def _handleStdout(process, output):
         line = data.decode('utf-8')
         if not _ignoreLine(line):
             output.write(line)
+
+def matchPlatform(value):
+    system = platform.system()
+    if system == "Linux" and value.lower() in ["linux"]:
+        return True
+    if system == "Darwin" and value.lower() in ["macos"]:
+        return True
+    if system == "Windows" and value.lower() in ["windows"]:
+        return True
+
+    return False
+
+def testPlatformFlag(value, default=False):
+    if isinstance(value, bool):
+        return value
+
+    if isinstance(value, str):
+        return matchPlatform(value)
+
+    if isinstance(value, list):
+        for subValue in value:
+            if matchPlatform(subValue):
+                return True
+        return False
+
+    return default
 
 async def runCommandASync(cmdArgs, output):
     '''Starts a child process and returns immediately'''
@@ -206,11 +233,11 @@ class SquishTest:
             jsonTest['name'], jsonTest['suite'], SquishTest.s_nextId)
 
         if 'supports_offscreen' in jsonTest:
-            squishTest.supportsOffscreen = jsonTest['supports_offscreen']
+            squishTest.supportsOffscreen = testPlatformFlag(jsonTest['supports_offscreen'], True)
         if 'disabled' in jsonTest:
-            squishTest.disabled = jsonTest['disabled']
+            squishTest.disabled = testPlatformFlag(jsonTest['disabled'])
         if 'failure_expected' in jsonTest:
-            squishTest.failureExpected = jsonTest['failure_expected']
+            squishTest.failureExpected = testPlatformFlag(jsonTest['failure_expected'])
 
         return squishTest
 
