@@ -106,6 +106,7 @@ def runCommandSync(cmdArgs):
         print("ERROR: %s probably not found in PATH! %s" % (cmdArgs[0], e))
         sys.exit(1)
 
+
 def _ignoreLine(line):
     for outputFilter in s_outputFilters:
         if outputFilter.match(line):
@@ -113,11 +114,13 @@ def _ignoreLine(line):
 
     return False
 
+
 async def _handleStdout(process, output):
     async for data in process.stdout:
         line = data.decode('utf-8')
         if not _ignoreLine(line):
             output.write(line)
+
 
 def matchPlatform(value):
     system = platform.system()
@@ -129,6 +132,7 @@ def matchPlatform(value):
         return True
 
     return False
+
 
 def testPlatformFlag(value, default=False):
     if isinstance(value, bool):
@@ -145,15 +149,16 @@ def testPlatformFlag(value, default=False):
 
     return default
 
+
 async def runCommandASync(cmdArgs, output):
     '''Starts a child process and returns immediately'''
     if s_verbose:
         print("Running: " + " ".join(cmdArgs))
 
     try:
-        process =  await asyncio.create_subprocess_exec(*cmdArgs,
-                                                    stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
-        #Create a task to read and filter process output and stop the pipe becoming full
+        process = await asyncio.create_subprocess_exec(*cmdArgs,
+                                                       stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
+        # Create a task to read and filter process output and stop the pipe becoming full
         s_allOutputTasks.append(asyncio.create_task(_handleStdout(process, output)))
         return process
 
@@ -187,7 +192,7 @@ def killProcessByPort(name, port):
     try:
         try:
             connections = list(filter(lambda p: p.laddr and p.laddr[1] == port,
-                                  psutil.net_connections(kind='tcp4')))
+                                      psutil.net_connections(kind='tcp4')))
         except:
             print("ERROR: Could not list process by port %s: %s, requires root privileges" % (name, port))
             return
@@ -198,6 +203,7 @@ def killProcessByPort(name, port):
                 killProcess(proc)
     except Exception as e:
         print("ERROR: Could not kill process by port %s: %s" % (name, e))
+
 
 class SquishTest:
     '''Represents a single squish test'''
@@ -310,10 +316,10 @@ class SquishTest:
 
         await self.serverProc.wait()
 
-        #Wait on all background tasks to finish reading
+        # Wait on all background tasks to finish reading
         await asyncio.gather(*asyncio.all_tasks(asyncio.get_running_loop()) - {asyncio.current_task()})
 
-        #pylint: disable=global-statement,invalid-name,global-variable-not-assigned
+        # pylint: disable=global-statement,invalid-name,global-variable-not-assigned
         global s_resultDir
         if s_resultDir:
             with open('/%s/%s.out' % (s_resultDir, self.name), 'w', encoding="utf8",) as f:
