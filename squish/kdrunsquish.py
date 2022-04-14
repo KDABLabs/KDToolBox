@@ -263,6 +263,7 @@ class SquishTest:
                 self.suite,
                 '--exitCodeOnFail',
                 '1',
+                '--abortOnFail',
                 '--reportgen',
                 'stdout',
                 '--testcase',
