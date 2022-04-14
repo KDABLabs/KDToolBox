@@ -404,6 +404,12 @@ class SquishRunner:
         self.aut = ''
         self.globalScriptDir = ''
         self.loadTests()
+        self.testsAborted = False
+        self._lock = threading.Lock()
+        self._abortsOnFail = False
+
+    def enableAbortOnFail(self):
+        self._abortsOnFail = True
 
     def prepareEnv(self):
         raise NotImplementedError()
@@ -500,7 +506,15 @@ class SquishRunner:
                   (len(requestedTestsList), ",".join(names)))
 
         for squishTest in requestedTestsList:
-            self.runSingleTest(squishTest)
+            with self._lock:
+                if self.testsAborted:
+                    return
+
+            testSucceeded = self.runSingleTest(squishTest)
+            if self._abortsOnFail and not testSucceeded:
+                print("Aborting the whole run since a test failed...")
+                with self._lock:
+                    self.testsAborted = True
 
         if s_verbose:
             print("Finished thread for (%s)." % (",".join(names)))
@@ -636,6 +650,10 @@ parser.add_argument('-j', '--jobs', required=False, type=int,
 parser.add_argument('--maxFlakyRuns', required=False, type=int, default=1,
                     help='Runs a test at most N times until it passes.')
 
+# Not to be confused with squishrunner's abortOnFail, that one we always want.
+parser.add_argument('--abortOnFail', action='store_true', required=False, default=False,
+                    help='aborts the whole script once the 1st test fails')
+
 args = parser.parse_args()
 
 s_verbose = args.verbose
@@ -670,6 +688,9 @@ if args.list:
     print("\nSuites:")
     plat.printSuites()
     sys.exit(0)
+
+if args.abortOnFail:
+    plat.enableAbortOnFail()
 
 if args.outputdir:
     s_resultDir = args.outputdir
