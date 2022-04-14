@@ -284,6 +284,10 @@ class SquishTest:
     def wasSkipped(self):
         return self.__wasSkipped
 
+    def ran(self):
+        '''Returns whether this test ran (regardless of success/error)'''
+        return self.__numRuns > 0
+
     def wasFlaky(self):
         '''Returns whether there was a mix of success and failure'''
         return self.numSuccesses > 0 and self.numFailures > 0
@@ -373,7 +377,7 @@ class Statistics:
         for squishTest in tests:
             if squishTest.wasSkipped():
                 self.__numTestsSkipped += 1
-            else:
+            elif squishTest.ran():
                 self.__numTestsRan += 1
 
                 if squishTest.wasFlaky():
