@@ -376,14 +376,14 @@ class SquishTest:
 class Statistics:
     '''Simple struct just to contain the result of the test run'''
 
-    def __init__(self, tests) -> None:
+    def __init__(self, squishTests) -> None:
         # self.__wasSuccessful = True currently unused
         self.__numTestsRan = 0
         self.__numTestsSkipped = 0
         self.__flakyTestNames = []
         self.__failedTestNames = []
 
-        for squishTest in tests:
+        for squishTest in squishTests:
             if squishTest.wasSkipped():
                 self.__numTestsSkipped += 1
             elif squishTest.ran():
