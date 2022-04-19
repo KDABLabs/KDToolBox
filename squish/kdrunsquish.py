@@ -56,6 +56,8 @@ The supported attributes for each test %s are:
 
   - 'name'              : Mandatory, the name of the test. Will be passed to squishrunner's --testcase argument.
   - 'suite'             : Mandatory, the name of the suite. Will be passed to squishrunner's --testsuite argument.
+  - 'categories'        : Optional, list of categories. These are user defined and have no meaning for the script, other than allowing to run just
+                          the tests that belong to a certain category.
   - 'disabled'          : Optional, defaults to false. If true, the test won't be executed.
   - 'supports_offscreen': Optional, defaults to true. If false, the test won't be executed via offscreen QPA, only if --native is passed.
   - 'failure_expected'  : Optional, defaults to false. If true, then it's expected that the test returns non-0 for this script to return 0.
@@ -225,6 +227,7 @@ class SquishTest:
         self.__wasSkipped = False
         self.serverStdout = io.StringIO()
         self.runnerStdout = io.StringIO()
+        self.categories = []
 
         ''' The number of times this test failed'''
         self.numFailures = 0
@@ -244,6 +247,8 @@ class SquishTest:
             squishTest.disabled = testPlatformFlag(jsonTest['disabled'])
         if 'failure_expected' in jsonTest:
             squishTest.failureExpected = testPlatformFlag(jsonTest['failure_expected'])
+        if 'categories' in jsonTest:
+            squishTest.categories = jsonTest['categories']
 
         return squishTest
 
@@ -363,6 +368,10 @@ class SquishTest:
 
         return success
 
+    def matchesCategories(self, categories):
+        '''Returns whether this test belongs to any of the specified categories'''
+        # Simply return if the 2 lists intersect
+        return bool(set(self.categories) & set(categories))
 
 class Statistics:
     '''Simple struct just to contain the result of the test run'''
@@ -584,6 +593,10 @@ class SquishRunner:
         for suite in self.suiteNames():
             print(suite)
 
+    def printCategories(self):
+        for cat in self.categories():
+            print(cat)
+
     def testByName(self, name):
         for squishTest in self.tests:
             if squishTest.name == name:
@@ -593,6 +606,18 @@ class SquishRunner:
     def testsBySuite(self, suiteName):
         '''Returns all tests from the specified suite'''
         return list(filter(lambda test: test.suite == suiteName, self.tests))
+
+    def testsByCategories(self, categories):
+        '''Returns all tests that match any of the specified categories'''
+        return list(filter(lambda test: test.matchesCategories(categories), self.tests))
+
+    def categories(self):
+        '''Returns the list of existing distinct categories'''
+        result = []
+        for squishTest in self.tests:
+            result += squishTest.categories
+
+        return list(set(result)) # unique
 
     def killChildProcesses(self):
         for squishTest in self.tests:
@@ -636,6 +661,8 @@ parser.add_argument('-t', '--tests', required=False,
                     help='Comma separated list of test names to run')
 parser.add_argument('-s', '--suites', required=False,
                     help='Comma separated list of test suites to run')
+parser.add_argument('-c', '--categories', required=False,
+                    help='Comma separated list of test categories to run')
 parser.add_argument('--native', action='store_true', required=False,
                     help='Uses the native QPA instead of offscreen')
 parser.add_argument('-o', '--outputdir', required=False,
@@ -687,6 +714,8 @@ if args.list:
     plat.printTests()
     print("\nSuites:")
     plat.printSuites()
+    print("\nCategories:")
+    plat.printCategories()
     sys.exit(0)
 
 if args.abortOnFail:
@@ -715,7 +744,14 @@ if args.suites:
     for requestedSuiteName in requestedSuiteNames:
         requestedTests += plat.testsBySuite(requestedSuiteName)
 
-if not args.tests and not args.suites:
+if args.categories:
+    tests = plat.testsByCategories(args.categories.split(","))
+    if not tests:
+        print("No tests matching the specified categories. Run with -l to see a list of tests.")
+        sys.exit(-1)
+    requestedTests += tests
+
+if not args.tests and not args.suites and not args.categories:
     # Test everything
     requestedTests = plat.tests
 
