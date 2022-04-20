@@ -55,6 +55,17 @@ public Q_SLOTS:
         m_s = s;
     }
 
+    void aSlotWithOneArgLess(int i)
+    {
+        m_i = i;
+        ++m_slotCounter;
+    }
+
+    void noArgSlot()
+    {
+        ++m_slotCounter;
+    }
+
 public:
     int m_slotCounter = 0;
     int m_i = 0;
@@ -102,6 +113,33 @@ void tst_SingleShot_Connect::singleshot()
         QCOMPARE(o.m_i, 42);
         QCOMPARE(o.m_s, "The Answer");
         QCOMPARE(o.m_slotCounter, 2);
+
+#if __cplusplus >= 201703L
+        c = KDToolBox::connectSingleShot(&o, &Object::aSignal,
+                                         &o, &Object::aSlotWithOneArgLess);
+        QVERIFY(c);
+        Q_EMIT o.aSignal(1, "Hello");
+        QVERIFY(!c);
+        QCOMPARE(o.m_i, 1);
+        QCOMPARE(o.m_slotCounter, 3);
+
+        c = KDToolBox::connectSingleShot(&o, &Object::aSignal,
+                                         &o, &Object::noArgSlot);
+        QVERIFY(c);
+        Q_EMIT o.aSignal(1, "Hello");
+        QVERIFY(!c);
+        QCOMPARE(o.m_i, 1);
+        QCOMPARE(o.m_slotCounter, 4);
+
+        int x = 0;
+        c = KDToolBox::connectSingleShot(&o, &Object::aSignal, [&x](int i) {
+            x = i;
+        });
+        QVERIFY(c);
+        Q_EMIT o.aSignal(33, "Hello");
+        QVERIFY(!c);
+        QCOMPARE(x, 33);
+#endif
     }
     {
         struct MoveOnlyFunctor {
