@@ -146,7 +146,9 @@ connectSingleShot(const typename QtPrivate::FunctionPointer<Func1>::Object *send
     {
         QObject::disconnect(*connection);
 #if __cplusplus >= 201703L
-        constexpr int SlotArgumentCount = (FunctorArgumentCount >= 0) ? FunctorArgumentCount : 0;
+        // MSVC fails to compile if we try to reuse FunctorArgumentCount...
+        constexpr int SlotArgumentCount =
+            QtPrivate::ComputeFunctorArgumentCount<Func2, typename SignalType::Arguments>::Value;
         std::apply(slot, Internal::makeTruncatedArgs<SlotArgumentCount>(std::forward<decltype(params)>(params)...));
 #else
         slot(std::forward<decltype(params)>(params)...);
