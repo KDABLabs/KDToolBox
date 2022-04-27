@@ -408,6 +408,22 @@ class Statistics:
             print("Flaky tests: %s" % ','.join(self.__flakyTestNames))
 
 
+class Platform:
+    def runSingleTest(self, squishTest: SquishTest) -> bool:
+        self.prepareEnv()
+        while squishTest.remainingRuns() > 0:  # if --maxFlakyRuns is passed, we'll execute until it passes
+            success = squishTest.run()
+            if success:
+                break
+
+        # print("Finished running %s" % squishTest.name)
+        return success
+
+    def prepareEnv(self):
+        '''Sets any required env variables'''
+        raise NotImplementedError()
+
+
 class TestsRunner:
     ''' Class responsible for loading and running all tests'''
 
@@ -422,12 +438,6 @@ class TestsRunner:
 
     def enableAbortOnFail(self):
         self._abortsOnFail = True
-
-    def prepareEnv(self):
-        raise NotImplementedError()
-
-    def acceptsTest(self, squishTest: SquishTest):
-        raise NotImplementedError()
 
     def loadTests(self):
         contents = ''
@@ -509,6 +519,16 @@ class TestsRunner:
         if s_verbose:
             print("All threads finished.")
 
+    @staticmethod
+    def platformForTest(squishTest: SquishTest):
+        '''Returns a suitable Platform to run the specified test. Since all tests support offscreen'''
+        if s_isOffscreen:
+            if squishTest.supportsOffscreen:
+                return (OffscreenPlatform(), '')
+            return (None, 'Test does not support offscreen')
+
+        return (NativePlatform(), '')
+
     def runInSequence(self, requestedTestsList):
         '''Runs the requested tests in sequence.'''
 
@@ -522,7 +542,14 @@ class TestsRunner:
                 if self.testsAborted:
                     return
 
-            testSucceeded = self.runSingleTest(squishTest)
+            (plat, skipReason) = TestsRunner.platformForTest(squishTest)
+
+            if not plat:
+                print('[SKIP] %s (%s)' % (squishTest.name, skipReason))
+                squishTest.markSkipped()
+                continue
+
+            testSucceeded = plat.runSingleTest(squishTest)
             if self._abortsOnFail and not testSucceeded:
                 print("Aborting the whole run since a test failed...")
                 with self._lock:
@@ -530,23 +557,6 @@ class TestsRunner:
 
         if s_verbose:
             print("Finished thread for (%s)." % (",".join(names)))
-
-    def runSingleTest(self, squishTest: SquishTest) -> bool:
-
-        (accepted, skipReason) = self.acceptsTest(squishTest)
-        if not accepted:
-            print('[SKIP] %s (%s)' % (squishTest.name, skipReason))
-            squishTest.markSkipped()
-            return True
-
-        self.prepareEnv()
-        while squishTest.remainingRuns() > 0:  # if --maxFlakyRuns is passed, we'll execute until it passes
-            success = squishTest.run()
-            if success:
-                break
-
-        # print("Finished running %s" % squishTest.name)
-        return success
 
     def createINIFiles(self):
 
@@ -630,26 +640,15 @@ class TestsRunner:
                 killProcess(squishTest.serverProc)
 
 
-class OffscreenSquishRunner(TestsRunner):
-    #pylint: disable=no-self-use, useless-super-delegation
-    def __init__(self):
-        super().__init__()
+class OffscreenPlatform(Platform):
+    '''Runs tests under the offscreen QPA. Supports parallelization.'''
 
     def prepareEnv(self):
         os.environ['QT_QPA_PLATFORM'] = 'offscreen'
 
-    def acceptsTest(self, squishTest: SquishTest):
-        return (squishTest.supportsOffscreen, 'Test does not support offscreen')
 
-
-class NativeSquishRunner(TestsRunner):
-    #pylint: disable=no-self-use, useless-super-delegation
-    def __init__(self):
-        super().__init__()
-
-    #pylint: disable=unused-argument
-    def acceptsTest(self, squishTest: SquishTest):
-        return (True, '')
+class NativePlatform(Platform):
+    '''Runs testsunder the native platform (windows, xcb or cocoa). Parallelization is not supported.'''
 
     def prepareEnv(self):
         os.environ['QT_QPA_PLATFORM'] = ''
@@ -710,7 +709,7 @@ if args.maxFlakyRuns:
         sys.exit(1)
 
 s_isOffscreen = not args.native
-testsRunner = OffscreenSquishRunner() if s_isOffscreen else NativeSquishRunner()
+testsRunner = TestsRunner()
 
 if args.list:
     print("Tests:")
