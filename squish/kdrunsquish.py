@@ -373,6 +373,7 @@ class SquishTest:
         # Simply return if the 2 lists intersect
         return bool(set(self.categories) & set(categories))
 
+
 class Statistics:
     '''Simple struct just to contain the result of the test run'''
 
@@ -407,7 +408,9 @@ class Statistics:
             print("Flaky tests: %s" % ','.join(self.__flakyTestNames))
 
 
-class SquishRunner:
+class TestsRunner:
+    ''' Class responsible for loading and running all tests'''
+
     def __init__(self) -> None:
         self.tests = []
         self.aut = ''
@@ -617,7 +620,7 @@ class SquishRunner:
         for squishTest in self.tests:
             result += squishTest.categories
 
-        return list(set(result)) # unique
+        return list(set(result))  # unique
 
     def killChildProcesses(self):
         for squishTest in self.tests:
@@ -627,7 +630,7 @@ class SquishRunner:
                 killProcess(squishTest.serverProc)
 
 
-class OffscreenSquishRunner(SquishRunner):
+class OffscreenSquishRunner(TestsRunner):
     #pylint: disable=no-self-use, useless-super-delegation
     def __init__(self):
         super().__init__()
@@ -639,7 +642,7 @@ class OffscreenSquishRunner(SquishRunner):
         return (squishTest.supportsOffscreen, 'Test does not support offscreen')
 
 
-class NativeSquishRunner(SquishRunner):
+class NativeSquishRunner(TestsRunner):
     #pylint: disable=no-self-use, useless-super-delegation
     def __init__(self):
         super().__init__()
@@ -707,19 +710,19 @@ if args.maxFlakyRuns:
         sys.exit(1)
 
 s_isOffscreen = not args.native
-plat = OffscreenSquishRunner() if s_isOffscreen else NativeSquishRunner()
+testsRunner = OffscreenSquishRunner() if s_isOffscreen else NativeSquishRunner()
 
 if args.list:
     print("Tests:")
-    plat.printTests()
+    testsRunner.printTests()
     print("\nSuites:")
-    plat.printSuites()
+    testsRunner.printSuites()
     print("\nCategories:")
-    plat.printCategories()
+    testsRunner.printCategories()
     sys.exit(0)
 
 if args.abortOnFail:
-    plat.enableAbortOnFail()
+    testsRunner.enableAbortOnFail()
 
 if args.outputdir:
     s_resultDir = args.outputdir
@@ -731,7 +734,7 @@ requestedTests = []
 if args.tests:
     requestedTestNames = args.tests.split(",")
     for requestedTestName in requestedTestNames:
-        test = plat.testByName(requestedTestName)
+        test = testsRunner.testByName(requestedTestName)
         if not test:
             print(
                 f"Unknown test {requestedTestName}. Run with -l to see a list of tests.")
@@ -742,10 +745,10 @@ if args.tests:
 if args.suites:
     requestedSuiteNames = args.suites.split(",")
     for requestedSuiteName in requestedSuiteNames:
-        requestedTests += plat.testsBySuite(requestedSuiteName)
+        requestedTests += testsRunner.testsBySuite(requestedSuiteName)
 
 if args.categories:
-    tests = plat.testsByCategories(args.categories.split(","))
+    tests = testsRunner.testsByCategories(args.categories.split(","))
     if not tests:
         print("No tests matching the specified categories. Run with -l to see a list of tests.")
         sys.exit(-1)
@@ -753,7 +756,7 @@ if args.categories:
 
 if not args.tests and not args.suites and not args.categories:
     # Test everything
-    requestedTests = plat.tests
+    requestedTests = testsRunner.tests
 
 
 if args.jobs:
@@ -763,10 +766,10 @@ else:
     num_jobs = s_numCPUs if s_isOffscreen else 1
 
 try:
-    plat.runInParallell(num_jobs, requestedTests)
+    testsRunner.runInParallell(num_jobs, requestedTests)
 except KeyboardInterrupt:
     print("Interrupted...")
-    plat.killChildProcesses()
+    testsRunner.killChildProcesses()
     sys.exit(1)
 
 results = Statistics(requestedTests)
@@ -777,6 +780,6 @@ print("Took %s seconds" % (int(time.time() - s_startTime)))
 if results.wasSuccessful():
     print("Success!")
 
-plat.killChildProcesses()
+testsRunner.killChildProcesses()
 
 sys.exit(0 if results.wasSuccessful() else 1)
