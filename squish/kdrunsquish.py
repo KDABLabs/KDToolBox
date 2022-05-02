@@ -26,6 +26,7 @@
 This script runs squish tests in parallel via the Qt offscreen QPA
 """
 
+import signal
 import time
 import sys
 import threading
@@ -152,14 +153,14 @@ def testPlatformFlag(value, default=False):
     return default
 
 
-async def runCommandASync(cmdArgs, output):
+async def runCommandASync(cmdArgs, output, env):
     '''Starts a child process and returns immediately'''
     if s_verbose:
         print("Running: " + " ".join(cmdArgs))
 
     try:
         process = await asyncio.create_subprocess_exec(*cmdArgs,
-                                                       stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
+                                                       stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT, env=env)
         # Create a task to read and filter process output and stop the pipe becoming full
         s_allOutputTasks.append(asyncio.create_task(_handleStdout(process, output)))
         return process
@@ -297,16 +298,16 @@ class SquishTest:
         '''Returns whether there was a mix of success and failure'''
         return self.numSuccesses > 0 and self.numFailures > 0
 
-    def run(self):
+    def run(self, env):
         killProcessByPort('_squishserver', int(self.serverPort()))
 
         loop = asyncio.new_event_loop()
-        returncode = loop.run_until_complete(self._runAsync())
+        returncode = loop.run_until_complete(self._runAsync(env))
         loop.close()
 
         return returncode
 
-    async def _runAsync(self):
+    async def _runAsync(self, env):
 
         if self.remainingRuns() <= 0:
             # Doesn't happen
@@ -316,8 +317,8 @@ class SquishTest:
 
         self.__numRuns = self.__numRuns + 1
 
-        self.serverProc = await runCommandASync(self.squishserverArgs(), self.serverStdout)
-        self.runnerProc = await runCommandASync(self.squishrunnerArgs(), self.runnerStdout)
+        self.serverProc = await runCommandASync(self.squishserverArgs(), self.serverStdout, env)
+        self.runnerProc = await runCommandASync(self.squishrunnerArgs(), self.runnerStdout, env)
 
         returncode = await self.runnerProc.wait()
 
@@ -410,18 +411,36 @@ class Statistics:
 
 class Platform:
     def runSingleTest(self, squishTest: SquishTest) -> bool:
-        self.prepareEnv()
+        if not self.prepare():
+            return False
+
         while squishTest.remainingRuns() > 0:  # if --maxFlakyRuns is passed, we'll execute until it passes
-            success = squishTest.run()
+            success = squishTest.run(self.env())
             if success:
                 break
+
+        self.cleanup()
 
         # print("Finished running %s" % squishTest.name)
         return success
 
-    def prepareEnv(self):
-        '''Sets any required env variables'''
-        raise NotImplementedError()
+    def prepare(self):
+        '''Called before running a test'''
+        return True
+
+    def cleanup(self):
+        '''Called after running a test'''
+        return True
+
+    def env(self):
+        '''Returns the environment where this test should run'''
+        testenv = os.environ.copy()
+        testenv.update(self.extraEnv())
+        return testenv
+
+    def extraEnv(self):
+        '''Returns any additional env variables. These will be merged with current environment.'''
+        return {}
 
 
 class TestsRunner:
@@ -525,6 +544,13 @@ class TestsRunner:
         if s_isOffscreen:
             if squishTest.supportsOffscreen:
                 return (OffscreenPlatform(), '')
+            elif matchPlatform('Linux'):
+                supported, reason = XvfbPlatform.supported()
+                if supported:
+                    return (XvfbPlatform(), '')
+                else:
+                    return (None, reason)
+
             return (None, 'Test does not support offscreen')
 
         return (NativePlatform(), '')
@@ -643,15 +669,83 @@ class TestsRunner:
 class OffscreenPlatform(Platform):
     '''Runs tests under the offscreen QPA. Supports parallelization.'''
 
-    def prepareEnv(self):
-        os.environ['QT_QPA_PLATFORM'] = 'offscreen'
+    def extraEnv(self):
+        return {'QT_QPA_PLATFORM': 'offscreen'}
 
 
 class NativePlatform(Platform):
-    '''Runs testsunder the native platform (windows, xcb or cocoa). Parallelization is not supported.'''
+    '''Runs test sunder the native platform (windows, xcb or cocoa). Parallelization is not supported.'''
 
-    def prepareEnv(self):
-        os.environ['QT_QPA_PLATFORM'] = ''
+    def extraEnv(self):
+        return {'QT_QPA_PLATFORM': ''}
+
+
+class XvfbPlatform(Platform):
+    '''Runs tests under X11 via Xvfb so parallelization is supported'''
+
+    display = 100
+
+    @staticmethod
+    def hasXfwm4():
+        try:
+            subprocess.run(["xfwm4", "--version"], capture_output=True)
+        except:
+            print()
+            exit('Failed to find xfwm4. Please install it.')
+            return False
+        return True
+
+    @staticmethod
+    def hasXvfb():
+        try:
+            subprocess.run(["xvfb-run", "--help"], capture_output=True)
+        except:
+            exit('Failed to find xvfb-run. Please install it.')
+            return False
+        return True
+
+    def __init__(self):
+        self.xvfbPid = None
+
+    def __runXvfb(self):
+        XvfbPlatform.display = XvfbPlatform.display + 1
+        cmd = ['xvfb-run', '-n', str(XvfbPlatform.display), '-s',
+               "-ac -screen 0 1920x1080x24", 'dbus-run-session', 'xfwm4']
+        try:
+            xvfbProcess = subprocess.Popen(cmd, preexec_fn=os.setsid,
+                                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            self.xvfbPid = xvfbProcess.pid
+            return True
+        except:
+            exit('Failed to run: {}'.format(' '.join(cmd)))
+            return False
+
+    @staticmethod
+    def supported():
+        '''Returns whether running under xvfb is supported'''
+        if not matchPlatform('Linux'):
+            return (False, 'Virtual X11 only supported on Linux')
+        if not XvfbPlatform.hasXfwm4():
+            return (False, 'Could not find xfwm4. Please install it.')
+        if not XvfbPlatform.hasXvfb():
+            return (False, 'Could not find xvfb-run. Please install it.')
+
+        return (True, '')
+
+    def extraEnv(self):
+        return {'QT_QPA_PLATFORM': 'xcb', 'DISPLAY': ':{}'.format(self.display)}
+
+    def prepare(self):
+        '''Called before running a test. Starts xvfb'''
+        return self.__runXvfb()
+
+    def cleanup(self):
+        '''Called after running a test. Kills xcfb.'''
+        if self.xvfbPid:
+            try:
+                os.killpg(os.getpgid(self.xvfbPid), signal.SIGTERM)
+            except:
+                pass
 
 
 parser = argparse.ArgumentParser(description=INSTRUCTIONS)
