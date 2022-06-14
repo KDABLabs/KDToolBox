@@ -5,7 +5,7 @@ KDAB's collection of miscellaneous useful C++ classes and stuff.
 
 Generic Tools
 =================
-- [asan_assert_fail](https://github.com/KDAB/KDToolBox/tree/master/generic/asan_assert_fail)
+- [asan_assert_fail](https://github.com/KDAB/KDToolBox/tree/master/general/asan_assert_fail)
   Intercept `cassert` failures with ASAN and print a backtrace.
 
 C++ Tools
