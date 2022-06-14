@@ -62,7 +62,8 @@ Qt Tools
   Tools to ease migrating from `QSharedPointer` to `std::shared_ptr`.
 - [qt_fmt](https://github.com/KDAB/KDToolBox/tree/master/qt/qt_fmt)
   Convenience for printing Qt classes through [libfmt](https://github.com/fmtlib/fmt).
-
+- [cmake-project](https://github.com/KDAB/KDToolBox/tree/master/qt/cmake-project)
+  A replacement for `qmake -project`, generating a ready-to-use CMakeLists.txt.
 
 Other Code Snippets
 ===================
