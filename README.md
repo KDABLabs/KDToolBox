@@ -64,6 +64,8 @@ Qt Tools
   Convenience for printing Qt classes through [libfmt](https://github.com/fmtlib/fmt).
 - [cmake-project](https://github.com/KDAB/KDToolBox/tree/master/qt/cmake-project)
   A replacement for `qmake -project`, generating a ready-to-use CMakeLists.txt.
+- [includemocs](https://github.com/KDAB/KDToolBox/tree/master/qt/includemocs)
+  A script to add inclusion of moc files to all .cpp files in the project.
 
 Other Code Snippets
 ===================
