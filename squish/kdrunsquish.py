@@ -322,7 +322,10 @@ class SquishTest:
 
         returncode = await self.runnerProc.wait()
 
-        killProcess(self.serverProc)
+        serverPort = int(self.serverPort())
+        if runCommandSync(['squishserver', '--stop', '--port', str(serverPort)]).returncode != 0:
+            print("ERROR: Could not stop the squishserver, port: %s" % serverPort)
+            sys.exit(1)
 
         await self.serverProc.wait()
 
