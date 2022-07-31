@@ -103,8 +103,7 @@ def runCommandSync(cmdArgs):
         print("Running: " + " ".join(cmdArgs))
 
     try:
-        #pylint: disable=subprocess-run-check
-        return subprocess.run(cmdArgs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        return subprocess.run(cmdArgs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     except FileNotFoundError as e:
         print("ERROR: %s probably not found in PATH! %s" % (cmdArgs[0], e))
         sys.exit(1)
@@ -160,7 +159,9 @@ async def runCommandASync(cmdArgs, output, env):
 
     try:
         process = await asyncio.create_subprocess_exec(*cmdArgs,
-                                                       stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT, env=env)
+                                                       stdout=asyncio.subprocess.PIPE,
+                                                       stderr=asyncio.subprocess.STDOUT,
+                                                       env=env)
         # Create a task to read and filter process output and stop the pipe becoming full
         s_allOutputTasks.append(asyncio.create_task(_handleStdout(process, output)))
         return process
@@ -412,6 +413,7 @@ class Statistics:
             print("Flaky tests: %s" % ','.join(self.__flakyTestNames))
 
 
+# pylint: disable=no-self-use
 class Platform:
     def runSingleTest(self, squishTest: SquishTest) -> bool:
         if not self.prepare():
@@ -547,12 +549,11 @@ class TestsRunner:
         if s_isOffscreen:
             if squishTest.supportsOffscreen:
                 return (OffscreenPlatform(), '')
-            elif matchPlatform('Linux'):
+            if matchPlatform('Linux'):
                 supported, reason = XvfbPlatform.supported()
                 if supported:
                     return (XvfbPlatform(), '')
-                else:
-                    return (None, reason)
+                return (None, reason)
 
             return (None, 'Test does not support offscreen')
 
@@ -691,36 +692,38 @@ class XvfbPlatform(Platform):
     @staticmethod
     def hasXfwm4():
         try:
-            subprocess.run(["xfwm4", "--version"], capture_output=True)
+            subprocess.run(["xfwm4", "--version"], capture_output=True, check=False)
         except:
             print()
-            exit('Failed to find xfwm4. Please install it.')
+            sys.exit('Failed to find xfwm4. Please install it.')
             return False
         return True
 
     @staticmethod
     def hasXvfb():
         try:
-            subprocess.run(["xvfb-run", "--help"], capture_output=True)
+            subprocess.run(["xvfb-run", "--help"], capture_output=True, check=False)
         except:
-            exit('Failed to find xvfb-run. Please install it.')
+            sys.exit('Failed to find xvfb-run. Please install it.')
             return False
         return True
 
     def __init__(self):
         self.xvfbPid = None
 
-    def __runXvfb(self):
+    def _runXvfb(self):
         XvfbPlatform.display = XvfbPlatform.display + 1
         cmd = ['xvfb-run', '-n', str(XvfbPlatform.display), '-s',
                "-ac -screen 0 1920x1080x24", 'dbus-run-session', 'xfwm4']
+        # pylint: disable=subprocess-popen-preexec-fn
         try:
-            xvfbProcess = subprocess.Popen(cmd, preexec_fn=os.setsid,
-                                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            self.xvfbPid = xvfbProcess.pid
-            return True
+            with subprocess.Popen(cmd, preexec_fn=os.setsid,
+                                  stdout=subprocess.DEVNULL,
+                                  stderr=subprocess.DEVNULL) as xvfbProcess:
+                self.xvfbPid = xvfbProcess.pid
+                return True
         except:
-            exit('Failed to run: {}'.format(' '.join(cmd)))
+            sys.exit('Failed to run: {}'.format(' '.join(cmd)))
             return False
 
     @staticmethod
@@ -740,7 +743,7 @@ class XvfbPlatform(Platform):
 
     def prepare(self):
         '''Called before running a test. Starts xvfb'''
-        return self.__runXvfb()
+        return self._runXvfb()
 
     def cleanup(self):
         '''Called after running a test. Kills xcfb.'''
