@@ -37,7 +37,7 @@ KDGenericSignalThrottler::KDGenericSignalThrottler(Kind kind,
     , m_emissionPolicy(emissionPolicy)
     , m_hasPendingEmission(false)
 {
-    m_timer.setSingleShot(true);
+    m_timer.setSingleShot(m_kind == Kind::Debouncer);
     connect(&m_timer, &QTimer::timeout, this, &KDGenericSignalThrottler::maybeEmitTriggered);
 }
 
@@ -123,6 +123,8 @@ void KDGenericSignalThrottler::maybeEmitTriggered()
 {
     if (m_hasPendingEmission)
         emitTriggered();
+    else
+        m_timer.stop();
 }
 
 void KDGenericSignalThrottler::emitTriggered()
