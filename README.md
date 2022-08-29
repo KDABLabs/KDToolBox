@@ -93,11 +93,7 @@ Contact KDAB at <info@kdab.com> if you need different licensing options.
 
 Get Involved
 ============
-KDAB will happily accept external contributions; however, **all**
-contributions will require a signed Contributor License Agreement
-(see docs/KDToolBox-CopyrightAssignmentForm.pdf).
-
-Contact info@kdab.com for more information.
+KDAB will happily accept external contributions.
 
 Please submit your contributions or issue reports from our GitHub space at
 https://github.com/KDAB/KDToolBox
