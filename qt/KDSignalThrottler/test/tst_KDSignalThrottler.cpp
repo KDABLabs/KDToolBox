@@ -53,6 +53,7 @@ private Q_SLOTS:
     void trailingOrLeadingActivation();
     void throttler();
     void debouncer();
+    void leadingEmissionTooSoon();
 };
 
 void tst_KDSignalThrottler::basics()
@@ -392,6 +393,59 @@ void tst_KDSignalThrottler::debouncer()
 
     // Eventually, this will trigger only 1 activation
     QTRY_COMPARE(spy.size(), 1);
+}
+
+void tst_KDSignalThrottler::leadingEmissionTooSoon()
+{
+    KDSignalLeadingThrottler throttler;
+    throttler.setTimeout(Timeout);
+
+    int triggeredCount = 0;
+
+    QSignalSpy spy(&throttler, &KDGenericSignalThrottler::triggered);
+    throttler.throttle();
+    ++triggeredCount;
+    QCOMPARE(spy.size(), triggeredCount);
+
+    // A new emission is scheduled now;
+    throttler.throttle();
+
+    // as soon as that one fires, throttle another one.
+    ++triggeredCount;
+    QTRY_COMPARE(spy.size(), triggeredCount);
+    throttler.throttle();
+
+    // Now we shouldn't be receiving a signal, even if this is a leading throttler.
+    // We'll receive it after the timeout.
+    QCOMPARE(spy.size(), triggeredCount);
+    ++triggeredCount;
+    QTRY_COMPARE(spy.size(), triggeredCount);
+
+    // Do it again
+    QTest::qWait(Timeout * 2); // wait for the timeout, so we get a leading emission
+
+    throttler.throttle();
+    ++triggeredCount;
+    QCOMPARE(spy.size(), triggeredCount); // Leading emission (after timeout)
+
+    throttler.throttle();
+    throttler.throttle();
+    throttler.throttle();
+    QCOMPARE(spy.size(), triggeredCount); // No emission
+
+    ++triggeredCount;
+    QTRY_COMPARE(spy.size(), triggeredCount); // Emission after timeout
+
+    throttler.throttle();
+    throttler.throttle();
+    throttler.throttle();
+    QCOMPARE(spy.size(), triggeredCount); // No emission, even if leading (too close)
+
+    ++triggeredCount;
+    QTRY_COMPARE(spy.size(), triggeredCount); // Emission after timeout
+
+    throttler.throttle();
+    QCOMPARE(spy.size(), triggeredCount); // No emission, even if leading (too close)
 }
 
 QTEST_MAIN(tst_KDSignalThrottler)

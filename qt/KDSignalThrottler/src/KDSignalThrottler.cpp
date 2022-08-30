@@ -37,7 +37,20 @@ KDGenericSignalThrottler::KDGenericSignalThrottler(Kind kind,
     , m_emissionPolicy(emissionPolicy)
     , m_hasPendingEmission(false)
 {
-    m_timer.setSingleShot(true);
+    // For leading throttlers we use a repeated timer. This is in order
+    // to catch the case where a signal is received by the throttler
+    // just after it emitted a throttled/debounced signal. Even if leading,
+    // it shouldn't re-emit immediately, as it would be too close to the previous one.
+    // So we keep the timer running, and stop it later if it times out
+    // with no intervening timeout() emitted by it.
+    switch (m_emissionPolicy) {
+    case EmissionPolicy::Leading:
+        m_timer.setSingleShot(false);
+        break;
+    case EmissionPolicy::Trailing:
+        m_timer.setSingleShot(true);
+        break;
+    }
     connect(&m_timer, &QTimer::timeout, this, &KDGenericSignalThrottler::maybeEmitTriggered);
 }
 
@@ -123,6 +136,8 @@ void KDGenericSignalThrottler::maybeEmitTriggered()
 {
     if (m_hasPendingEmission)
         emitTriggered();
+    else
+        m_timer.stop();
 }
 
 void KDGenericSignalThrottler::emitTriggered()
