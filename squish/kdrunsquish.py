@@ -41,7 +41,8 @@ import io
 import platform
 import psutil
 
-#pylint: disable=invalid-name
+# pylint: disable=invalid-name,bare-except
+
 TESTS_JSON_FILENAME = 'tests.json'
 
 INSTRUCTIONS = '''
@@ -208,13 +209,14 @@ def killProcessByPort(name, port):
     except Exception as e:
         print("ERROR: Could not kill process by port %s: %s" % (name, e))
 
+# pylint: disable=too-many-instance-attributes
+
 
 class SquishTest:
     '''Represents a single squish test'''
 
     s_nextId = 1
 
-    #pylint: disable=too-many-instance-attributes
     def __init__(self, name, suite, testId):
         self.name = name
         self.suite = suite
