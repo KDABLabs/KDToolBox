@@ -53,7 +53,7 @@ def shouldExclude(root, path):
 regexp = re.compile("\\s*(Q_OBJECT|Q_GADGET|Q_NAMESPACE)\\s*")
 # Returns true if the header file provides contains a Q_OBJECT, Q_GADGET or Q_NAMESPACE macro
 def hasMacro(fileName):
-    f = open(fileName, "r")
+    f = open(fileName, "r", encoding="utf8")
     for line in f:
         if regexp.match(line):
             return True
@@ -81,7 +81,7 @@ def fileNameWithoutExtension(fileName):
 # returns true if the specifies .cpp file already has the proper include
 def cppHasMOCInclude(fileName):
     includeStatement = '#include "moc_%s.cpp"' % fileNameWithoutExtension(fileName)
-    f = open(fileName)
+    f = open(fileName, encoding="utf8")
     return includeStatement in f.read()
 
 def processFile(root, fileName):
@@ -108,7 +108,7 @@ def processFile(root, fileName):
             else:
                 if not args.quiet:
                     print("Updating %s" % cppFileName)
-                f = open(cppFileName, "a")
+                f = open(cppFileName, "a", encoding="utf8")
                 f.write('\n#include "moc_%s.cpp"\n' % fileNameWithoutExtension(cppFileName))
 
 
