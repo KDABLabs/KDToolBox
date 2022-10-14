@@ -156,7 +156,7 @@ public:
     inline friend bool operator<=(const FlatIterator& lhs, const FlatIterator& rhs) {return !operator>(lhs, rhs);}
     inline friend bool operator>=(const FlatIterator& lhs, const FlatIterator& rhs) {return !operator<(lhs, rhs);}
 
-    inline QModelIndex operator*() {return !m_atEnd ? m_index : QModelIndex();}
+    inline QModelIndex operator*() const {return !m_atEnd ? m_index : QModelIndex();}
     inline QModelIndex *operator->() {Q_ASSERT(!m_atEnd); return &m_index;}
 
     static FlatIterator begin(QAbstractItemModel *model, int column = 0);
