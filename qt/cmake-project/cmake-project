@@ -8,8 +8,8 @@
 
 usage()
 {
-  echo "Usage: $0 [ -q | --qt 5 | 6 | none ]"
-  echo "The -q or --qt option allows to choose between Qt 5, Qt 6, or no Qt dependency"
+  echo "Usage: $0 [ -q | --qt 5 | 6 | 5-and-6 | none ]"
+  echo "The -q or --qt option allows to choose between Qt 5, Qt 6, both, or no Qt dependency"
   exit 2
 }
 
@@ -45,7 +45,11 @@ PROJECTNAME=`basename "$PWD" | sed -e 's/ /_/g'`
 TARGET="$PROJECTNAME"
 
 if [ "$QTVERSION" != "none" ]; then
-    QT=Qt$QTVERSION
+    if [ "$QTVERSION" = "5-and-6" ]; then
+        QT="Qt\${QT_VERSION_MAJOR}"
+    else
+        QT=Qt$QTVERSION
+    fi
     QTLIBS="Core Gui"
     QTTARGETS="$QT::Core $QT::Gui"
     if [ -n "`grep QApplication *.cpp`" ]; then
@@ -58,8 +62,15 @@ fi
 cat > CMakeLists.txt <<EOF
 cmake_minimum_required(VERSION 3.9)
 project($PROJECTNAME)
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 EOF
+
+if [ "$QTVERSION" = "5-and-6" ]; then
+cat >> CMakeLists.txt <<EOF
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS $QTLIBS)
+EOF
+fi
 
 if [ "$QTVERSION" != "none" ]; then
 cat >> CMakeLists.txt <<EOF
@@ -67,6 +78,7 @@ find_package($QT CONFIG REQUIRED COMPONENTS $QTLIBS)
 set(CMAKE_AUTOMOC TRUE)
 set(CMAKE_AUTORCC TRUE)
 $AUTOUIC
+
 EOF
 fi
 
