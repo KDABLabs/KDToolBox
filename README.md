@@ -19,6 +19,8 @@ C++ Tools
   its memory usage (compared to a 'plain' set implementation).
 - [toContainer](https://github.com/KDAB/KDToolBox/tree/master/cpp/toContainer)
   Helper functions to convert a container to another container, using a convenient pipeline style.
+- [propagate_const](https://github.com/KDAB/KDToolBox/tree/master/cpp/propagate_const)
+  A backport of `propagate_const` from the C++ Extensions for Library Fundamentals version 3.
 
 Qt Tools
 =================
