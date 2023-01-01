@@ -70,7 +70,7 @@ int TableModel::rowCount(const QModelIndex &parent) const
     if (parent.isValid())
         return 0;
 
-    return m_data.size();
+    return int(m_data.size());
 }
 
 int TableModel::columnCount(const QModelIndex &parent) const
