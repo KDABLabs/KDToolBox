@@ -1,7 +1,7 @@
 /****************************************************************************
 **                                MIT License
 **
-** Copyright (C) 2020-2022 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
+** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
 ** Author: Giuseppe D'Angelo <giuseppe.dangelo@kdab.com>
 **
 ** This file is part of KDToolBox (https://github.com/KDAB/KDToolBox).
@@ -51,6 +51,31 @@ template<std::size_t ArgsCount, typename... Args>
 static inline auto makeTruncatedArgs(Args &&...args)
 {
     return makeTruncatedArgsImpl(std::make_index_sequence<ArgsCount>(), std::forward<Args>(args)...);
+}
+
+// This could be a lambda, but it doesn't work on MSVC,
+// so here's an "unrolled" implementation.
+template <int ArgumentCount, typename SlotType>
+struct SingleShotStruct
+{
+    SlotType slot;
+    std::unique_ptr<QMetaObject::Connection> connection;
+
+    template <typename... T>
+    void operator()(T&&... args) {
+        QObject::disconnect(*connection);
+#if __cplusplus >= 201703L
+        std::apply(slot, makeTruncatedArgs<ArgumentCount>(std::forward<T>(args)...));
+#else
+        slot(std::forward<T>(args)...);
+#endif
+    }
+};
+
+template <int ArgumentCount, typename SlotType>
+auto makeSingleShotStruct(SlotType&& slot, std::unique_ptr<QMetaObject::Connection>&& connection)
+{
+    return SingleShotStruct<ArgumentCount, SlotType>{std::forward<SlotType>(slot), std::move(connection)};
 }
 
 } // namespace Internal
@@ -104,8 +129,7 @@ connectSingleShot(const typename QtPrivate::FunctionPointer<Func1>::Object *send
     auto connection = std::make_unique<QMetaObject::Connection>();
     auto connectionPtr = connection.get();
     auto singleShot =
-            [=,
-            slot = std::move(slot),
+            [slot = std::move(slot),
             connection = std::move(connection)]
                 (auto && ... params) mutable
     {
@@ -138,22 +162,8 @@ connectSingleShot(const typename QtPrivate::FunctionPointer<Func1>::Object *send
 
     auto connection = std::make_unique<QMetaObject::Connection>();
     auto connectionPtr = connection.get();
-    auto singleShot =
-            [=,
-            slot = std::move(slot),
-            connection = std::move(connection)]
-                (auto && ... params) mutable
-    {
-        QObject::disconnect(*connection);
-#if __cplusplus >= 201703L
-        // MSVC fails to compile if we try to reuse FunctorArgumentCount...
-        constexpr int SlotArgumentCount =
-            QtPrivate::ComputeFunctorArgumentCount<Func2, typename SignalType::Arguments>::Value;
-        std::apply(slot, Internal::makeTruncatedArgs<SlotArgumentCount>(std::forward<decltype(params)>(params)...));
-#else
-        slot(std::forward<decltype(params)>(params)...);
-#endif
-    };
+
+    auto singleShot = Internal::makeSingleShotStruct<FunctorArgumentCount>(std::move(slot), std::move(connection));
 
     *connectionPtr = QObject::connect(sender, signal, context, std::move(singleShot), type);
     return *connectionPtr;
