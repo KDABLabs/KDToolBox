@@ -1,7 +1,7 @@
 /****************************************************************************
 **                                MIT License
 **
-** Copyright (C) 2020-2022 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Marc Mutz <marc.mutz@kdab.com>
+** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Marc Mutz <marc.mutz@kdab.com>
 **
 ** This file is part of KDToolBox (https://github.com/KDAB/KDToolBox).
 **
@@ -148,7 +148,7 @@ private:
 
 #include <QtCore/qstringview.h>
 
-namespace QtPrivate {
+namespace KDToolBoxPrivate {
 namespace Tok {
 
     Q_DECL_CONSTEXPR qsizetype size(QChar) noexcept { return 1; }
@@ -267,17 +267,17 @@ namespace Tok {
     template <typename Haystack, typename Needle>
     using TokenizerBase = QStringTokenizerBase<ViewFor<Haystack>, ViewFor<Needle>>;
 } // namespace Tok
-} // namespace QtPrivate
+} // namespace KDToolBoxPrivate
 
 template <typename Haystack, typename Needle>
 class QStringTokenizer
-    : private QtPrivate::Tok::HaystackPinning<Haystack>,
-      private QtPrivate::Tok::NeedlePinning<Needle>,
-      public  QtPrivate::Tok::TokenizerBase<Haystack, Needle>
+    : private KDToolBoxPrivate::Tok::HaystackPinning<Haystack>,
+      private KDToolBoxPrivate::Tok::NeedlePinning<Needle>,
+      public  KDToolBoxPrivate::Tok::TokenizerBase<Haystack, Needle>
 {
-    using HPin = QtPrivate::Tok::HaystackPinning<Haystack>;
-    using NPin = QtPrivate::Tok::NeedlePinning<Needle>;
-    using Base = QtPrivate::Tok::TokenizerBase<Haystack, Needle>;
+    using HPin = KDToolBoxPrivate::Tok::HaystackPinning<Haystack>;
+    using NPin = KDToolBoxPrivate::Tok::NeedlePinning<Needle>;
+    using Base = KDToolBoxPrivate::Tok::TokenizerBase<Haystack, Needle>;
     template <typename Container, typename HPin>
     struct if_haystack_not_pinned_impl : std::enable_if<std::is_empty<HPin>::value, bool> {};
     template <typename Container>
@@ -336,7 +336,7 @@ public:
     }
 };
 
-namespace QtPrivate {
+namespace KDToolBoxPrivate {
 namespace Tok {
 // This meta function just calculated the template arguments for the
 // QStringTokenizer (not -Base), based on the actual arguments passed
@@ -351,8 +351,8 @@ namespace Tok {
 // it.
 #define Q_TOK_RESULT \
     QStringTokenizer< \
-        QtPrivate::Tok::PinFor<Haystack>, \
-        QtPrivate::Tok::PinFor<Needle> \
+        KDToolBoxPrivate::Tok::PinFor<Haystack>, \
+        KDToolBoxPrivate::Tok::PinFor<Needle> \
     > \
     /*end*/
 template <typename Haystack, typename Needle>
@@ -360,7 +360,7 @@ using TokenizerResult = Q_TOK_RESULT;
 template <typename Haystack, typename Needle>
 using is_nothrow_constructible_from = std::is_nothrow_copy_constructible<TokenizerResult<Haystack, Needle>>;
 }
-}
+} // namespace KDToolBoxPrivate
 
 #ifdef __cpp_deduction_guides
 // these tell the compiler how to determine the QStringTokenizer
@@ -387,9 +387,9 @@ QStringTokenizer(Haystack&&, Needle&&, Qt::CaseSensitivity, Qt::SplitBehavior)
 template <typename Haystack, typename Needle, typename...Flags>
 Q_REQUIRED_RESULT constexpr auto
 qTokenize(Haystack &&h, Needle &&n, Flags...flags)
-    -> decltype(QtPrivate::Tok::TokenizerResult<Haystack, Needle>{std::forward<Haystack>(h),
-                                                                  std::forward<Needle>(n), flags...})
-{ return QtPrivate::Tok::TokenizerResult<Haystack, Needle>{std::forward<Haystack>(h),
+    -> decltype(KDToolBoxPrivate::Tok::TokenizerResult<Haystack, Needle>{std::forward<Haystack>(h),
+                                                                         std::forward<Needle>(n), flags...})
+{ return KDToolBoxPrivate::Tok::TokenizerResult<Haystack, Needle>{std::forward<Haystack>(h),
                                                            std::forward<Needle>(n),
                                                            flags...}; }
 
@@ -406,7 +406,7 @@ auto QStringTokenizerBase<Haystack, Needle>::next(tokenizer_state state) const n
         if (state.end >= 0) {
             // token separator found => return intermediate element:
             result = m_haystack.mid(state.start, state.end - state.start);
-            const auto ns = QtPrivate::Tok::size(m_needle);
+            const auto ns = KDToolBoxPrivate::Tok::size(m_needle);
             state.start = state.end + ns;
             state.extra = (ns == 0 ? 1 : 0);
         } else {
