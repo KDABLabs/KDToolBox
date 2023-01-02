@@ -26,41 +26,47 @@
 ****************************************************************************/
 
 #include "notifyguard.h"
-#include <QObject>
+#include <QDebug>
+#include <QLoggingCategory>
 #include <QMetaObject>
 #include <QMetaProperty>
-#include <QLoggingCategory>
-#include <QDebug>
+#include <QObject>
 #include <QVarLengthArray>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 static const char guardSharedDataPropertyName[] = "__NotifyGuardSharedData__";
-namespace {
+namespace
+{
 Q_DECLARE_LOGGING_CATEGORY(cat)
 Q_LOGGING_CATEGORY(cat, "KDToolBox.NotifyGuard", QtWarningMsg);
 }
 
-namespace KDToolBox {
-namespace Internal {
+namespace KDToolBox
+{
+namespace Internal
+{
 
-struct PropertyPair {
+struct PropertyPair
+{
     QMetaProperty property;
     QVariant startValue;
 };
-//the per-signal data. A shared instance is held by each NotifyGuard on this signal
-struct SignalData {
-    QObject* target;
+// the per-signal data. A shared instance is held by each NotifyGuard on this signal
+struct SignalData
+{
+    QObject *target;
     QMetaMethod signal;
     QVarLengthArray<PropertyPair, 2> properties;
 
     SignalData() = default;
     ~SignalData();
     Q_DISABLE_COPY(SignalData)
-    bool contains(const QMetaProperty& property) const;
+    bool contains(const QMetaProperty &property) const;
 };
 using SignalDataWPtr = std::weak_ptr<SignalData>;
-struct SignalIdDataPair {
+struct SignalIdDataPair
+{
     int id;
     SignalDataWPtr dataWPtr;
 };
@@ -69,8 +75,8 @@ using InstanceData = QVarLengthArray<SignalIdDataPair, 4>;
 using InstanceDataPtr = std::shared_ptr<InstanceData>;
 }
 
-
-static Internal::SignalDataSPtr getDataObject(QObject* target, QMetaMethod notifySignal, NotifyGuard::GuardOptions options);
+static Internal::SignalDataSPtr getDataObject(QObject *target, QMetaMethod notifySignal,
+                                              NotifyGuard::GuardOptions options);
 
 /**
  * @brief NotifyGuard::NotifyGuard constructs a property guard on the given target and property
@@ -80,44 +86,53 @@ static Internal::SignalDataSPtr getDataObject(QObject* target, QMetaMethod notif
  *
  * By default, NotifyGuard uses RecursiveScope for @arg options.
  */
-NotifyGuard::NotifyGuard(QObject* target, const char* property, GuardOptions options)
+NotifyGuard::NotifyGuard(QObject *target, const char *property, GuardOptions options)
 {
     Q_ASSERT(target);
     qCDebug(cat) << "Creating NotifyGuard from property on" << property;
 
-
     auto metaObject = target->metaObject();
     int propertyIndex = metaObject->indexOfProperty(property);
 
-    if (propertyIndex < 0) {
-        qCWarning(cat) << "Error: Constructing NotifyGuard on non-existent property" << property << "on target" << target;
+    if (propertyIndex < 0)
+    {
+        qCWarning(cat) << "Error: Constructing NotifyGuard on non-existent property" << property << "on target"
+                       << target;
         return;
     }
 
     const QMetaProperty prop = metaObject->property(propertyIndex);
     auto signal = prop.notifySignal();
-    if (!signal.isValid()) {
+    if (!signal.isValid())
+    {
         qCWarning(cat) << "Error: Constructing NotifyGuard on property `" << property << "` on target" << target
-                   << "that does not have a notify signal";
+                       << "that does not have a notify signal";
         return;
     }
 
-    if (prop.type() == QVariant::UserType && !QMetaType::hasRegisteredComparators(prop.userType())) {
+    if (prop.type() == QVariant::UserType && !QMetaType::hasRegisteredComparators(prop.userType()))
+    {
         qCWarning(cat) << "Error: Constructing NotifyGuard on property" << prop.name()
-                  << "which is of a user-defined type" << prop.typeName() << "that does not have a comparison operator registered. "
-                     "Register a comparison operator for this type using QMetaType::registerEqualsComparator<" << prop.typeName() << ">().";
+                       << "which is of a user-defined type" << prop.typeName()
+                       << "that does not have a comparison operator registered. "
+                          "Register a comparison operator for this type using QMetaType::registerEqualsComparator<"
+                       << prop.typeName() << ">().";
         return;
     }
 
     const auto parameterCount = signal.parameterCount();
-    if (parameterCount > 1) {
+    if (parameterCount > 1)
+    {
         qCWarning(cat) << "Error: Constructing NotifyGuard on property `" << property << "` on target" << target
-                   << "with a notify signal with too many parameters";
+                       << "with a notify signal with too many parameters";
         return;
-    } else if (parameterCount == 1) {
-        if (signal.parameterType(0) != prop.userType()) {
+    }
+    else if (parameterCount == 1)
+    {
+        if (signal.parameterType(0) != prop.userType())
+        {
             qCWarning(cat) << "Error: Constructing NotifyGuard on property `" << property << "` on target" << target
-                       << "with a notify signal that has a different parameter type than the property itself";
+                           << "with a notify signal that has a different parameter type than the property itself";
             return;
         }
     }
@@ -125,7 +140,8 @@ NotifyGuard::NotifyGuard(QObject* target, const char* property, GuardOptions opt
     m_signalData = getDataObject(target, signal, options);
 
     // check if we already monitor this property
-    if (!m_signalData->contains(prop)) {
+    if (!m_signalData->contains(prop))
+    {
         m_signalData->properties.push_back({prop, prop.read(target)});
     }
 }
@@ -154,10 +170,11 @@ NotifyGuard::~NotifyGuard()
  *
  * By default, NotifyGuard uses RecursiveScope for @arg options.
  */
-NotifyGuard::NotifyGuard(QObject* target, QMetaMethod notifySignal, NotifyGuard::GuardOptions options)
+NotifyGuard::NotifyGuard(QObject *target, QMetaMethod notifySignal, NotifyGuard::GuardOptions options)
 {
     qCDebug(cat) << "Creating NotifyGuard from signal" << notifySignal.name() << "on object" << target;
-    if (!notifySignal.isValid()) {
+    if (!notifySignal.isValid())
+    {
         qCWarning(cat) << "Error: Constructing NotifyGuard on invalid signal on target" << target;
         return;
     }
@@ -168,75 +185,100 @@ NotifyGuard::NotifyGuard(QObject* target, QMetaMethod notifySignal, NotifyGuard:
 
     bool foundProperties = false;
     bool foundUncomparableProperties = false;
-    for (int i = 0; i < metaObject->propertyCount(); ++i) {
+    for (int i = 0; i < metaObject->propertyCount(); ++i)
+    {
         const auto property = metaObject->property(i);
-        if (property.notifySignal() == notifySignal) {
-            //check if the types are comparable
-            if (property.type() != QVariant::UserType || QMetaType::hasRegisteredComparators(property.userType())) {
+        if (property.notifySignal() == notifySignal)
+        {
+            // check if the types are comparable
+            if (property.type() != QVariant::UserType || QMetaType::hasRegisteredComparators(property.userType()))
+            {
                 foundProperties = true;
-                if (!data->contains(property)) {
+                if (!data->contains(property))
+                {
                     data->properties.push_back({property, property.read(target)});
                 }
-            } else {
-                qCWarning(cat) << "Warning: Constructing NotifyGuard on signal"
-                          << notifySignal.name() << "that is used for property" << property.name()
-                          << "which is of a user-defined type" << property.typeName() << "that does not have a comparison operator registered. "
-                             "Register a comparison operator for this type using QMetaType::registerEqualsComparator<" << property.typeName() << ">(). "
-                             "Property" << property.name() << "will not be used.";
+            }
+            else
+            {
+                qCWarning(cat)
+                    << "Warning: Constructing NotifyGuard on signal" << notifySignal.name()
+                    << "that is used for property" << property.name() << "which is of a user-defined type"
+                    << property.typeName()
+                    << "that does not have a comparison operator registered. "
+                       "Register a comparison operator for this type using QMetaType::registerEqualsComparator<"
+                    << property.typeName()
+                    << ">(). "
+                       "Property"
+                    << property.name() << "will not be used.";
                 foundUncomparableProperties = true;
             }
         }
     }
 
-    if (foundProperties) {
+    if (foundProperties)
+    {
         m_signalData = std::move(data);
-    } else {
-        if (foundUncomparableProperties) {
-            qCWarning(cat) << "Error: Constructing NotifyGuard on signal"
-                       << notifySignal.name() << "failed because all properties using this notification signal have "
-                        "custom types that don't have a registered comparison operator.";
-        } else {
-            qCWarning(cat) << "Error: Constructing NotifyGuard on signal"
-                       << notifySignal.name() << "failed as there are no properties using this signal as a notification signal.";
+    }
+    else
+    {
+        if (foundUncomparableProperties)
+        {
+            qCWarning(cat) << "Error: Constructing NotifyGuard on signal" << notifySignal.name()
+                           << "failed because all properties using this notification signal have "
+                              "custom types that don't have a registered comparison operator.";
+        }
+        else
+        {
+            qCWarning(cat) << "Error: Constructing NotifyGuard on signal" << notifySignal.name()
+                           << "failed as there are no properties using this signal as a notification signal.";
         }
     }
 }
 
-Internal::SignalDataSPtr getDataObject(QObject* target, QMetaMethod notifySignal, NotifyGuard::GuardOptions options)
+Internal::SignalDataSPtr getDataObject(QObject *target, QMetaMethod notifySignal, NotifyGuard::GuardOptions options)
 {
-    auto createSignalData = [](QObject* target, QMetaMethod notifySignal) {
+    auto createSignalData = [](QObject *target, QMetaMethod notifySignal) {
         Internal::SignalDataSPtr shared = std::make_shared<Internal::SignalData>();
         shared->target = target;
         shared->signal = notifySignal;
         return shared;
     };
 
-    if (options == NotifyGuard::RecursiveScope) {
+    if (options == NotifyGuard::RecursiveScope)
+    {
         const auto notifySignalIndex = notifySignal.methodIndex();
 
-        qCDebug(cat)<< "custom properties on target" << target << target->dynamicPropertyNames() << "looking for signal id" << notifySignalIndex;
+        qCDebug(cat) << "custom properties on target" << target << target->dynamicPropertyNames()
+                     << "looking for signal id" << notifySignalIndex;
 
         auto instanceData = target->property(guardSharedDataPropertyName).value<Internal::InstanceDataPtr>();
-        if (instanceData) {
+        if (instanceData)
+        {
             qCDebug(cat) << "instance data ptr found and valid";
-            const auto it = std::find_if(instanceData->begin(), instanceData->end(),
-                                         [notifySignalIndex](const Internal::SignalIdDataPair& data){return notifySignalIndex == data.id;});
-            if (it != instanceData->end()) {
-                if (auto sptr = it->dataWPtr.lock()) {
+            const auto it = std::find_if(
+                instanceData->begin(), instanceData->end(),
+                [notifySignalIndex](const Internal::SignalIdDataPair &data) { return notifySignalIndex == data.id; });
+            if (it != instanceData->end())
+            {
+                if (auto sptr = it->dataWPtr.lock())
+                {
                     qCDebug(cat) << "re-using shared instanceData for" << notifySignal.name() << sptr.get();
                     return sptr;
                 }
 
                 qCDebug(cat) << "found shared instance, but unable to lock it";
 
-                //replace the current, no-longer valid entry with a new one
+                // replace the current, no-longer valid entry with a new one
                 auto shared = createSignalData(target, notifySignal);
                 *it = {notifySignalIndex, Internal::SignalDataWPtr(shared)};
                 qCDebug(cat) << "created new shared instanceData for" << notifySignal.name() << shared.get();
 
                 return shared;
             }
-        } else {
+        }
+        else
+        {
             qCDebug(cat) << "instance data ptr not found";
             instanceData = std::make_shared<Internal::InstanceData>();
             target->setProperty(guardSharedDataPropertyName, QVariant::fromValue(instanceData));
@@ -246,7 +288,9 @@ Internal::SignalDataSPtr getDataObject(QObject* target, QMetaMethod notifySignal
         instanceData->push_back({notifySignalIndex, Internal::SignalDataWPtr(shared)});
         qCDebug(cat) << "created new shared instanceData for" << notifySignal.name() << shared.get();
         return shared;
-    } else {
+    }
+    else
+    {
         qCDebug(cat) << "created new non-shared instanceData for" << notifySignal.name();
         return createSignalData(target, notifySignal);
     }
@@ -272,14 +316,18 @@ Internal::SignalDataSPtr getDataObject(QObject* target, QMetaMethod notifySignal
 Internal::SignalData::~SignalData()
 {
     qCDebug(cat) << "Destroying SignalData object" << this << "on signal" << signal.name();
-    for (const auto& pp: properties) {
+    for (const auto &pp : properties)
+    {
         const auto currentValue = pp.property.read(target);
         if (currentValue == pp.startValue)
             continue;
         // we need to emit the signal
-        if (signal.parameterCount() == 0) {
+        if (signal.parameterCount() == 0)
+        {
             signal.invoke(target, Qt::DirectConnection);
-        } else { // one parameter of the same type as the property itself
+        }
+        else
+        { // one parameter of the same type as the property itself
             signal.invoke(target, Qt::DirectConnection,
                           QGenericArgument(signal.parameterTypes().constFirst().data(), currentValue.data()));
         }
@@ -288,14 +336,14 @@ Internal::SignalData::~SignalData()
     }
 }
 
-bool Internal::SignalData::contains(const QMetaProperty& property) const
+bool Internal::SignalData::contains(const QMetaProperty &property) const
 {
     const auto propertyIndex = property.propertyIndex();
-    return std::any_of(properties.begin(), properties.end(), [propertyIndex](const PropertyPair& pp){
+    return std::any_of(properties.begin(), properties.end(), [propertyIndex](const PropertyPair &pp) {
         return pp.property.propertyIndex() == propertyIndex;
     });
 }
 
-} //end namespace KDToolBox
+} // end namespace KDToolBox
 
 Q_DECLARE_METATYPE(KDToolBox::Internal::InstanceDataPtr);

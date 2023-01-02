@@ -1,7 +1,8 @@
 /****************************************************************************
 **                                MIT License
 **
-** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Giuseppe D'Angelo <giuseppe.dangelo@kdab.com>
+** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Giuseppe D'Angelo
+*<giuseppe.dangelo@kdab.com>
 **
 ** This file is part of KDToolBox (https://github.com/KDAB/KDToolBox).
 **
@@ -41,10 +42,10 @@ public:
         auto helpLabel = new QLabel(this);
         helpLabel->setWordWrap(true);
         helpLabel->setText(tr("<h2>Debouncer example</h2>"
-                           "<p>Type some text in the line edit below.</p>"
-                           "<p>The label below it will be updated only after 250ms of inactivity "
-                           "on the line edit, due to a debouncer filtering the line edit's "
-                           "signal emissions.</p>"));
+                              "<p>Type some text in the line edit below.</p>"
+                              "<p>The label below it will be updated only after 250ms of inactivity "
+                              "on the line edit, due to a debouncer filtering the line edit's "
+                              "signal emissions.</p>"));
 
         auto line = new QFrame(this);
         line->setFrameShape(QFrame::HLine);
@@ -57,10 +58,8 @@ public:
         auto debouncer = new KDToolBox::KDSignalDebouncer(this);
         debouncer->setTimeout(250);
 
-        connect(m_edit, &QLineEdit::textChanged,
-                debouncer, &KDToolBox::KDSignalDebouncer::throttle);
-        connect(debouncer, &KDToolBox::KDSignalDebouncer::triggered,
-                this, &Widget::updateLabel);
+        connect(m_edit, &QLineEdit::textChanged, debouncer, &KDToolBox::KDSignalDebouncer::throttle);
+        connect(debouncer, &KDToolBox::KDSignalDebouncer::triggered, this, &Widget::updateLabel);
 
         QVBoxLayout *layout = new QVBoxLayout(this);
         layout->addWidget(helpLabel);

@@ -28,12 +28,14 @@
 #ifndef KDTOOLBOX_NOTIFYGUARD_H
 #define KDTOOLBOX_NOTIFYGUARD_H
 
-#include <memory>
 #include <QMetaMethod>
+#include <memory>
 
-namespace KDToolBox {
+namespace KDToolBox
+{
 
-namespace Internal {
+namespace Internal
+{
 struct SignalData;
 using SignalDataSPtr = std::shared_ptr<SignalData>;
 }
@@ -68,31 +70,34 @@ using SignalDataSPtr = std::shared_ptr<SignalData>;
 class NotifyGuard
 {
 public:
-    enum GuardOptions {
-        RecursiveScope, //!< This guard will only activate if there isn't already another guard on the same property active (in an outer scope).
+    enum GuardOptions
+    {
+        RecursiveScope, //!< This guard will only activate if there isn't already another guard on the same property
+                        //!< active (in an outer scope).
         SingleScope,    //!< This guard only considers its own scope.
     };
 
 public:
     NotifyGuard() = default;
-    explicit NotifyGuard(QObject* target, const char* property, GuardOptions options = RecursiveScope);
-    template <typename PointerToMemberFunction>
-    explicit NotifyGuard(QObject* target, PointerToMemberFunction notifySignal, GuardOptions options = RecursiveScope):
-        NotifyGuard(target, QMetaMethod::fromSignal(notifySignal), options)
-    {}
+    explicit NotifyGuard(QObject *target, const char *property, GuardOptions options = RecursiveScope);
+    template<typename PointerToMemberFunction>
+    explicit NotifyGuard(QObject *target, PointerToMemberFunction notifySignal, GuardOptions options = RecursiveScope)
+        : NotifyGuard(target, QMetaMethod::fromSignal(notifySignal), options)
+    {
+    }
     // we allow moving from a NotifyGuard
-    NotifyGuard(NotifyGuard&&) = default;
-    NotifyGuard& operator=(NotifyGuard&&) = default;
+    NotifyGuard(NotifyGuard &&) = default;
+    NotifyGuard &operator=(NotifyGuard &&) = default;
 
     ~NotifyGuard();
 
-    inline bool isActive() const {return bool(m_signalData);}
+    inline bool isActive() const { return bool(m_signalData); }
 
-private: //methods
+private: // methods
     Q_DISABLE_COPY(NotifyGuard)
-    explicit NotifyGuard(QObject* target, QMetaMethod notifySignal, GuardOptions options);
+    explicit NotifyGuard(QObject *target, QMetaMethod notifySignal, GuardOptions options);
 
-private: //members
+private: // members
     Internal::SignalDataSPtr m_signalData;
 };
 

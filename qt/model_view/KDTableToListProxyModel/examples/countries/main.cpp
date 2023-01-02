@@ -25,59 +25,47 @@
 ****************************************************************************/
 
 #include <QGuiApplication>
-#include <QQuickView>
 #include <QQmlContext>
 #include <QQmlEngine>
+#include <QQuickView>
 #include <QUrl>
 
 #include <QTimer>
 
-#include <QStandardItemModel>
-#include <QSortFilterProxyModel>
 #include <KDTableToListProxyModel.h>
+#include <QSortFilterProxyModel>
+#include <QStandardItemModel>
 
 #include <memory>
 
-struct Country {
+struct Country
+{
     const char *name;
     double population;
     const char *flag;
 } countries[] = {
-    { "Austria", 8.858, "images/Austria.png" },
-    { "Belgium", 11.467, "images/Belgium.png" },
-    { "Bulgaria", 7.0, "images/Bulgaria.png" },
-    { "Croatia", 4.076, "images/Croatia.png" },
-    { "Cyprus", 0.875, "images/Cyprus.png" },
-    { "Czech Republic", 10.649, "images/Czech Republic.png" },
-    { "Denmark", 5.806, "images/Denmark.png" },
-    { "Estonia", 1.324, "images/Estonia.png" },
-    { "Finland", 5.517, "images/Finland.png" },
-    { "France", 67.028, "images/France.png" },
-    { "Germany", 83.019, "images/Germany.png" },
-    { "Greece", 10.722, "images/Greece.png" },
-    { "Hungary", 9.797, "images/Hungary.png" },
-    { "Ireland", 4.904, "images/Ireland.png" },
-    { "Italy", 60.359, "images/Italy.png" },
-    { "Latvia", 1.919, "images/Latvia.png" },
-    { "Lithuania", 2.794, "images/Lithuania.png" },
-    { "Luxembourg", 0.613, "images/Luxembourg.png" },
-    { "Malta", 0.493, "images/Malta.png" },
-    { "Netherlands", 12.282, "images/Netherlands.png" },
-    { "Poland", 37.972, "images/Poland.png" },
-    { "Portugal", 10.276, "images/Portugal.png" },
-    { "Romania", 19.401, "images/Romania.png" },
-    { "Slovakia", 5.45, "images/Slovakia.png" },
-    { "Slovenia", 2.080, "images/Slovenia.png" },
-    { "Spain", 46.934, "images/Spain.png" },
-    { "Sweden", 10.230, "images/Sweden.png" },
-    { "United Kingdom", 66.647, "images/United Kingdom.png" },
+    {"Austria", 8.858, "images/Austria.png"},     {"Belgium", 11.467, "images/Belgium.png"},
+    {"Bulgaria", 7.0, "images/Bulgaria.png"},     {"Croatia", 4.076, "images/Croatia.png"},
+    {"Cyprus", 0.875, "images/Cyprus.png"},       {"Czech Republic", 10.649, "images/Czech Republic.png"},
+    {"Denmark", 5.806, "images/Denmark.png"},     {"Estonia", 1.324, "images/Estonia.png"},
+    {"Finland", 5.517, "images/Finland.png"},     {"France", 67.028, "images/France.png"},
+    {"Germany", 83.019, "images/Germany.png"},    {"Greece", 10.722, "images/Greece.png"},
+    {"Hungary", 9.797, "images/Hungary.png"},     {"Ireland", 4.904, "images/Ireland.png"},
+    {"Italy", 60.359, "images/Italy.png"},        {"Latvia", 1.919, "images/Latvia.png"},
+    {"Lithuania", 2.794, "images/Lithuania.png"}, {"Luxembourg", 0.613, "images/Luxembourg.png"},
+    {"Malta", 0.493, "images/Malta.png"},         {"Netherlands", 12.282, "images/Netherlands.png"},
+    {"Poland", 37.972, "images/Poland.png"},      {"Portugal", 10.276, "images/Portugal.png"},
+    {"Romania", 19.401, "images/Romania.png"},    {"Slovakia", 5.45, "images/Slovakia.png"},
+    {"Slovenia", 2.080, "images/Slovenia.png"},   {"Spain", 46.934, "images/Spain.png"},
+    {"Sweden", 10.230, "images/Sweden.png"},      {"United Kingdom", 66.647, "images/United Kingdom.png"},
 };
 
 std::unique_ptr<QStandardItemModel> createCountriesModel()
 {
     std::unique_ptr<QStandardItemModel> countriesModel(new QStandardItemModel);
 
-    for (const auto &country : countries) {
+    for (const auto &country : countries)
+    {
         QList<QStandardItem *> row;
         row << new QStandardItem(QString::fromUtf8(country.name));
 
@@ -119,7 +107,6 @@ int main(int argc, char **argv)
     tableToListProxyModel.setRoleMapping(1, Qt::UserRole + 1, "population");
     tableToListProxyModel.setRoleMapping(2, Qt::UserRole + 2, "flag");
 
-
     // Load and show some Qt Quick content
     QQuickView view;
     view.setTitle(QStringLiteral("Countries of the European Union"));
@@ -131,9 +118,9 @@ int main(int argc, char **argv)
 
     // Have the source model change
     QTimer populationIncreaseTimer;
-    populationIncreaseTimer.callOnTimeout([&]()
-    {
-        for (int row = 0; row < countriesModel->rowCount(); ++row) {
+    populationIncreaseTimer.callOnTimeout([&]() {
+        for (int row = 0; row < countriesModel->rowCount(); ++row)
+        {
             auto item = countriesModel->item(row, 1);
             auto currentPopulation = item->data(Qt::DisplayRole).toDouble();
             currentPopulation *= 1.01;

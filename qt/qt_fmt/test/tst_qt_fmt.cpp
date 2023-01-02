@@ -26,14 +26,14 @@
 
 #include "../qt_fmt.h"
 
-#include <QTest>
 #include <QDebug>
 #include <QRegularExpression>
+#include <QTest>
 
 #include <QDateTime>
-#include <QUuid>
 #include <QRect>
 #include <QSize>
+#include <QUuid>
 
 class QtFmtTest : public QObject
 {
@@ -44,15 +44,21 @@ private Q_SLOTS:
 };
 
 // Custom class streamable via QDebug
-class CustomClass {};
-QDebug operator<<(QDebug d, CustomClass) {
+class CustomClass
+{
+};
+QDebug operator<<(QDebug d, CustomClass)
+{
     return d << "CustomClass()";
 }
 
 // Custom class streamable via fmt and QDebug
-class BothFmtAndQDebugClass {};
-template <>
-struct fmt::formatter<BothFmtAndQDebugClass, char> {
+class BothFmtAndQDebugClass
+{
+};
+template<>
+struct fmt::formatter<BothFmtAndQDebugClass, char>
+{
     constexpr auto parse(fmt::format_parse_context &ctx)
     {
         auto it = ctx.begin();
@@ -61,7 +67,7 @@ struct fmt::formatter<BothFmtAndQDebugClass, char> {
             throw fmt::format_error("Only {} is supported");
         return it;
     }
-    template <typename FormatContext>
+    template<typename FormatContext>
     auto format(const BothFmtAndQDebugClass &, FormatContext &ctx)
     {
         return fmt::format_to(ctx.out(), "BothFmtAndQDebugClass via fmt");
@@ -73,9 +79,10 @@ QDebug operator<<(QDebug d, BothFmtAndQDebugClass)
     return d << "BothFmtAndQDebugClass via QDebug";
 }
 
-template <>
-struct Qt_fmt::exclude_from_qdebug_fmt<BothFmtAndQDebugClass> : std::true_type {};
-
+template<>
+struct Qt_fmt::exclude_from_qdebug_fmt<BothFmtAndQDebugClass> : std::true_type
+{
+};
 
 void QtFmtTest::testQtFmt()
 {
@@ -95,7 +102,8 @@ void QtFmtTest::testQtFmt()
     // Qt types
     QCOMPARE(fmt::format("{}", QString("hello")), "hello");
     QCOMPARE(fmt::format("{}", QByteArray("hello")), "hello");
-    QCOMPARE(fmt::format("{}", QDateTime(QDate(2000, 2, 29), QTime(12, 12, 12), Qt::UTC)), "QDateTime(2000-02-29 12:12:12.000 UTC Qt::UTC)");
+    QCOMPARE(fmt::format("{}", QDateTime(QDate(2000, 2, 29), QTime(12, 12, 12), Qt::UTC)),
+             "QDateTime(2000-02-29 12:12:12.000 UTC Qt::UTC)");
     QCOMPARE(fmt::format("{}", QUuid()), "QUuid({00000000-0000-0000-0000-000000000000})");
     QCOMPARE(fmt::format("{}", QRect()), "QRect(0,0 0x0)");
     QCOMPARE(fmt::format("{}", QSizeF()), "QSizeF(-1, -1)");
@@ -106,7 +114,8 @@ void QtFmtTest::testQtFmt()
     }
 
     // Q_FLAG / Q_ENUM
-    QCOMPARE(fmt::format("{}", Qt::Alignment(Qt::AlignLeft | Qt::AlignVCenter)), "QFlags<Qt::AlignmentFlag>(AlignLeading|AlignVCenter)");
+    QCOMPARE(fmt::format("{}", Qt::Alignment(Qt::AlignLeft | Qt::AlignVCenter)),
+             "QFlags<Qt::AlignmentFlag>(AlignLeading|AlignVCenter)");
     QCOMPARE(fmt::format("{}", Qt::AlignLeft), "Qt::AlignLeft");
 
     // User defined types

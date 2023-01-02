@@ -28,15 +28,15 @@
 #ifndef UIWATCHDOG_H
 #define UIWATCHDOG_H
 
-#include <QThread>
-#include <QTimer>
-#include <QMutex>
+#include <QDebug>
 #include <QElapsedTimer>
 #include <QLoggingCategory>
-#include <QDebug>
+#include <QMutex>
+#include <QThread>
+#include <QTimer>
 
 #ifdef Q_OS_WIN
-# include <Windows.h>
+#include <Windows.h>
 #endif
 
 #define MAX_TIME_BLOCKED 300 // ms
@@ -48,7 +48,8 @@ class UiWatchdog;
 class UiWatchdogWorker : public QObject
 {
 public:
-    enum Option {
+    enum Option
+    {
         OptionNone = 0,
         OptionDebugBreak = 1
     };
@@ -76,10 +77,7 @@ private:
         m_elapsedTimeSinceLastBeat.start();
     }
 
-    void stop()
-    {
-        m_watchTimer->stop();
-    }
+    void stop() { m_watchTimer->stop(); }
 
     void checkUI()
     {
@@ -90,8 +88,9 @@ private:
             elapsed = m_elapsedTimeSinceLastBeat.elapsed();
         }
 
-        if (elapsed > MAX_TIME_BLOCKED) {
-            qDebug() << "UI is blocked !" << elapsed;  // Add custom action here!
+        if (elapsed > MAX_TIME_BLOCKED)
+        {
+            qDebug() << "UI is blocked !" << elapsed; // Add custom action here!
             if ((m_options & OptionDebugBreak))
                 debugBreak();
         }
@@ -120,7 +119,6 @@ private:
 class UiWatchdog : public QObject
 {
 public:
-
     explicit UiWatchdog(UiWatchdogWorker::Options options = UiWatchdogWorker::OptionNone, QObject *parent = nullptr)
         : QObject(parent)
         , m_uiTimer(new QTimer(this))
@@ -148,9 +146,8 @@ public:
         m_watchDogThread = new QThread(this);
         m_worker->moveToThread(m_watchDogThread);
         m_watchDogThread->start();
-        connect(m_watchDogThread, &QThread::started, m_worker, [this, frequency_msecs] {
-            m_worker->start(frequency_msecs);
-        });
+        connect(m_watchDogThread, &QThread::started, m_worker,
+                [this, frequency_msecs] { m_worker->start(frequency_msecs); });
     }
 
     void stop()
@@ -169,10 +166,7 @@ public:
         m_worker = nullptr;
     }
 
-    void onUiBeat()
-    {
-        m_worker->reset();
-    }
+    void onUiBeat() { m_worker->reset(); }
 
 private:
     QTimer *const m_uiTimer;

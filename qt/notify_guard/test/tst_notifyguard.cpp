@@ -24,8 +24,8 @@
 ** ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 ** DEALINGS IN THE SOFTWARE.
 ****************************************************************************/
-#include <QTest>
 #include <QSignalSpy>
+#include <QTest>
 
 #include "notifyguard.h"
 
@@ -53,28 +53,27 @@ private Q_SLOTS:
     void test_moveFrom();
 };
 
-struct CustomType {
+struct CustomType
+{
     int iValue;
-    friend bool operator==(CustomType lhs, CustomType rhs) noexcept
-    { return lhs.iValue == rhs.iValue; }
-    friend bool operator!=(CustomType lhs, CustomType rhs) noexcept
-    { return lhs.iValue != rhs.iValue; }
+    friend bool operator==(CustomType lhs, CustomType rhs) noexcept { return lhs.iValue == rhs.iValue; }
+    friend bool operator!=(CustomType lhs, CustomType rhs) noexcept { return lhs.iValue != rhs.iValue; }
 };
 
 Q_DECLARE_METATYPE(CustomType);
 
-class TestClass: public QObject
+class TestClass : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY (QString stringProperty MEMBER m_stringProperty NOTIFY stringPropertyChanged)
-    Q_PROPERTY (int intProperty READ intProperty NOTIFY intPropertyChanged)
-    Q_PROPERTY (int intProperty1 MEMBER m_intProperty2 NOTIFY intPropertyChanged)
-    Q_PROPERTY (CustomType customProperty MEMBER m_customProperty NOTIFY customPropertyChanged)
+    Q_PROPERTY(QString stringProperty MEMBER m_stringProperty NOTIFY stringPropertyChanged)
+    Q_PROPERTY(int intProperty READ intProperty NOTIFY intPropertyChanged)
+    Q_PROPERTY(int intProperty1 MEMBER m_intProperty2 NOTIFY intPropertyChanged)
+    Q_PROPERTY(CustomType customProperty MEMBER m_customProperty NOTIFY customPropertyChanged)
 
 public:
     using QObject::QObject;
 
-    int intProperty() const {return m_intProperty;}
+    int intProperty() const { return m_intProperty; }
 
 Q_SIGNALS:
     void stringPropertyChanged(QString);
@@ -138,7 +137,7 @@ void NotifyGuardTest::test_PMFSyntax()
     TestClass test;
     QSignalSpy intSpy(&test, &TestClass::intPropertyChanged);
 
-    //change int 1
+    // change int 1
     {
         NotifyGuard guard(&test, &TestClass::intPropertyChanged);
         QVERIFY(guard.isActive());
@@ -147,7 +146,7 @@ void NotifyGuardTest::test_PMFSyntax()
     QCOMPARE(intSpy.count(), 1);
     intSpy.clear();
 
-    //change int 2
+    // change int 2
     {
         NotifyGuard guard(&test, &TestClass::intPropertyChanged);
         QVERIFY(guard.isActive());
@@ -156,7 +155,7 @@ void NotifyGuardTest::test_PMFSyntax()
     QCOMPARE(intSpy.count(), 1);
     intSpy.clear();
 
-    //change both ints
+    // change both ints
     {
         NotifyGuard guard(&test, &TestClass::intPropertyChanged);
         QVERIFY(guard.isActive());
@@ -166,7 +165,7 @@ void NotifyGuardTest::test_PMFSyntax()
     QCOMPARE(intSpy.count(), 1);
     intSpy.clear();
 
-    //no change
+    // no change
     {
         NotifyGuard guard(&test, &TestClass::intPropertyChanged);
         QVERIFY(guard.isActive());
@@ -186,7 +185,8 @@ void NotifyGuardTest::test_recursiveScope()
             NotifyGuard innerGuard(&test, &TestClass::intPropertyChanged, NotifyGuard::RecursiveScope);
             QVERIFY(innerGuard.isActive());
             test.m_intProperty2 = 11;
-            // innerGuard should _not_ emit, as intProperty2 uses the same notification signal as intProperty which is already in a scope
+            // innerGuard should _not_ emit, as intProperty2 uses the same notification signal as intProperty which is
+            // already in a scope
         }
         QVERIFY(intSpy.isEmpty());
         test.m_intProperty = 42;
@@ -206,7 +206,8 @@ void NotifyGuardTest::test_recursiveScope2()
             NotifyGuard innerGuard(&test, &TestClass::intPropertyChanged, NotifyGuard::RecursiveScope);
             QVERIFY(innerGuard.isActive());
             test.m_intProperty2 = 11;
-            // innerGuard should _not_ emit, as intProperty2 uses the same notification signal as intProperty which is already in a scope
+            // innerGuard should _not_ emit, as intProperty2 uses the same notification signal as intProperty which is
+            // already in a scope
         }
         QVERIFY(intSpy.isEmpty());
     }
@@ -227,7 +228,8 @@ void NotifyGuardTest::test_recursiveScopePMF()
             QVERIFY(innerGuard.isActive());
             test.m_intProperty2 = 11;
             test.m_intProperty = 12;
-            // innerGuard should _not_ emit, as intProperty2 uses the same notification signal as intProperty which is already in a scope
+            // innerGuard should _not_ emit, as intProperty2 uses the same notification signal as intProperty which is
+            // already in a scope
         }
         QVERIFY(intSpy.isEmpty());
         test.m_intProperty = 42;
@@ -236,7 +238,8 @@ void NotifyGuardTest::test_recursiveScopePMF()
     // only on the outer guard should the signal emit, even though the guard on the changed property is the innerGuard
     QCOMPARE(intSpy.count(), 1);
 
-    //test second iteration. Uncovered a bug that caused the implementation to work the first time, but not a second time, so testing for that.
+    // test second iteration. Uncovered a bug that caused the implementation to work the first time, but not a second
+    // time, so testing for that.
     test.m_intProperty = 0;
     test.m_intProperty2 = 0;
     intSpy.clear();
@@ -249,7 +252,8 @@ void NotifyGuardTest::test_recursiveScopePMF()
             QVERIFY(innerGuard.isActive());
             test.m_intProperty2 = 11;
             test.m_intProperty = 12;
-            // innerGuard should _not_ emit, as intProperty2 uses the same notification signal as intProperty which is already in a scope
+            // innerGuard should _not_ emit, as intProperty2 uses the same notification signal as intProperty which is
+            // already in a scope
         }
         QVERIFY(intSpy.isEmpty());
         test.m_intProperty = 42;
@@ -257,7 +261,6 @@ void NotifyGuardTest::test_recursiveScopePMF()
 
     // only on the outer guard should the signal emit, even though the guard on the changed property is the innerGuard
     QCOMPARE(intSpy.count(), 1);
-
 }
 
 void NotifyGuardTest::test_singleScope()
@@ -271,7 +274,7 @@ void NotifyGuardTest::test_singleScope()
             NotifyGuard innerGuard(&test, "intProperty", NotifyGuard::SingleScope);
             QVERIFY(innerGuard.isActive());
             test.m_intProperty = 11;
-            //innerGuards _should_ emit
+            // innerGuards _should_ emit
         }
         QCOMPARE(intSpy.count(), 1);
         test.m_intProperty = 42;
@@ -291,7 +294,7 @@ void NotifyGuardTest::test_singleInsideRecursiveScope()
             NotifyGuard innerGuard(&test, "intProperty", NotifyGuard::SingleScope);
             QVERIFY(innerGuard.isActive());
             test.m_intProperty = 11;
-            //innerGuards _should_ emit
+            // innerGuards _should_ emit
         }
         QCOMPARE(intSpy.count(), 1);
         test.m_intProperty = 42;
@@ -324,7 +327,7 @@ void NotifyGuardTest::test_setResetInRecursiveScope()
         test.m_intProperty = 42;
     }
 
-    //This is a bit of a weird one actually. Would we expect signals to be emitted here or not? How many?
+    // This is a bit of a weird one actually. Would we expect signals to be emitted here or not? How many?
     QCOMPARE(intSpy.count(), 1);
 }
 
@@ -348,7 +351,7 @@ void NotifyGuardTest::test_invalidGuards()
         QVERIFY(!guard.isActive());
     }
 
-    //try with unregistered custom type
+    // try with unregistered custom type
     {
         NotifyGuard guard(&test, "customProperty");
         QVERIFY(!guard.isActive());
@@ -359,7 +362,7 @@ void NotifyGuardTest::test_invalidGuards()
         QVERIFY(!guard.isActive());
     }
 
-    //now, register the comparator, and try again
+    // now, register the comparator, and try again
     QMetaType::registerEqualsComparator<CustomType>();
     {
         NotifyGuard guard(&test, "customProperty");
@@ -380,9 +383,12 @@ void NotifyGuardTest::test_moveFrom()
     {
         NotifyGuard guard;
         QVERIFY(!guard.isActive());
-        if (intSpy.isEmpty()) {
+        if (intSpy.isEmpty())
+        {
             guard = NotifyGuard(&test, "intProperty");
-        } else {
+        }
+        else
+        {
             guard = NotifyGuard(&test, "stringProperty");
         }
         QVERIFY(guard.isActive());
@@ -393,7 +399,6 @@ void NotifyGuardTest::test_moveFrom()
     QCOMPARE(intSpy.count(), 1);
     QCOMPARE(stringSpy.count(), 0);
 }
-
 
 QTEST_MAIN(NotifyGuardTest)
 

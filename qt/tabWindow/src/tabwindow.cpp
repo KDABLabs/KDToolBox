@@ -33,7 +33,8 @@
 #include <QTabBar>
 #include <QWindow>
 
-namespace {
+namespace
+{
 const constexpr int DISTANCE_TO_DETACH = 20;
 
 int distance(QRect r, QPoint p)
@@ -41,8 +42,7 @@ int distance(QRect r, QPoint p)
     if (r.contains(p))
         return 0;
 
-    auto ref = [](int a, int b, int v)
-    {
+    auto ref = [](int a, int b, int v) {
         if (v < a) // left/top
             return a;
         else if (v > b) // right/bottom
@@ -51,8 +51,7 @@ int distance(QRect r, QPoint p)
             return v;
     };
 
-    const auto refPoint = QPoint(ref(r.left(), r.right(), p.x()),
-                                 ref(r.top(), r.bottom(), p.y()));
+    const auto refPoint = QPoint(ref(r.left(), r.right(), p.x()), ref(r.top(), r.bottom(), p.y()));
 
     return (refPoint - p).manhattanLength();
 }
@@ -60,8 +59,7 @@ int distance(QRect r, QPoint p)
 
 TabWindowManager::TabWindowManager()
 {
-    connect(qApp, &QApplication::focusWindowChanged,
-            this, &TabWindowManager::activateWindow);
+    connect(qApp, &QApplication::focusWindowChanged, this, &TabWindowManager::activateWindow);
 }
 
 TabWindowManager *TabWindowManager::instance()
@@ -102,12 +100,14 @@ void TabWindowManager::removeWindow(TabWindow *window)
 
 TabWindow *TabWindowManager::possibleWindow(TabWindow *currentWindow, QPoint globalPos)
 {
-    for (auto tabWindow: qAsConst(m_windows)) {
+    for (auto tabWindow : qAsConst(m_windows))
+    {
         if (tabWindow == currentWindow)
             continue;
         // Get the possible drop rectangle, which is the rectangle at the top
         // containing the tabbar
-        if (tabWindow->frameGeometry().contains(globalPos)) {
+        if (tabWindow->frameGeometry().contains(globalPos))
+        {
             auto pos = tabWindow->tabBar()->mapFromGlobal(globalPos);
             auto r = tabWindow->tabBar()->rect();
             r.setWidth(tabWindow->rect().width());
@@ -125,8 +125,10 @@ void TabWindowManager::activateWindow(QWindow *window)
         return;
 
     int index = -1;
-    for (int i = 1; i < m_windows.count(); ++i) {
-        if (m_windows.at(i)->windowHandle() == window) {
+    for (int i = 1; i < m_windows.count(); ++i)
+    {
+        if (m_windows.at(i)->windowHandle() == window)
+        {
             index = i;
             break;
         }
@@ -138,7 +140,7 @@ void TabWindowManager::activateWindow(QWindow *window)
 
 void TabWindowManager::requestCloseTab(int index)
 {
-    auto window = qobject_cast<TabWindow*>(sender());
+    auto window = qobject_cast<TabWindow *>(sender());
     Q_EMIT tabCloseRequested(window->widget(index), window);
 }
 
@@ -166,23 +168,28 @@ bool TabWindow::eventFilter(QObject *object, QEvent *event)
     if (object != tabBar())
         return QTabWidget::eventFilter(object, event);
 
-    switch (event->type()) {
-    case QEvent::MouseMove: {
+    switch (event->type())
+    {
+    case QEvent::MouseMove:
+    {
         if (m_ignoreMouseEvent)
             return true;
-        auto mouseEvent = static_cast<QMouseEvent*>(event);
+        auto mouseEvent = static_cast<QMouseEvent *>(event);
 
-        auto sendFakeEvent = [mouseEvent](QObject *receiver, QEvent::Type type)
-        {
-            QMouseEvent newEvent(type, mouseEvent->pos(), Qt::LeftButton, mouseEvent->buttons(), mouseEvent->modifiers());
+        auto sendFakeEvent = [mouseEvent](QObject *receiver, QEvent::Type type) {
+            QMouseEvent newEvent(type, mouseEvent->pos(), Qt::LeftButton, mouseEvent->buttons(),
+                                 mouseEvent->modifiers());
             QCoreApplication::sendEvent(receiver, &newEvent);
         };
 
-        if (m_isMoving) {
-            if (m_movingWindow) {
+        if (m_isMoving)
+        {
+            if (m_movingWindow)
+            {
                 auto globalPos = QCursor::pos();
                 auto window = TabWindowManager::instance()->possibleWindow(m_movingWindow, globalPos);
-                if (window) {
+                if (window)
+                {
                     // re-attach
                     const auto pos = window->mapFromGlobal(globalPos);
                     const int index = tabBar()->tabAt(pos);
@@ -197,15 +204,20 @@ bool TabWindow::eventFilter(QObject *object, QEvent *event)
                     m_ignoreMouseEvent = true;
                     sendFakeEvent(object, QEvent::MouseButtonRelease);
                     sendFakeEvent(window->tabBar(), QEvent::MouseButtonPress);
-                } else {
+                }
+                else
+                {
                     auto newPos = globalPos - m_mouseDelta;
                     m_movingWindow->move(newPos);
                 }
                 return true;
             }
-        } else {
+        }
+        else
+        {
             auto r = tabBar()->rect();
-            if (tabBar()->count() == 1 || distance(r, mouseEvent->pos()) > DISTANCE_TO_DETACH) {
+            if (tabBar()->count() == 1 || distance(r, mouseEvent->pos()) > DISTANCE_TO_DETACH)
+            {
                 sendFakeEvent(object, QEvent::MouseButtonRelease);
 
                 m_isMoving = true;
@@ -214,7 +226,8 @@ bool TabWindow::eventFilter(QObject *object, QEvent *event)
                 auto tabRect = tabBar()->tabRect(index);
                 m_mouseDelta = tabRect.center() - tabRect.topLeft() + (geometry().topLeft() - pos());
 
-                if (tabBar()->count() >= 2) {
+                if (tabBar()->count() >= 2)
+                {
                     m_movingWindow = new TabWindow;
                     const auto w = widget(index);
                     const auto text = tabText(index);
@@ -226,7 +239,9 @@ bool TabWindow::eventFilter(QObject *object, QEvent *event)
                     // with poor openGL driver, there is actually a crash when the tab is a QQuickWidget
                     m_movingWindow->show();
                     m_movingWindow->addTab(w, icon, text);
-                } else {
+                }
+                else
+                {
                     m_movingWindow = this;
                 }
                 return true;

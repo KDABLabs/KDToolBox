@@ -1,7 +1,8 @@
 /****************************************************************************
 **                                MIT License
 **
-** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Marc Mutz <marc.mutz@kdab.com>
+** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Marc Mutz
+*<marc.mutz@kdab.com>
 **
 ** This file is part of KDToolBox (https://github.com/KDAB/KDToolBox).
 **
@@ -24,8 +25,8 @@
 ** DEALINGS IN THE SOFTWARE.
 ****************************************************************************/
 
-#include <QStringTokenizer>
 #include <QStringBuilder>
+#include <QStringTokenizer>
 
 #include <QTest>
 
@@ -50,7 +51,8 @@ static QStringList skipped(const QStringList &sl)
 {
     QStringList result;
     result.reserve(sl.size());
-    for (const QString &s : sl) {
+    for (const QString &s : sl)
+    {
         if (!s.isEmpty())
             result.push_back(s);
     }
@@ -62,7 +64,7 @@ QString toQString(QStringView str)
     return str.toString();
 }
 
-template <typename Container>
+template<typename Container>
 QStringList toQStringList(const Container &c)
 {
     QStringList r;
@@ -93,8 +95,11 @@ void tst_QStringTokenizer::basics_data() const
     QTest::addColumn<Qt::SplitBehavior>("sb");
     QTest::addColumn<Qt::CaseSensitivity>("cs");
 
-#define ROW(sb, cs) \
-    do { QTest::addRow("%s/%s", #sb, #cs) << Qt::SplitBehavior{Qt::sb} << Qt::cs; } while (0)
+#define ROW(sb, cs)                                                                                                    \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        QTest::addRow("%s/%s", #sb, #cs) << Qt::SplitBehavior{Qt::sb} << Qt::cs;                                       \
+    } while (0)
 
     ROW(KeepEmptyParts, CaseSensitive);
     ROW(KeepEmptyParts, CaseInsensitive);

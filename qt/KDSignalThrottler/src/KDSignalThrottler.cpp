@@ -1,7 +1,8 @@
 /****************************************************************************
 **                                MIT License
 **
-** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Giuseppe D'Angelo <giuseppe.dangelo@kdab.com>
+** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Giuseppe D'Angelo
+*<giuseppe.dangelo@kdab.com>
 **
 ** This file is part of KDToolBox (https://github.com/KDAB/KDToolBox).
 **
@@ -26,11 +27,10 @@
 
 #include "KDSignalThrottler.h"
 
-namespace KDToolBox {
+namespace KDToolBox
+{
 
-KDGenericSignalThrottler::KDGenericSignalThrottler(Kind kind,
-                                     EmissionPolicy emissionPolicy,
-                                     QObject *parent)
+KDGenericSignalThrottler::KDGenericSignalThrottler(Kind kind, EmissionPolicy emissionPolicy, QObject *parent)
     : QObject(parent)
     , m_timer(this)
     , m_kind(kind)
@@ -43,7 +43,8 @@ KDGenericSignalThrottler::KDGenericSignalThrottler(Kind kind,
     // it shouldn't re-emit immediately, as it would be too close to the previous one.
     // So we keep the timer running, and stop it later if it times out
     // with no intervening timeout() emitted by it.
-    switch (m_emissionPolicy) {
+    switch (m_emissionPolicy)
+    {
     case EmissionPolicy::Leading:
         m_timer.setSingleShot(false);
         break;
@@ -104,7 +105,8 @@ void KDGenericSignalThrottler::throttle()
 {
     m_hasPendingEmission = true;
 
-    switch (m_emissionPolicy) {
+    switch (m_emissionPolicy)
+    {
     case EmissionPolicy::Leading:
         // Emit only if we haven't emitted already. We know if that's
         // the case by checking if the timer is running.
@@ -119,7 +121,8 @@ void KDGenericSignalThrottler::throttle()
     // and we're Leading, and we did emit because of that,
     // then we don't re-emit when the timer fires (unless we get ANOTHER
     // signal).
-    switch (m_kind) {
+    switch (m_kind)
+    {
     case Kind::Throttler:
         if (!m_timer.isActive())
             m_timer.start(); // = actual start, not restart
@@ -156,7 +159,6 @@ KDSignalThrottler::KDSignalThrottler(QObject *parent)
 
 KDSignalThrottler::~KDSignalThrottler() = default;
 
-
 KDSignalLeadingThrottler::KDSignalLeadingThrottler(QObject *parent)
     : KDGenericSignalThrottler(Kind::Throttler, EmissionPolicy::Leading, parent)
 {
@@ -164,14 +166,12 @@ KDSignalLeadingThrottler::KDSignalLeadingThrottler(QObject *parent)
 
 KDSignalLeadingThrottler::~KDSignalLeadingThrottler() = default;
 
-
 KDSignalDebouncer::KDSignalDebouncer(QObject *parent)
     : KDGenericSignalThrottler(Kind::Debouncer, EmissionPolicy::Trailing, parent)
 {
 }
 
 KDSignalDebouncer::~KDSignalDebouncer() = default;
-
 
 KDSignalLeadingDebouncer::KDSignalLeadingDebouncer(QObject *parent)
     : KDGenericSignalThrottler(Kind::Debouncer, EmissionPolicy::Leading, parent)

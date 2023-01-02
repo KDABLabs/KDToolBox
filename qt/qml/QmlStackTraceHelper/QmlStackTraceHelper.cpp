@@ -25,17 +25,18 @@
 ** DEALINGS IN THE SOFTWARE.
 ****************************************************************************/
 
-#include <QString>
-#include <QVector>
 #include <QGuiApplication>
-#include <QQuickWindow>
 #include <QQmlContext>
 #include <QQuickItem>
+#include <QQuickWindow>
+#include <QString>
+#include <QVector>
 #include <QtQml/private/qqmlengine_p.h>
 
-extern "C"  char *qt_v4StackTrace(void *executionContext);
+extern "C" char *qt_v4StackTrace(void *executionContext);
 
-namespace KDAB {
+namespace KDAB
+{
 
 QString qmlStackTrace(QV4::ExecutionEngine *engine)
 {
@@ -45,10 +46,12 @@ QString qmlStackTrace(QV4::ExecutionEngine *engine)
 void printQmlStackTraces()
 {
     const auto windows = qApp->topLevelWindows();
-    for (QWindow *w : windows) {
-        if (auto qw = qobject_cast<QQuickWindow*>(w)) {
+    for (QWindow *w : windows)
+    {
+        if (auto qw = qobject_cast<QQuickWindow *>(w))
+        {
             QQuickItem *item = qw->contentItem();
-            QQmlContext* context = QQmlEngine::contextForObject(item);
+            QQmlContext *context = QQmlEngine::contextForObject(item);
             if (!context)
                 continue;
             QQmlEnginePrivate *enginePriv = QQmlEnginePrivate::get(context->engine());

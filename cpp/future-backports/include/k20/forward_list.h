@@ -1,7 +1,8 @@
 /****************************************************************************
 **                                MIT License
 **
-** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Marc Mutz <marc.mutz@kdab.com>
+** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Marc Mutz
+*<marc.mutz@kdab.com>
 **
 ** This file is part of KDToolBox (https://github.com/KDAB/KDToolBox).
 **
@@ -31,23 +32,22 @@
 #include <k20/detail/erase_if.h>
 
 // like std::erase/_if
-namespace k20 {
+namespace k20
+{
 #if defined(__cpp_lib_erase_if) && _cpp_lib_erase_if >= 202002L // the version that returns size_type
-    using std::erase;
-    using std::erase_if;
+using std::erase;
+using std::erase_if;
 #else
-    template <typename Value, typename...Args>
-    typename std::forward_list<Args...>::size_type
-    erase(std::forward_list<Args...>& c, const Value& value)
-    {
-        return detail::list_erase(c, value);
-    }
+template<typename Value, typename... Args>
+typename std::forward_list<Args...>::size_type erase(std::forward_list<Args...> &c, const Value &value)
+{
+    return detail::list_erase(c, value);
+}
 
-    template <typename UnaryPredicate, typename...Args>
-    typename std::forward_list<Args...>::size_type
-    erase_if(std::forward_list<Args...>& c, UnaryPredicate pred)
-    {
-        return detail::list_erase_if(c, pred);
-    }
+template<typename UnaryPredicate, typename... Args>
+typename std::forward_list<Args...>::size_type erase_if(std::forward_list<Args...> &c, UnaryPredicate pred)
+{
+    return detail::list_erase_if(c, pred);
+}
 #endif
 } // namespace k20

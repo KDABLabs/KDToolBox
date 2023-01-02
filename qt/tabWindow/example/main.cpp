@@ -32,7 +32,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-
     TabWindow w;
     w.addTab(new QWidget, QStringLiteral("Tab 1"));
     w.addTab(new QWidget, QStringLiteral("Tab 2"));

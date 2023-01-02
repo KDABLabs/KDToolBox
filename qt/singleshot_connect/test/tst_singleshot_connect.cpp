@@ -45,10 +45,10 @@ public:
     using QObject::QObject;
 
 Q_SIGNALS:
-    void aSignal(int, const QString&);
+    void aSignal(int, const QString &);
 
 public Q_SLOTS:
-    void aSlot(int i, const QString& s)
+    void aSlot(int i, const QString &s)
     {
         ++m_slotCounter;
         m_i = i;
@@ -61,10 +61,7 @@ public Q_SLOTS:
         ++m_slotCounter;
     }
 
-    void noArgSlot()
-    {
-        ++m_slotCounter;
-    }
+    void noArgSlot() { ++m_slotCounter; }
 
 public:
     int m_slotCounter = 0;
@@ -78,8 +75,7 @@ void tst_SingleShot_Connect::singleshot()
         Object o;
         QMetaObject::Connection c;
 
-        c = KDToolBox::connectSingleShot(&o, &Object::aSignal,
-                                         &o, &Object::aSlot);
+        c = KDToolBox::connectSingleShot(&o, &Object::aSignal, &o, &Object::aSlot);
         QVERIFY(c);
         QCOMPARE(o.m_slotCounter, 0);
 
@@ -95,8 +91,7 @@ void tst_SingleShot_Connect::singleshot()
         QCOMPARE(o.m_s, "Hello");
         QCOMPARE(o.m_slotCounter, 1);
 
-        c = KDToolBox::connectSingleShot(&o, &Object::aSignal,
-                                         &o, &Object::aSlot);
+        c = KDToolBox::connectSingleShot(&o, &Object::aSignal, &o, &Object::aSlot);
         QVERIFY(c);
         disconnect(c);
         QVERIFY(!c);
@@ -105,8 +100,7 @@ void tst_SingleShot_Connect::singleshot()
         QCOMPARE(o.m_s, "Hello");
         QCOMPARE(o.m_slotCounter, 1);
 
-        c = KDToolBox::connectSingleShot(&o, &Object::aSignal,
-                                         &o, &Object::aSlot);
+        c = KDToolBox::connectSingleShot(&o, &Object::aSignal, &o, &Object::aSlot);
         QVERIFY(c);
         Q_EMIT o.aSignal(42, "The Answer");
         QVERIFY(!c);
@@ -115,16 +109,14 @@ void tst_SingleShot_Connect::singleshot()
         QCOMPARE(o.m_slotCounter, 2);
 
 #if __cplusplus >= 201703L
-        c = KDToolBox::connectSingleShot(&o, &Object::aSignal,
-                                         &o, &Object::aSlotWithOneArgLess);
+        c = KDToolBox::connectSingleShot(&o, &Object::aSignal, &o, &Object::aSlotWithOneArgLess);
         QVERIFY(c);
         Q_EMIT o.aSignal(1, "Hello");
         QVERIFY(!c);
         QCOMPARE(o.m_i, 1);
         QCOMPARE(o.m_slotCounter, 3);
 
-        c = KDToolBox::connectSingleShot(&o, &Object::aSignal,
-                                         &o, &Object::noArgSlot);
+        c = KDToolBox::connectSingleShot(&o, &Object::aSignal, &o, &Object::noArgSlot);
         QVERIFY(c);
         Q_EMIT o.aSignal(1, "Hello");
         QVERIFY(!c);
@@ -132,9 +124,7 @@ void tst_SingleShot_Connect::singleshot()
         QCOMPARE(o.m_slotCounter, 4);
 
         int x = 0;
-        c = KDToolBox::connectSingleShot(&o, &Object::aSignal, [&x](int i) {
-            x = i;
-        });
+        c = KDToolBox::connectSingleShot(&o, &Object::aSignal, [&x](int i) { x = i; });
         QVERIFY(c);
         Q_EMIT o.aSignal(33, "Hello");
         QVERIFY(!c);
@@ -142,14 +132,23 @@ void tst_SingleShot_Connect::singleshot()
 #endif
     }
     {
-        struct MoveOnlyFunctor {
-            struct noop_deleter { void operator()(const void*) const noexcept {} };
+        struct MoveOnlyFunctor
+        {
+            struct noop_deleter
+            {
+                void operator()(const void *) const noexcept {}
+            };
             std::unique_ptr<int, noop_deleter> ri;
             std::unique_ptr<QString, noop_deleter> rs;
 
-            explicit MoveOnlyFunctor(int &i, QString &s) : ri(&i), rs(&s) {}
+            explicit MoveOnlyFunctor(int &i, QString &s)
+                : ri(&i)
+                , rs(&s)
+            {
+            }
 
-            void operator()(int i, const QString &s) {
+            void operator()(int i, const QString &s)
+            {
                 *ri = i;
                 *rs = s;
             }

@@ -27,15 +27,16 @@
 #ifndef KDTOOLBOX_KDSQLDATABASETRANSACTION_H
 #define KDTOOLBOX_KDSQLDATABASETRANSACTION_H
 
+#include <QLoggingCategory>
 #include <QSqlDatabase>
 #include <QSqlDriver>
-#include <QLoggingCategory>
 #include <QtDebug>
 
 namespace KDToolBox
 {
 
-namespace Private {
+namespace Private
+{
 // `inline` logging category; Qt doesn't support them.
 inline const QLoggingCategory &kdsqllc()
 {
@@ -61,13 +62,18 @@ public:
         : m_db(database)
         , m_shouldRollback(true)
     {
-        if (!m_db.isOpen()) {
+        if (!m_db.isOpen())
+        {
             qCWarning(Private::kdsqllc) << "The database" << m_db << "is not open";
             m_shouldRollback = false;
-        } else if (!m_db.driver()->hasFeature(QSqlDriver::Transactions)) {
+        }
+        else if (!m_db.driver()->hasFeature(QSqlDriver::Transactions))
+        {
             qCWarning(Private::kdsqllc) << "The database" << m_db << "does not support transactions";
             m_shouldRollback = false;
-        } else if (!m_db.transaction()) {
+        }
+        else if (!m_db.transaction())
+        {
             qCWarning(Private::kdsqllc) << "Could not begin a new transaction";
             m_shouldRollback = false;
         }
@@ -79,7 +85,8 @@ public:
      */
     ~KDSqlDatabaseTransaction()
     {
-        if (m_shouldRollback) {
+        if (m_shouldRollback)
+        {
             m_db.rollback();
         }
     }
@@ -87,7 +94,8 @@ public:
     KDSqlDatabaseTransaction(KDSqlDatabaseTransaction &&other) noexcept
         : m_db(std::move(other.m_db))
         , m_shouldRollback(std::exchange(other.m_shouldRollback, false))
-    {}
+    {
+    }
 
     KDSqlDatabaseTransaction &operator=(KDSqlDatabaseTransaction &&other) noexcept
     {
@@ -111,12 +119,14 @@ public:
      */
     bool commit()
     {
-        if (!m_shouldRollback) {
+        if (!m_shouldRollback)
+        {
             qCWarning(Private::kdsqllc) << "commit() / rollback() already called on this object";
             return false;
         }
         const bool result = m_db.commit();
-        if (result) {
+        if (result)
+        {
             m_shouldRollback = false;
         }
         return result;
@@ -131,7 +141,8 @@ public:
      */
     bool rollback()
     {
-        if (!m_shouldRollback) {
+        if (!m_shouldRollback)
+        {
             qCWarning(Private::kdsqllc) << "commit() / rollback() already called on this object";
             return false;
         }
@@ -144,10 +155,7 @@ public:
      * \brief Returns the database connection used by this object.
      * \return The database connection.
      */
-    const QSqlDatabase &database() const
-    {
-        return m_db;
-    }
+    const QSqlDatabase &database() const { return m_db; }
 
 private:
     QSqlDatabase m_db;

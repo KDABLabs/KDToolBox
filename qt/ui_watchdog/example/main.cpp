@@ -47,7 +47,8 @@ int main(int argc, char **argv)
 
     QObject::connect(button, &QPushButton::clicked, [] {
         qDebug() << "Blocking forever!";
-        while (true);
+        while (true)
+            ;
     });
 
     auto sleepTimer = new QTimer(&w);

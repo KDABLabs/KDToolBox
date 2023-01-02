@@ -27,24 +27,27 @@
 #include "tst_qt_hasher.h"
 #include "../qt_hasher.h"
 
-#include <QTest>
-#include <QRegularExpression>
 #include <QFont>
+#include <QRegularExpression>
+#include <QTest>
 
 #include <unordered_map>
 #include <unordered_set>
 
-struct Foo { int i; };
+struct Foo
+{
+    int i;
+};
 
 void tst_QtHasher::hash()
 {
     std::unordered_map<QString, Foo, KDToolBox::QtHasher<QString>> stringMap;
-    stringMap.insert({ QStringLiteral("123"), {123} });
-    stringMap.insert({ QStringLiteral("456"), {456} });
-    stringMap.insert({ QStringLiteral("789"), {789} });
+    stringMap.insert({QStringLiteral("123"), {123}});
+    stringMap.insert({QStringLiteral("456"), {456}});
+    stringMap.insert({QStringLiteral("789"), {789}});
     QCOMPARE(stringMap.size(), std::size_t(3));
 
-    stringMap.insert({ QStringLiteral("123"), {0} });
+    stringMap.insert({QStringLiteral("123"), {0}});
     QCOMPARE(stringMap.size(), std::size_t(3));
 
     stringMap.clear();
@@ -52,13 +55,12 @@ void tst_QtHasher::hash()
 
     constexpr int LOOPS = 195044;
     for (int i = 0; i < LOOPS; ++i)
-        stringMap.insert({ QString::number(i), {i} });
+        stringMap.insert({QString::number(i), {i}});
 
     QCOMPARE(stringMap.size(), std::size_t(LOOPS));
 
     for (const auto &v : stringMap)
         QCOMPARE(v.first.toInt(), v.second.i);
-
 
     std::unordered_set<QRegularExpression, KDToolBox::QtHasher<QRegularExpression>> regexpSet;
 
@@ -95,23 +97,23 @@ void tst_QtHasher::hash()
 
 namespace TestNS
 {
-    struct Hashable { int i ; };
+struct Hashable
+{
+    int i;
+};
 
-    using QHashIntReturnType = decltype(qHash(0));
+using QHashIntReturnType = decltype(qHash(0));
 
-    QHashIntReturnType qHash(Hashable h) noexcept
-    {
-        return QT_PREPEND_NAMESPACE(qHash)(h.i);
-    }
+QHashIntReturnType qHash(Hashable h) noexcept
+{
+    return QT_PREPEND_NAMESPACE(qHash)(h.i);
+}
 
-    struct HashableHiddenFriend
-    {
-        int i;
-        friend QHashIntReturnType qHash(HashableHiddenFriend h) noexcept
-        {
-            return QT_PREPEND_NAMESPACE(qHash)(h.i);
-        }
-    };
+struct HashableHiddenFriend
+{
+    int i;
+    friend QHashIntReturnType qHash(HashableHiddenFriend h) noexcept { return QT_PREPEND_NAMESPACE(qHash)(h.i); }
+};
 } // namespace TestNS
 
 void tst_QtHasher::poison()
@@ -119,9 +121,10 @@ void tst_QtHasher::poison()
     Q_STATIC_ASSERT(std::is_default_constructible<KDToolBox::QtHasher<QString>>::value);
     Q_STATIC_ASSERT(std::is_default_constructible<KDToolBox::QtHasher<QUrl>>::value);
     Q_STATIC_ASSERT(std::is_default_constructible<KDToolBox::QtHasher<QFont>>::value);
-    Q_STATIC_ASSERT(!std::is_default_constructible<KDToolBox::QtHasher<Foo>>::value); // no qHash(Foo)
+    Q_STATIC_ASSERT(!std::is_default_constructible<KDToolBox::QtHasher<Foo>>::value);             // no qHash(Foo)
     Q_STATIC_ASSERT(std::is_default_constructible<KDToolBox::QtHasher<TestNS::Hashable>>::value); // found through ADL
-    Q_STATIC_ASSERT(std::is_default_constructible<KDToolBox::QtHasher<TestNS::HashableHiddenFriend>>::value); // found through ADL
+    Q_STATIC_ASSERT(
+        std::is_default_constructible<KDToolBox::QtHasher<TestNS::HashableHiddenFriend>>::value); // found through ADL
 }
 
 QTEST_MAIN(tst_QtHasher)

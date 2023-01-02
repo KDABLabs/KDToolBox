@@ -24,10 +24,10 @@
 ** DEALINGS IN THE SOFTWARE.
 ****************************************************************************/
 
-#include <QTest>
 #include <QSqlDatabase>
-#include <QSqlQuery>
 #include <QSqlError>
+#include <QSqlQuery>
+#include <QTest>
 
 #include "../KDSqlDatabaseTransaction.h"
 
@@ -74,7 +74,6 @@ void tst_KDSqlDatabaseTransaction::testTransactions()
         QVERIFY(q.exec(QSL("INSERT INTO t VALUES(42)")));
         verifyRowCount(++rowCount);
     }
-
 
     {
         // commit

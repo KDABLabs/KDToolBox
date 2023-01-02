@@ -35,7 +35,8 @@ int main(int argc, char **argv)
 
     QStandardItemModel model;
     const auto colorNames = QColor::colorNames();
-    for (const QString &name : colorNames) {
+    for (const QString &name : colorNames)
+    {
         auto *item = new QStandardItem;
         item->setData(QVariant::fromValue(name), Qt::DisplayRole);
         item->setData(QVariant::fromValue(QColor(name)), Qt::DecorationRole);
@@ -45,8 +46,7 @@ int main(int argc, char **argv)
     KDFunctionalSortFilterProxyModel proxy;
     proxy.setSourceModel(&model);
 
-    auto colorIsLong = [](const QAbstractItemModel *model, int source_row, const QModelIndex &parent)
-    {
+    auto colorIsLong = [](const QAbstractItemModel *model, int source_row, const QModelIndex &parent) {
         auto index = model->index(source_row, 0, parent);
         return index.data(Qt::DisplayRole).toString().size() >= 10;
     };

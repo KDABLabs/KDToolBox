@@ -30,12 +30,12 @@
 #include <QTest>
 
 #include <QList>
-#include <QVector>
 #include <QSet>
+#include <QVector>
 
-#include <vector>
 #include <deque>
 #include <unordered_set>
+#include <vector>
 
 #include <QDebug>
 
@@ -52,7 +52,7 @@ private Q_SLOTS:
     void toContainer();
 
 private:
-    template <template <typename ...> class Container>
+    template<template<typename...> class Container>
     void toContainer_impl();
 };
 
@@ -70,8 +70,7 @@ void tst_toContainer::toContainer()
     toContainer_impl<std::deque>();
 }
 
-template <typename DestinationContainer,
-          typename SourceContainer>
+template<typename DestinationContainer, typename SourceContainer>
 static void toContainer_helper(const SourceContainer &s)
 {
     DestinationContainer d(s.begin(), s.end());
@@ -83,8 +82,7 @@ static void toContainer_helper(const SourceContainer &s)
     QCOMPARE((functionReturningS() | kdToContainer<DestinationContainer>()), d);
 }
 
-template <template <typename ...> class DestinationContainerTemplate,
-          typename SourceContainer>
+template<template<typename...> class DestinationContainerTemplate, typename SourceContainer>
 static void toContainer_helper2(const SourceContainer &s)
 {
     DestinationContainerTemplate<typename SourceContainer::value_type> d(s.begin(), s.end());
@@ -96,7 +94,7 @@ static void toContainer_helper2(const SourceContainer &s)
     QCOMPARE((functionReturningS() | kdToContainer<DestinationContainerTemplate>()), d);
 }
 
-template <template <typename ...> class Container>
+template<template<typename...> class Container>
 void tst_toContainer::toContainer_impl()
 {
     Container<int> container{1, 2, 3, 4, 5, 1, 2, 6, -1, 1, 2, 45};

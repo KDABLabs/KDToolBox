@@ -1,9 +1,9 @@
 #include "../eventfilter.h"
 
 #include <QApplication>
-#include <QPushButton>
-#include <QFocusEvent>
 #include <QDebug>
+#include <QFocusEvent>
+#include <QPushButton>
 
 int main(int argc, char *argv[])
 {
@@ -15,34 +15,30 @@ int main(int argc, char *argv[])
     button->setMouseTracking(true);
 
     // directly capturing the target in the lambda
-    auto filter = KDToolBox::installEventFilter(button, QEvent::Enter, [button]
-    {
+    auto filter = KDToolBox::installEventFilter(button, QEvent::Enter, [button] {
         qDebug() << "Mouse entered button" << button;
         return false;
     });
 
     // taking target+event in the lambda
-    auto filter2 = KDToolBox::installEventFilter(button, QEvent::FocusIn, [](QObject *target, QEvent *event)
-    {
-        qDebug() << "Focus in onto" << target
-                 << "because" << static_cast<QFocusEvent *>(event)->reason();
+    auto filter2 = KDToolBox::installEventFilter(button, QEvent::FocusIn, [](QObject *target, QEvent *event) {
+        qDebug() << "Focus in onto" << target << "because" << static_cast<QFocusEvent *>(event)->reason();
         return false;
     });
 
     // not returning anything, return false implied
-    auto filter3 = KDToolBox::installEventFilter(button, QEvent::MouseMove, [button](QObject *, QEvent *event)
-    {
+    auto filter3 = KDToolBox::installEventFilter(button, QEvent::MouseMove, [button](QObject *, QEvent *event) {
         qDebug() << "Mouse moved on" << button << "at" << static_cast<QMouseEvent *>(event)->pos();
     });
 
     // move-only mutable lambda, not returning anything
-    auto filter4 = KDToolBox::installEventFilter(button, QEvent::FocusOut, [button, x = std::make_unique<int>(0), y = 0](QObject *target, QEvent *event) mutable
-    {
-        qDebug() << "Focus out from" << target
-                 << "because" << static_cast<QFocusEvent *>(event)->reason()
-                 << "invoked" << ++(y) << "times";
-        *x = y;
-    });
+    auto filter4 = KDToolBox::installEventFilter(
+        button, QEvent::FocusOut,
+        [button, x = std::make_unique<int>(0), y = 0](QObject *target, QEvent *event) mutable {
+            qDebug() << "Focus out from" << target << "because" << static_cast<QFocusEvent *>(event)->reason()
+                     << "invoked" << ++(y) << "times";
+            *x = y;
+        });
 
     button->show();
     button->resize(500, 500);

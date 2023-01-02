@@ -1,7 +1,8 @@
 /****************************************************************************
 **                                MIT License
 **
-** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Giuseppe D'Angelo <giuseppe.dangelo@kdab.com>
+** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Giuseppe D'Angelo
+*<giuseppe.dangelo@kdab.com>
 **
 ** This file is part of KDToolBox (https://github.com/KDAB/KDToolBox).
 **
@@ -32,7 +33,8 @@
 
 #include <chrono>
 
-namespace KDToolBox {
+namespace KDToolBox
+{
 
 class KDGenericSignalThrottler : public QObject
 {
@@ -44,13 +46,15 @@ class KDGenericSignalThrottler : public QObject
     Q_PROPERTY(Qt::TimerType timerType READ timerType WRITE setTimerType NOTIFY timerTypeChanged)
 
 public:
-    enum class Kind {
+    enum class Kind
+    {
         Throttler,
         Debouncer,
     };
     Q_ENUM(Kind)
 
-    enum class EmissionPolicy {
+    enum class EmissionPolicy
+    {
         Trailing,
         Leading,
     };

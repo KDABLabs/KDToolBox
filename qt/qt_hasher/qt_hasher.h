@@ -30,20 +30,23 @@
 
 #include <QtCore/qhashfunctions.h>
 
-#include <utility>
 #include <functional>
+#include <utility>
 
-namespace KDToolBox {
+namespace KDToolBox
+{
 
-namespace detail {
+namespace detail
+{
 
 QT_USE_NAMESPACE
 
-template <typename ...> using void_t = void;
+template<typename...>
+using void_t = void;
 
 using QHashSeedType = decltype(qHash(0)); // which is also the return type of qHash
 
-template <typename T, typename = void>
+template<typename T, typename = void>
 class QtHasherBase
 {
     // poison
@@ -52,7 +55,7 @@ private:
     QtHasherBase(QtHasherBase &&);
 };
 
-template <typename T>
+template<typename T>
 class QtHasherBase<T, void_t<decltype(qHash(std::declval<const T &>()))>>
 {
 public:
@@ -80,7 +83,7 @@ protected:
 
 } // namespace detail
 
-template <typename T>
+template<typename T>
 struct QtHasher : detail::QtHasherBase<T>
 {
 };

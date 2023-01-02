@@ -24,10 +24,9 @@
 ** DEALINGS IN THE SOFTWARE.
 ****************************************************************************/
 
-
 #include <QGuiApplication>
-#include <QQuickView>
 #include <QQmlContext>
+#include <QQuickView>
 
 class Controller : public QObject
 {
@@ -35,11 +34,12 @@ class Controller : public QObject
 public:
     using QObject::QObject;
 
-    Q_INVOKABLE void crash() {
-        delete this; delete this;
+    Q_INVOKABLE void crash()
+    {
+        delete this;
+        delete this;
     }
 };
-
 
 int main(int a, char **b)
 {

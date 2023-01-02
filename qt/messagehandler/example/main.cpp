@@ -26,14 +26,15 @@
 ****************************************************************************/
 
 #include <QApplication>
-#include <QPushButton>
 #include <QDebug>
+#include <QPushButton>
 
 #include <messagehandler.h>
 
 int main(int argc, char **argv)
 {
-    qSetMessagePattern(QStringLiteral("[%{if-debug}DBUG%{endif}%{if-info}INFO%{endif}%{if-warning}WARN%{endif}%{if-critical}CRIT%{endif}%{if-fatal}FATL%{endif}] %{message}"));
+    qSetMessagePattern(QStringLiteral("[%{if-debug}DBUG%{endif}%{if-info}INFO%{endif}%{if-warning}WARN%{endif}%{if-"
+                                      "critical}CRIT%{endif}%{if-fatal}FATL%{endif}] %{message}"));
 
     QApplication app(argc, argv);
 
@@ -42,16 +43,17 @@ int main(int argc, char **argv)
     qDebug() << "This is a debug message. We're now installing a handler for all warnings";
 
     KDToolBox::handleMessage(QtWarningMsg,
-                             [](){  qDebug() << "***!!!*** 1st warning handler here: a warning happened"; });
+                             []() { qDebug() << "***!!!*** 1st warning handler here: a warning happened"; });
 
     qWarning() << "This is warning again. Before this warning, you should've had an extra print.";
 
-    qDebug() << "This is a debug message; this did not trigger the handler because it's a debug, not a warning message.";
+    qDebug()
+        << "This is a debug message; this did not trigger the handler because it's a debug, not a warning message.";
     qDebug() << "Now installing a handler that reacts only on warnings that begin with 'PANIC'.";
 
-    KDToolBox::handleMessage(QtWarningMsg,
-                             QRegularExpression(QStringLiteral("^PANIC")),
-                             [](){ qDebug() << "***!!!*** 2nd warning handler here: a warning that begins with PANIC has been received"; });
+    KDToolBox::handleMessage(QtWarningMsg, QRegularExpression(QStringLiteral("^PANIC")), []() {
+        qDebug() << "***!!!*** 2nd warning handler here: a warning that begins with PANIC has been received";
+    });
 
     qWarning() << "PANIC! Both warning handlers should've fired before this message";
     qWarning() << "Another warning, this time only the first warning handler should've fired";

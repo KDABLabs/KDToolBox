@@ -1,7 +1,8 @@
 /****************************************************************************
 **                                MIT License
 **
-** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Giuseppe D'Angelo <giuseppe.dangelo@kdab.com>
+** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Giuseppe D'Angelo
+*<giuseppe.dangelo@kdab.com>
 **
 ** This file is part of KDToolBox (https://github.com/KDAB/KDToolBox).
 **
@@ -42,10 +43,9 @@ public:
     static constexpr int Timeout = 50;
 
 private:
-    template <typename Throttler>
-    void basics_impl(KDGenericSignalThrottler::Kind kind,
-                     KDGenericSignalThrottler::EmissionPolicy emissionPolicy);
-    template <typename Throttler>
+    template<typename Throttler>
+    void basics_impl(KDGenericSignalThrottler::Kind kind, KDGenericSignalThrottler::EmissionPolicy emissionPolicy);
+    template<typename Throttler>
     void trailingOrLeadingActivation_impl();
 
 private Q_SLOTS:
@@ -61,7 +61,7 @@ void tst_KDSignalThrottler::basics()
     basics_impl<KDSignalThrottler>(KDGenericSignalThrottler::Kind::Throttler,
                                    KDGenericSignalThrottler::EmissionPolicy::Trailing);
     basics_impl<KDSignalLeadingThrottler>(KDGenericSignalThrottler::Kind::Throttler,
-                                   KDGenericSignalThrottler::EmissionPolicy::Leading);
+                                          KDGenericSignalThrottler::EmissionPolicy::Leading);
     basics_impl<KDSignalDebouncer>(KDGenericSignalThrottler::Kind::Debouncer,
                                    KDGenericSignalThrottler::EmissionPolicy::Trailing);
     basics_impl<KDSignalLeadingDebouncer>(KDGenericSignalThrottler::Kind::Debouncer,
@@ -132,9 +132,13 @@ void tst_KDSignalThrottler::trailingOrLeadingActivation_impl()
 
         t->throttle();
 
-        switch (ep) {
-        case KDGenericSignalThrottler::EmissionPolicy::Trailing: break;
-        case KDGenericSignalThrottler::EmissionPolicy::Leading: ++triggeredCount; break;
+        switch (ep)
+        {
+        case KDGenericSignalThrottler::EmissionPolicy::Trailing:
+            break;
+        case KDGenericSignalThrottler::EmissionPolicy::Leading:
+            ++triggeredCount;
+            break;
         }
         QCOMPARE(spy.size(), triggeredCount);
 
@@ -160,9 +164,13 @@ void tst_KDSignalThrottler::trailingOrLeadingActivation_impl()
 
         t->throttle();
 
-        switch (ep) {
-        case KDGenericSignalThrottler::EmissionPolicy::Trailing: break;
-        case KDGenericSignalThrottler::EmissionPolicy::Leading: ++triggeredCount; break;
+        switch (ep)
+        {
+        case KDGenericSignalThrottler::EmissionPolicy::Trailing:
+            break;
+        case KDGenericSignalThrottler::EmissionPolicy::Leading:
+            ++triggeredCount;
+            break;
         }
         QCOMPARE(spy.size(), triggeredCount);
 
@@ -191,9 +199,13 @@ void tst_KDSignalThrottler::trailingOrLeadingActivation_impl()
 
         t->throttle();
 
-        switch (ep) {
-        case KDGenericSignalThrottler::EmissionPolicy::Trailing: break;
-        case KDGenericSignalThrottler::EmissionPolicy::Leading: ++triggeredCount; break;
+        switch (ep)
+        {
+        case KDGenericSignalThrottler::EmissionPolicy::Trailing:
+            break;
+        case KDGenericSignalThrottler::EmissionPolicy::Leading:
+            ++triggeredCount;
+            break;
         }
         QCOMPARE(spy.size(), triggeredCount);
 
@@ -221,9 +233,13 @@ void tst_KDSignalThrottler::trailingOrLeadingActivation_impl()
 
         t->throttle();
 
-        switch (ep) {
-        case KDGenericSignalThrottler::EmissionPolicy::Trailing: break;
-        case KDGenericSignalThrottler::EmissionPolicy::Leading: ++triggeredCount; break;
+        switch (ep)
+        {
+        case KDGenericSignalThrottler::EmissionPolicy::Trailing:
+            break;
+        case KDGenericSignalThrottler::EmissionPolicy::Leading:
+            ++triggeredCount;
+            break;
         }
         QCOMPARE(spy.size(), triggeredCount);
 
@@ -249,17 +265,25 @@ void tst_KDSignalThrottler::trailingOrLeadingActivation_impl()
 
         t->throttle();
 
-        switch (ep) {
-        case KDGenericSignalThrottler::EmissionPolicy::Trailing: break;
-        case KDGenericSignalThrottler::EmissionPolicy::Leading: ++triggeredCount; break;
+        switch (ep)
+        {
+        case KDGenericSignalThrottler::EmissionPolicy::Trailing:
+            break;
+        case KDGenericSignalThrottler::EmissionPolicy::Leading:
+            ++triggeredCount;
+            break;
         }
         QCOMPARE(spy.size(), triggeredCount);
 
         QTest::qWait(Timeout * 2);
 
-        switch (ep) {
-        case KDGenericSignalThrottler::EmissionPolicy::Trailing: ++triggeredCount; break;
-        case KDGenericSignalThrottler::EmissionPolicy::Leading: break;
+        switch (ep)
+        {
+        case KDGenericSignalThrottler::EmissionPolicy::Trailing:
+            ++triggeredCount;
+            break;
+        case KDGenericSignalThrottler::EmissionPolicy::Leading:
+            break;
         }
         QCOMPARE(spy.size(), triggeredCount);
     }
@@ -277,34 +301,49 @@ void tst_KDSignalThrottler::trailingOrLeadingActivation_impl()
 
         t->throttle();
 
-        switch (ep) {
-        case KDGenericSignalThrottler::EmissionPolicy::Trailing: break;
-        case KDGenericSignalThrottler::EmissionPolicy::Leading: ++triggeredCount; break;
+        switch (ep)
+        {
+        case KDGenericSignalThrottler::EmissionPolicy::Trailing:
+            break;
+        case KDGenericSignalThrottler::EmissionPolicy::Leading:
+            ++triggeredCount;
+            break;
         }
         QCOMPARE(spy.size(), triggeredCount);
 
         QTest::qWait(Timeout * 2);
-        switch (ep) {
-        case KDGenericSignalThrottler::EmissionPolicy::Trailing: ++triggeredCount; break;
-        case KDGenericSignalThrottler::EmissionPolicy::Leading: break;
+        switch (ep)
+        {
+        case KDGenericSignalThrottler::EmissionPolicy::Trailing:
+            ++triggeredCount;
+            break;
+        case KDGenericSignalThrottler::EmissionPolicy::Leading:
+            break;
         }
         QCOMPARE(spy.size(), triggeredCount);
 
         t->throttle();
-        switch (ep) {
-        case KDGenericSignalThrottler::EmissionPolicy::Trailing: break;
-        case KDGenericSignalThrottler::EmissionPolicy::Leading: ++triggeredCount; break;
+        switch (ep)
+        {
+        case KDGenericSignalThrottler::EmissionPolicy::Trailing:
+            break;
+        case KDGenericSignalThrottler::EmissionPolicy::Leading:
+            ++triggeredCount;
+            break;
         }
         QCOMPARE(spy.size(), triggeredCount);
 
         t.reset();
-        switch (ep) {
-        case KDGenericSignalThrottler::EmissionPolicy::Trailing: ++triggeredCount; break;
-        case KDGenericSignalThrottler::EmissionPolicy::Leading: break;
+        switch (ep)
+        {
+        case KDGenericSignalThrottler::EmissionPolicy::Trailing:
+            ++triggeredCount;
+            break;
+        case KDGenericSignalThrottler::EmissionPolicy::Leading:
+            break;
         }
         QCOMPARE(spy.size(), triggeredCount);
     }
-
 
     // Same, but throttle more signals
     {
@@ -318,23 +357,35 @@ void tst_KDSignalThrottler::trailingOrLeadingActivation_impl()
 
         t->throttle();
 
-        switch (ep) {
-        case KDGenericSignalThrottler::EmissionPolicy::Trailing: break;
-        case KDGenericSignalThrottler::EmissionPolicy::Leading: ++triggeredCount; break;
+        switch (ep)
+        {
+        case KDGenericSignalThrottler::EmissionPolicy::Trailing:
+            break;
+        case KDGenericSignalThrottler::EmissionPolicy::Leading:
+            ++triggeredCount;
+            break;
         }
         QCOMPARE(spy.size(), triggeredCount);
 
         QTest::qWait(Timeout * 2);
-        switch (ep) {
-        case KDGenericSignalThrottler::EmissionPolicy::Trailing: ++triggeredCount; break;
-        case KDGenericSignalThrottler::EmissionPolicy::Leading: break;
+        switch (ep)
+        {
+        case KDGenericSignalThrottler::EmissionPolicy::Trailing:
+            ++triggeredCount;
+            break;
+        case KDGenericSignalThrottler::EmissionPolicy::Leading:
+            break;
         }
         QCOMPARE(spy.size(), triggeredCount);
 
         t->throttle();
-        switch (ep) {
-        case KDGenericSignalThrottler::EmissionPolicy::Trailing: break;
-        case KDGenericSignalThrottler::EmissionPolicy::Leading: ++triggeredCount; break;
+        switch (ep)
+        {
+        case KDGenericSignalThrottler::EmissionPolicy::Trailing:
+            break;
+        case KDGenericSignalThrottler::EmissionPolicy::Leading:
+            ++triggeredCount;
+            break;
         }
         QCOMPARE(spy.size(), triggeredCount);
 
@@ -360,7 +411,8 @@ void tst_KDSignalThrottler::throttler()
     constexpr int Count = 20;
     constexpr int Frequency = 5;
 
-    for (int i = 0; i < Count; ++i) {
+    for (int i = 0; i < Count; ++i)
+    {
         // Basic throttler behavior: signal is emitted "less often"
         // than the incoming frequency (ideally, at its own timeout)
         QTest::qWait(Timeout / Frequency);
@@ -383,7 +435,8 @@ void tst_KDSignalThrottler::debouncer()
     QCOMPARE(spy.size(), 0);
 
     constexpr int Count = 20;
-    for (int i = 0; i < Count; ++i) {
+    for (int i = 0; i < Count; ++i)
+    {
         // Basic debouncer behavior: incoming notifications before the
         // timeout will reset the timeout
         QTest::qWait(Timeout / 5);

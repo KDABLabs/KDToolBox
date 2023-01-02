@@ -33,14 +33,20 @@
 #include <QDebug>
 #include <QString>
 
-namespace Qt_fmt {
-namespace detail {
+namespace Qt_fmt
+{
+namespace detail
+{
 
-template <typename T, template <typename ...> typename Primary>
-struct is_specialization_of : std::false_type {};
+template<typename T, template<typename...> typename Primary>
+struct is_specialization_of : std::false_type
+{
+};
 
-template <template <typename ...> typename Primary, typename ... Args>
-struct is_specialization_of<Primary<Args...>, Primary> : std::true_type {};
+template<template<typename...> typename Primary, typename... Args>
+struct is_specialization_of<Primary<Args...>, Primary> : std::true_type
+{
+};
 
 } // namespace detail
 
@@ -50,28 +56,24 @@ struct is_specialization_of<Primary<Args...>, Primary> : std::true_type {};
 //
 // Note: keeping this in sync between fmt and QDebug sounds like a
 // nightmare.
-template <typename T, typename Enable = void>
-struct exclude_from_qdebug_fmt : std::disjunction<
-    std::is_fundamental<T>,
-    std::is_convertible<T, const char *>,
-    std::conjunction<std::is_convertible<T, const void *>, std::negation<std::is_convertible<T, const QObject *>>>,
-    // fmt doesn't necessarily offer these as builtins, but let's be conservative
-    detail::is_specialization_of<T, std::pair>,
-    detail::is_specialization_of<T, std::vector>,
-    detail::is_specialization_of<T, std::list>,
-    detail::is_specialization_of<T, std::map>,
-    detail::is_specialization_of<T, std::multimap>
-> {};
+template<typename T, typename Enable = void>
+struct exclude_from_qdebug_fmt
+    : std::disjunction<std::is_fundamental<T>, std::is_convertible<T, const char *>,
+                       std::conjunction<std::is_convertible<T, const void *>,
+                                        std::negation<std::is_convertible<T, const QObject *>>>,
+                       // fmt doesn't necessarily offer these as builtins, but let's be conservative
+                       detail::is_specialization_of<T, std::pair>, detail::is_specialization_of<T, std::vector>,
+                       detail::is_specialization_of<T, std::list>, detail::is_specialization_of<T, std::map>,
+                       detail::is_specialization_of<T, std::multimap>>
+{
+};
 
 } // namespace Qt_fmt
 
-template <typename T>
+template<typename T>
 struct fmt::formatter<T, char,
-    std::void_t<
-        std::enable_if_t<!Qt_fmt::exclude_from_qdebug_fmt<T>::value>,
-        decltype(std::declval<QDebug &>() << std::declval<const T &>())
-    >
->
+                      std::void_t<std::enable_if_t<!Qt_fmt::exclude_from_qdebug_fmt<T>::value>,
+                                  decltype(std::declval<QDebug &>() << std::declval<const T &>())>>
 {
     constexpr auto parse(fmt::format_parse_context &ctx)
     {
@@ -82,7 +84,7 @@ struct fmt::formatter<T, char,
         return it;
     }
 
-    template <typename FormatContext>
+    template<typename FormatContext>
     auto format(const T &t, FormatContext &ctx)
     {
         // This is really expensive (lots of allocations). Unfortunately

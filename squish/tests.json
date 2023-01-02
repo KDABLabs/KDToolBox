@@ -31,12 +31,17 @@
         {
             "suite": "mysuite1",
             "name": "tst_myfeature6",
-            "supports_offscreen": ["macos","windows"]
+            "supports_offscreen": [
+                "macos",
+                "windows"
+            ]
         },
         {
             "suite": "mysuite1",
             "name": "tst_myfeature7",
-            "categories" : ["mycategory"]
+            "categories": [
+                "mycategory"
+            ]
         }
     ]
 }

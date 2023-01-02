@@ -26,11 +26,11 @@
 
 #include <KDFunctionalSortFilterProxyModel.h>
 
-#include <QTest>
 #include <QStandardItemModel>
+#include <QTest>
 
-#include <QStringListModel>
 #include <QColor>
+#include <QStringListModel>
 
 #include <memory>
 
@@ -63,8 +63,7 @@ void tst_KDFunctionalSortFilterProxyModel::filterAcceptsRows()
     QCOMPARE(proxy.rowCount(), Rows);
     QCOMPARE(proxy.columnCount(), Columns);
 
-    auto beginsWithOne = [](const QAbstractItemModel *model, int source_row, const QModelIndex &parent)
-    {
+    auto beginsWithOne = [](const QAbstractItemModel *model, int source_row, const QModelIndex &parent) {
         return model->index(source_row, 0, parent).data().toString().startsWith(u'1');
     };
 
@@ -76,7 +75,8 @@ void tst_KDFunctionalSortFilterProxyModel::filterAcceptsRows()
     QCOMPARE(proxy.index(0, 1).data().toString(), QStringLiteral("1-1"));
     QCOMPARE(proxy.index(0, 2).data().toString(), QStringLiteral("1-2"));
 
-    for (int row = 1; row <= 10; ++row) {
+    for (int row = 1; row <= 10; ++row)
+    {
         QCOMPARE(proxy.index(row, 0).data().toString(), QStringLiteral("%1-0").arg(row + 9));
         QCOMPARE(proxy.index(row, 1).data().toString(), QStringLiteral("%1-1").arg(row + 9));
         QCOMPARE(proxy.index(row, 2).data().toString(), QStringLiteral("%1-2").arg(row + 9));
@@ -100,8 +100,7 @@ void tst_KDFunctionalSortFilterProxyModel::filterAcceptsColumns()
     QCOMPARE(proxy.rowCount(), Rows);
     QCOMPARE(proxy.columnCount(), Columns);
 
-    auto keepLastColumn = [](const QAbstractItemModel *model, int source_column, const QModelIndex &parent)
-    {
+    auto keepLastColumn = [](const QAbstractItemModel *model, int source_column, const QModelIndex &parent) {
         return source_column == (model->columnCount(parent) - 1);
     };
 
@@ -110,7 +109,8 @@ void tst_KDFunctionalSortFilterProxyModel::filterAcceptsColumns()
     QCOMPARE(proxy.rowCount(), Rows);
     QCOMPARE(proxy.columnCount(), 1);
 
-    for (int row = 0; row < Rows; ++row) {
+    for (int row = 0; row < Rows; ++row)
+    {
         QCOMPARE(proxy.index(row, 0).data().toString(), QStringLiteral("%1-%2").arg(row).arg(Columns - 1));
     }
 
@@ -130,15 +130,16 @@ void tst_KDFunctionalSortFilterProxyModel::sort()
     proxy.setSourceModel(model.get());
 
     const auto verifyDefaultContents = [&]() {
-        for (int row = 0; row < Rows; ++row) {
-            for (int column = 0; column < Columns; ++column) {
+        for (int row = 0; row < Rows; ++row)
+        {
+            for (int column = 0; column < Columns; ++column)
+            {
                 QCOMPARE(proxy.index(row, column).data().toString(), QStringLiteral("%1-%2").arg(row).arg(column));
             }
         }
     };
 
-    const auto evenBeforeOdds = [](const QModelIndex &lhs, const QModelIndex &rhs)
-    {
+    const auto evenBeforeOdds = [](const QModelIndex &lhs, const QModelIndex &rhs) {
         auto getNumberBeforeDash = [](const QModelIndex &index) {
             const auto contents = index.data().toString();
             const auto dash = contents.indexOf(u'-');
@@ -155,30 +156,28 @@ void tst_KDFunctionalSortFilterProxyModel::sort()
     QCOMPARE(proxy.columnCount(), Columns);
     verifyDefaultContents();
 
-
     proxy.setLessThanFunction(evenBeforeOdds);
     QCOMPARE(proxy.rowCount(), Rows);
     QCOMPARE(proxy.columnCount(), Columns);
     verifyDefaultContents();
 
-
     proxy.sort(0);
     QCOMPARE(proxy.rowCount(), Rows);
     QCOMPARE(proxy.columnCount(), Columns);
-    for (int row = 0; row < Rows; ++row) {
-        for (int column = 0; column < Columns; ++column) {
+    for (int row = 0; row < Rows; ++row)
+    {
+        for (int column = 0; column < Columns; ++column)
+        {
             // 0, 2, 4, ..., 98, 1, 3, 5, 7, ..., 99
             const int expectedRow = (row < 50) ? row * 2 : (row - 50) * 2 + 1;
             QCOMPARE(proxy.index(row, column).data().toString(), QStringLiteral("%1-%2").arg(expectedRow).arg(column));
         }
     }
 
-
     proxy.sort(-1);
     QCOMPARE(proxy.rowCount(), Rows);
     QCOMPARE(proxy.columnCount(), Columns);
     verifyDefaultContents();
-
 
     proxy.clearLessThanFunction();
     QCOMPARE(proxy.rowCount(), Rows);
@@ -196,19 +195,22 @@ void tst_KDFunctionalSortFilterProxyModel::filterAndSort()
     QCOMPARE(proxy.rowCount(), model.stringList().size());
     QCOMPARE(proxy.columnCount(), 1);
 
-
-    const auto isVowel = [](int letter)
-    {
-        switch (letter) {
-        case 'a': case 'e': case 'i': case 'o': case 'u': case 'y':
+    const auto isVowel = [](int letter) {
+        switch (letter)
+        {
+        case 'a':
+        case 'e':
+        case 'i':
+        case 'o':
+        case 'u':
+        case 'y':
             return true;
         default:
             return false;
         }
     };
 
-    const auto onlyVowelColors = [&](const QAbstractItemModel *model, int source_row, const QModelIndex &parent)
-    {
+    const auto onlyVowelColors = [&](const QAbstractItemModel *model, int source_row, const QModelIndex &parent) {
         const auto data = model->index(source_row, 0, parent).data().toString();
         const auto firstLetter = data.front().unicode();
         return isVowel(firstLetter);
@@ -220,14 +222,13 @@ void tst_KDFunctionalSortFilterProxyModel::filterAndSort()
     int rowCount = proxy.rowCount();
     QVERIFY(rowCount > 0);
 
-    for (int row = 0; row < rowCount; ++row) {
+    for (int row = 0; row < rowCount; ++row)
+    {
         const auto data = proxy.index(row, 0).data().toString();
         QVERIFY(isVowel(data.front().unicode()));
     }
 
-
-    const auto sortByLength = [&](const QModelIndex &lhs, const QModelIndex &rhs)
-    {
+    const auto sortByLength = [&](const QModelIndex &lhs, const QModelIndex &rhs) {
         return lhs.data().toString().size() < rhs.data().toString().size();
     };
 
@@ -239,13 +240,13 @@ void tst_KDFunctionalSortFilterProxyModel::filterAndSort()
     QVERIFY(rowCount > 0);
     int sizeSoFar = proxy.index(0, 0).data().toString().size();
 
-    for (int row = 0; row < rowCount; ++row) {
+    for (int row = 0; row < rowCount; ++row)
+    {
         const auto data = proxy.index(row, 0).data().toString();
         QVERIFY(isVowel(data.front().unicode()));
         QVERIFY(data.size() >= sizeSoFar);
         sizeSoFar = data.size();
     }
-
 
     // clear filtering, make sure it's still sorted
     proxy.clearFilterAcceptsRowFunction();
@@ -254,7 +255,8 @@ void tst_KDFunctionalSortFilterProxyModel::filterAndSort()
     rowCount = proxy.rowCount();
     QVERIFY(rowCount > 0);
     sizeSoFar = proxy.index(0, 0).data().toString().size();
-    for (int row = 0; row < rowCount; ++row) {
+    for (int row = 0; row < rowCount; ++row)
+    {
         const auto data = proxy.index(row, 0).data().toString();
         QVERIFY(data.size() >= sizeSoFar);
         sizeSoFar = data.size();
@@ -265,8 +267,10 @@ std::unique_ptr<QStandardItemModel> tst_KDFunctionalSortFilterProxyModel::create
 {
     std::unique_ptr<QStandardItemModel> model(new QStandardItemModel(rows, columns));
 
-    for (int row = 0; row < rows; ++row) {
-        for (int column = 0; column < columns; ++column) {
+    for (int row = 0; row < rows; ++row)
+    {
+        for (int column = 0; column < columns; ++column)
+        {
             model->setItem(row, column, new QStandardItem(QStringLiteral("%1-%2").arg(row).arg(column)));
         }
     }

@@ -48,7 +48,8 @@ public:
     // Use \a roleName to build roleNames, as extra convenience.
     // Optionally, also specify which role of the original model
     // should we be mapping to.
-    void setRoleMapping(int column, int dataRole, const QByteArray &roleName = QByteArray(), int columnRole = Qt::DisplayRole);
+    void setRoleMapping(int column, int dataRole, const QByteArray &roleName = QByteArray(),
+                        int columnRole = Qt::DisplayRole);
     void unsetRoleMapping(int dataRole);
 
     // QAbstractItemModel interface
@@ -64,7 +65,8 @@ public:
 
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
-    bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild) override;
+    bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent,
+                  int destinationChild) override;
 
     void fetchMore(const QModelIndex &parent = QModelIndex()) override;
     bool canFetchMore(const QModelIndex &parent = QModelIndex()) const override;
@@ -73,23 +75,23 @@ public:
 
 private:
     QAbstractItemModel *m_sourceModel;
-    template <typename Func1, typename Func2> void connectToSourceModel(Func1 signal, Func2 slot);
+    template<typename Func1, typename Func2>
+    void connectToSourceModel(Func1 signal, Func2 slot);
     std::vector<QMetaObject::Connection> m_sourceModelConnections;
 
-    struct RoleMapping {
-        int dataRole;         // the role in *this* model (accepted by our data())
-        int column;           // dataRole maps to this column in the *source* model
-        QByteArray roleName;  // name for the data role in *this* model
-        int columnRole;       // dataRole also maps to this role in the *source* model
+    struct RoleMapping
+    {
+        int dataRole;        // the role in *this* model (accepted by our data())
+        int column;          // dataRole maps to this column in the *source* model
+        QByteArray roleName; // name for the data role in *this* model
+        int columnRole;      // dataRole also maps to this role in the *source* model
     };
     std::vector<RoleMapping> m_roleMappings;
 
-    struct RoleMappingComparator {
+    struct RoleMappingComparator
+    {
         int m_dataRole;
-        bool operator()(const RoleMapping &mapping) const noexcept
-        {
-            return m_dataRole == mapping.dataRole;
-        }
+        bool operator()(const RoleMapping &mapping) const noexcept { return m_dataRole == mapping.dataRole; }
     };
     std::vector<RoleMapping>::iterator findRoleMapping(int dataRole);
     std::vector<RoleMapping>::const_iterator findRoleMapping(int dataRole) const;
@@ -99,11 +101,14 @@ private:
     // all of QAbstractItemModel signals.
     void sourceModelDestroyed();
 
-    void dataChangedInSourceModel(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
+    void dataChangedInSourceModel(const QModelIndex &topLeft, const QModelIndex &bottomRight,
+                                  const QVector<int> &roles);
     void headerDataChangedInSourceModel(Qt::Orientation orientation, int first, int last);
 
-    void layoutAboutToBeChangedInSourceModel(const QList<QPersistentModelIndex> &parents, QAbstractItemModel::LayoutChangeHint hint);
-    void layoutChangedInSourceModel(const QList<QPersistentModelIndex> &parents, QAbstractItemModel::LayoutChangeHint hint);
+    void layoutAboutToBeChangedInSourceModel(const QList<QPersistentModelIndex> &parents,
+                                             QAbstractItemModel::LayoutChangeHint hint);
+    void layoutChangedInSourceModel(const QList<QPersistentModelIndex> &parents,
+                                    QAbstractItemModel::LayoutChangeHint hint);
 
     void rowsAboutToBeInsertedInSourceModel(const QModelIndex &parent, int start, int end);
     void rowsInsertedInSourceModel(const QModelIndex &parent, int start, int end);
@@ -118,10 +123,12 @@ private:
     void modelAboutToBeResetInSourceModel();
     void modelResetInSourceModel();
 
-    void rowsAboutToBeMovedInSourceModel(const QModelIndex &sourceParent, int sourceStart, int sourceEnd, const QModelIndex &destinationParent, int destinationRow);
+    void rowsAboutToBeMovedInSourceModel(const QModelIndex &sourceParent, int sourceStart, int sourceEnd,
+                                         const QModelIndex &destinationParent, int destinationRow);
     void rowsMovedInSourceModel(const QModelIndex &parent, int start, int end, const QModelIndex &destination, int row);
 
-    void columnsMovedInSourceModel(const QModelIndex &parent, int start, int end, const QModelIndex &destination, int column);
+    void columnsMovedInSourceModel(const QModelIndex &parent, int start, int end, const QModelIndex &destination,
+                                   int column);
 
     // For a layout change that involves rows changing
     QModelIndexList m_ownPersistentIndexesForLayoutChange;

@@ -41,18 +41,24 @@ private Q_SLOTS:
     void constCast();
 };
 
-namespace {
+namespace
+{
 
-struct B {
+struct B
+{
     B() = default;
-    B(const B&) = delete;
-    B& operator=(const B&) = delete;
+    B(const B &) = delete;
+    B &operator=(const B &) = delete;
     virtual ~B() = default;
 };
 
-struct D : B {};
+struct D : B
+{
+};
 
-struct D2 : B {};
+struct D2 : B
+{
+};
 
 } // unnamed namespace
 

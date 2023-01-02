@@ -28,8 +28,8 @@
 #ifndef TABWINDOW_H
 #define TABWINDOW_H
 
-#include <QTabWidget>
 #include <QCursor>
+#include <QTabWidget>
 
 QT_BEGIN_NAMESPACE
 class QWindow;
@@ -43,7 +43,7 @@ class TabWindowManager : public QObject
 public:
     static TabWindowManager *instance();
 
-    QList<TabWindow*> windows() const;
+    QList<TabWindow *> windows() const;
 
     TabWindow *currentWindow() const;
     QWidget *currentWidget() const;
@@ -66,7 +66,7 @@ private:
     TabWindowManager();
 
     friend class TabWindow;
-    QList<TabWindow*> m_windows;
+    QList<TabWindow *> m_windows;
 };
 
 class TabWindow : public QTabWidget

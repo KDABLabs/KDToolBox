@@ -28,13 +28,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
 #include "Data.h"
+#include <QMainWindow>
 
 class TableModel;
 
 QT_BEGIN_NAMESPACE
-namespace Ui {
+namespace Ui
+{
 class MainWindow;
 }
 QT_END_NAMESPACE
@@ -48,16 +49,16 @@ public:
     ~MainWindow();
 
 private:
-    //make some updates to the data
+    // make some updates to the data
     void updateData();
 
 private:
     Ui::MainWindow *ui;
 
-    //the model inheriting from UpdateableModel
-    TableModel* m_model;
+    // the model inheriting from UpdateableModel
+    TableModel *m_model;
 
-    //the data that we are changing and then pushing to the model
+    // the data that we are changing and then pushing to the model
     DataContainer m_data;
 };
 

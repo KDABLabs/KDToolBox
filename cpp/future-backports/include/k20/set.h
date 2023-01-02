@@ -1,7 +1,8 @@
 /****************************************************************************
 **                                MIT License
 **
-** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Marc Mutz <marc.mutz@kdab.com>
+** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Marc Mutz
+*<marc.mutz@kdab.com>
 **
 ** This file is part of KDToolBox (https://github.com/KDAB/KDToolBox).
 **
@@ -31,24 +32,23 @@
 #include <k20/detail/erase_if.h>
 
 // like std::erase/_if
-namespace k20 {
+namespace k20
+{
 #if defined(__cpp_lib_erase_if) && _cpp_lib_erase_if >= 202002L // the version that returns size_type
-    using std::erase_if;
+using std::erase_if;
 
-    // std::experimental::erase_if isn't good enough: returns void
+// std::experimental::erase_if isn't good enough: returns void
 #else
-    template <typename UnaryPredicate, typename...Args>
-    typename std::set<Args...>::size_type
-    erase_if(std::set<Args...>& c, UnaryPredicate pred)
-    {
-        return detail::node_erase_if(c, pred);
-    }
+template<typename UnaryPredicate, typename... Args>
+typename std::set<Args...>::size_type erase_if(std::set<Args...> &c, UnaryPredicate pred)
+{
+    return detail::node_erase_if(c, pred);
+}
 
-    template <typename UnaryPredicate, typename...Args>
-    typename std::multiset<Args...>::size_type
-    erase_if(std::multiset<Args...>& c, UnaryPredicate pred)
-    {
-        return detail::node_erase_if(c, pred);
-    }
+template<typename UnaryPredicate, typename... Args>
+typename std::multiset<Args...>::size_type erase_if(std::multiset<Args...> &c, UnaryPredicate pred)
+{
+    return detail::node_erase_if(c, pred);
+}
 #endif
 } // namespace k20

@@ -26,19 +26,21 @@
 ****************************************************************************/
 
 #include "sortproxymodel.h"
+#include <QDebug>
 #include <QVariant>
 #include <iterator>
-#include <QDebug>
 
-namespace {
-    void buildReverseMap(const std::vector<int>& aToB, std::vector<int>& bToA)
+namespace
+{
+void buildReverseMap(const std::vector<int> &aToB, std::vector<int> &bToA)
+{
+    const auto size = aToB.size();
+    bToA.resize(size);
+    for (size_t i = 0; i < size; ++i)
     {
-        const auto size = aToB.size();
-        bToA.resize(size);
-        for (size_t i = 0; i < size; ++i) {
-            bToA[aToB[i]] = i;
-        }
+        bToA[aToB[i]] = i;
     }
+}
 }
 
 SortProxyModel::SortProxyModel(QObject *parent)
@@ -49,7 +51,7 @@ SortProxyModel::SortProxyModel(QObject *parent)
 
 QModelIndex SortProxyModel::index(int row, int column, const QModelIndex &parent) const
 {
-    Q_ASSERT(!parent.isValid()); //we do not support tree models
+    Q_ASSERT(!parent.isValid()); // we do not support tree models
     Q_UNUSED(parent)
 
     if (!sourceModel())
@@ -71,9 +73,12 @@ QModelIndex SortProxyModel::parent(const QModelIndex &child) const
 int SortProxyModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
-    if (sourceModel()) {
+    if (sourceModel())
+    {
         return static_cast<int>(m_proxyToSourceMap.size());
-    } else {
+    }
+    else
+    {
         return 0;
     }
 }
@@ -82,9 +87,12 @@ int SortProxyModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
     const auto source = sourceModel();
-    if (source) {
+    if (source)
+    {
         return source->columnCount();
-    } else {
+    }
+    else
+    {
         return 0;
     }
 }
@@ -102,7 +110,8 @@ void SortProxyModel::sort(int column, Qt::SortOrder order)
 {
     Q_ASSERT(column >= -1 && column < columnCount());
 
-    if (m_sortColumn != column || m_order != order) {
+    if (m_sortColumn != column || m_order != order)
+    {
         int oldColumn = m_sortColumn;
         int oldOrder = m_order;
 
@@ -120,7 +129,8 @@ void SortProxyModel::sort(int column, Qt::SortOrder order)
 
 QVariant SortProxyModel::data(const QModelIndex &proxyIndex, int role) const
 {
-    if (proxyIndex.isValid() && !isInvalidedRow(proxyIndex.row())) {
+    if (proxyIndex.isValid() && !isInvalidedRow(proxyIndex.row()))
+    {
         return QAbstractProxyModel::data(proxyIndex, role);
     }
     return {};
@@ -128,12 +138,14 @@ QVariant SortProxyModel::data(const QModelIndex &proxyIndex, int role) const
 
 void SortProxyModel::setSourceModel(QAbstractItemModel *model)
 {
-    if (model != sourceModel()) {
+    if (model != sourceModel())
+    {
         beginResetModel();
         if (sourceModel())
             sourceModel()->disconnect(this);
         QAbstractProxyModel::setSourceModel(model);
-        if (model) {
+        if (model)
+        {
             connect(model, &QAbstractItemModel::dataChanged, this, &SortProxyModel::handleDataChanged);
             connect(model, &QAbstractItemModel::rowsInserted, this, &SortProxyModel::handleRowsInserted);
             connect(model, &QAbstractItemModel::rowsRemoved, this, &SortProxyModel::handleRowsRemoved);
@@ -149,7 +161,7 @@ QModelIndex SortProxyModel::mapToSource(const QModelIndex &proxyIndex) const
 
     Q_ASSERT(proxyIndex.model() == this);
 
-    //no further bounds checking, out of bounds indices are a breach of contract
+    // no further bounds checking, out of bounds indices are a breach of contract
     return sourceModel()->index(static_cast<int>(proxyIndex.internalId()), proxyIndex.column());
 }
 
@@ -163,14 +175,15 @@ QModelIndex SortProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
     if (sourceIndex.parent().isValid())
         return {};
 
-    //no further bounds checking, out of bounds indices are a breach of contract
+    // no further bounds checking, out of bounds indices are a breach of contract
     const auto proxyRow = mapToProxyRow(sourceIndex.row());
     return index(proxyRow, sourceIndex.column());
 }
 
 void SortProxyModel::setSortRole(int role)
 {
-    if (m_sortRole != role) {
+    if (m_sortRole != role)
+    {
         m_sortRole = role;
         Q_EMIT sortRoleChanged();
         reorder();
@@ -184,7 +197,8 @@ int SortProxyModel::sortRole() const
 
 void SortProxyModel::setSortCaseSensitivity(Qt::CaseSensitivity sensitivity)
 {
-    if (m_caseSensitivity != sensitivity) {
+    if (m_caseSensitivity != sensitivity)
+    {
         m_caseSensitivity = sensitivity;
         Q_EMIT sortCaseSensitivityChanged();
         reorder();
@@ -211,9 +225,12 @@ bool SortProxyModel::lessThan(const QModelIndex &source_left, const QModelIndex 
     const QVariant lhs = source_left.data(m_sortRole);
     const QVariant rhs = source_right.data(m_sortRole);
 
-    if (lhs.type() == QVariant::String && rhs.type() == QVariant::String) {
+    if (lhs.type() == QVariant::String && rhs.type() == QVariant::String)
+    {
         return QString::compare(lhs.toString(), rhs.toString(), m_caseSensitivity) < 0;
-    } else {
+    }
+    else
+    {
         QT_WARNING_PUSH
         QT_WARNING_DISABLE_DEPRECATED
         return lhs < rhs;
@@ -228,9 +245,10 @@ void SortProxyModel::resetInternalData()
 
 void SortProxyModel::rebuildRowMap()
 {
-    //simple initial sort. No emitting of row moves
+    // simple initial sort. No emitting of row moves
     m_proxyToSourceMap.clear();
-    if (sourceModel()) {
+    if (sourceModel())
+    {
         m_proxyToSourceMap.resize(static_cast<ulong>(sourceModel()->rowCount()));
         std::iota(m_proxyToSourceMap.begin(), m_proxyToSourceMap.end(), 0);
         sortMappingContainer(m_proxyToSourceMap);
@@ -238,27 +256,29 @@ void SortProxyModel::rebuildRowMap()
     buildReverseMap(m_proxyToSourceMap, m_sourceToProxyMap);
 }
 
-template <class Iterator>
+template<class Iterator>
 inline Iterator predecessor(Iterator it)
 {
     --it;
     return it;
 }
 
-template <class Iterator>
+template<class Iterator>
 inline Iterator successor(Iterator it)
 {
     ++it;
     return it;
 }
 
-template <class Iterator, class Predicate>
-inline Iterator find_if_from_back(const Iterator& begin, const Iterator& end, Predicate predicate)
+template<class Iterator, class Predicate>
+inline Iterator find_if_from_back(const Iterator &begin, const Iterator &end, Predicate predicate)
 {
     auto it = end;
-    do {
+    do
+    {
         auto pred = predecessor(it);
-        if (predicate(*pred)) {
+        if (predicate(*pred))
+        {
             return pred;
         }
         it = pred;
@@ -267,25 +287,28 @@ inline Iterator find_if_from_back(const Iterator& begin, const Iterator& end, Pr
     return end;
 }
 
-template <class Iterator>
-inline Iterator find_from_back(const Iterator& begin, const Iterator& end, const typename Iterator::value_type &value)
+template<class Iterator>
+inline Iterator find_from_back(const Iterator &begin, const Iterator &end, const typename Iterator::value_type &value)
 {
-    const auto predicate = [value](const typename Iterator::value_type &itemValue){return itemValue == value;};
+    const auto predicate = [value](const typename Iterator::value_type &itemValue) { return itemValue == value; };
 
     return find_if_from_back(begin, end, predicate);
 }
 
 void SortProxyModel::reorder()
 {
-    //update the sort order. Emits row moves
-    if (m_proxyToSourceMap.empty()) //checks emptiness, doesn't empty by itself
+    // update the sort order. Emits row moves
+    if (m_proxyToSourceMap.empty()) // checks emptiness, doesn't empty by itself
         return;
 
-    auto newOrder = m_proxyToSourceMap; //deep copy
+    auto newOrder = m_proxyToSourceMap; // deep copy
 
-    if (m_sortColumn == -1) {
+    if (m_sortColumn == -1)
+    {
         std::iota(newOrder.begin(), newOrder.end(), 0);
-    } else {
+    }
+    else
+    {
         sortMappingContainer(newOrder);
     }
     // during a reorder, we don't try to keep the reverse map in order. We clear and rebuild later.
@@ -294,18 +317,22 @@ void SortProxyModel::reorder()
     auto orderedIt = predecessor(newOrder.end());
     auto unorderedIt = predecessor(m_proxyToSourceMap.end());
 
-    while (orderedIt != newOrder.begin()) {
-        if (*orderedIt == *unorderedIt) {
-            --orderedIt; --unorderedIt;
-        } else {
+    while (orderedIt != newOrder.begin())
+    {
+        if (*orderedIt == *unorderedIt)
+        {
+            --orderedIt;
+            --unorderedIt;
+        }
+        else
+        {
             auto it = find_from_back(m_proxyToSourceMap.begin(), unorderedIt, *orderedIt);
-            //we know it is valid, as newOrder is just a permutation of m_rowMap
+            // we know it is valid, as newOrder is just a permutation of m_rowMap
             int movedRow = static_cast<int>(it - m_proxyToSourceMap.begin());
             int destinationRow = static_cast<int>(unorderedIt - m_proxyToSourceMap.begin()) + 1;
             int moveCount = 1;
 
-            while (it != m_proxyToSourceMap.begin() &&
-                   orderedIt != newOrder.begin() &&
+            while (it != m_proxyToSourceMap.begin() && orderedIt != newOrder.begin() &&
                    *predecessor(it) == *predecessor(orderedIt))
             {
                 ++moveCount;
@@ -314,11 +341,14 @@ void SortProxyModel::reorder()
                 --orderedIt;
             }
             bool ok = beginMoveRows(QModelIndex(), movedRow, movedRow + moveCount - 1, QModelIndex(), destinationRow);
-            if (!ok) {
-                qWarning() << "moveRows from" << movedRow << "up to" << movedRow + moveCount - 1 << "to" << destinationRow;
+            if (!ok)
+            {
+                qWarning() << "moveRows from" << movedRow << "up to" << movedRow + moveCount - 1 << "to"
+                           << destinationRow;
                 QStringList contents;
                 contents.reserve(rowCount());
-                for(int row = 0; row < rowCount(); ++row) {
+                for (int row = 0; row < rowCount(); ++row)
+                {
                     contents << index(row).data(m_sortRole).toString();
                 }
                 qWarning() << "moving failed. Current contents:" << contents.join(", ");
@@ -339,9 +369,8 @@ void SortProxyModel::sortMappingContainer(std::vector<int> &container)
     if (m_sortColumn == -1)
         return;
 
-    std::sort(container.begin(), container.end(), [this](int lhs, int rhs){
-        return lessThan(lhs, rhs) != (m_order == Qt::DescendingOrder);
-    });
+    std::sort(container.begin(), container.end(),
+              [this](int lhs, int rhs) { return lessThan(lhs, rhs) != (m_order == Qt::DescendingOrder); });
 }
 
 bool SortProxyModel::lessThan(int source_left_row, int source_right_row) const
@@ -355,54 +384,63 @@ bool SortProxyModel::lessThan(int source_left_row, int source_right_row) const
 
 int SortProxyModel::mapToProxyRow(int sourceRow) const
 {
-    if (!m_sourceToProxyMap.empty()) {
-        //we have an up-to-date reverse mapping, so use that
+    if (!m_sourceToProxyMap.empty())
+    {
+        // we have an up-to-date reverse mapping, so use that
         return m_sourceToProxyMap[sourceRow];
     }
 
-    //reverse mapping is not up to date, use slower linear search instead
+    // reverse mapping is not up to date, use slower linear search instead
     auto it = std::find(m_proxyToSourceMap.cbegin(), m_proxyToSourceMap.cend(), sourceRow);
     return static_cast<int>(it - m_proxyToSourceMap.cbegin());
 }
 
-void SortProxyModel::handleDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
+void SortProxyModel::handleDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight,
+                                       const QVector<int> &roles)
 {
-    //Map the row-range
+    // Map the row-range
     const int firstSrcRow = topLeft.row();
     const std::vector<int>::size_type rowCnt = bottomRight.row() - firstSrcRow + 1;
     std::vector<int> rows(rowCnt);
-    for (int r = 0; r < (int)rowCnt; ++r) {
+    for (int r = 0; r < (int)rowCnt; ++r)
+    {
         rows[r] = mapToProxyRow(r + firstSrcRow);
     }
     std::sort(rows.begin(), rows.end());
 
-    //convert the vector of ints indicating changed columns into a vector of pairs of ints indicating ranges.
-    //for example, the vector {1, 2, 3, 5, 6, 9} would be converted to {{1, 3}, {5, 6}, {9, 9}}
-    struct ColumnRange {
+    // convert the vector of ints indicating changed columns into a vector of pairs of ints indicating ranges.
+    // for example, the vector {1, 2, 3, 5, 6, 9} would be converted to {{1, 3}, {5, 6}, {9, 9}}
+    struct ColumnRange
+    {
         int from;
         int to;
     };
 
     using ColumnRanges = std::vector<ColumnRange>;
     auto accumulator = [](ColumnRanges ranges, int column) {
-        if (ranges.empty() || (ranges.back().to < column - 1)) {
+        if (ranges.empty() || (ranges.back().to < column - 1))
+        {
             ranges.push_back({column, column});
-        } else {
+        }
+        else
+        {
             ranges.back().to = column;
         }
         return ranges;
     };
     const ColumnRanges ranges = std::accumulate(rows.begin(), rows.end(), ColumnRanges(), accumulator);
 
-    //re-emit the dataChanged signals
-    for (const auto& range: ranges) {
+    // re-emit the dataChanged signals
+    for (const auto &range : ranges)
+    {
         QModelIndex pTopLeft = index(range.from, topLeft.column());
         QModelIndex pBottomRight = index(range.to, bottomRight.column());
         Q_EMIT dataChanged(pTopLeft, pBottomRight, roles);
     }
 
-    //re-order if needed
-    if (roles.isEmpty() || roles.contains(m_sortRole)) {
+    // re-order if needed
+    if (roles.isEmpty() || roles.contains(m_sortRole))
+    {
         reorder();
     }
 }
@@ -412,35 +450,40 @@ void SortProxyModel::handleRowsInserted(const QModelIndex &parent, int firstNewR
     if (parent.isValid())
         return;
 
-    //reverse mapping is now invalid
+    // reverse mapping is now invalid
     m_sourceToProxyMap.clear();
 
-    //create a mapping for the new rows
+    // create a mapping for the new rows
     std::vector<int> newRowsMap;
     newRowsMap.resize(static_cast<ulong>(lastNewRow - firstNewRow + 1));
     std::iota(newRowsMap.begin(), newRowsMap.end(), firstNewRow);
     sortMappingContainer(newRowsMap);
 
-    //update the row indices in the mapping pointing to rows that shifted backwards
+    // update the row indices in the mapping pointing to rows that shifted backwards
     const int shift = lastNewRow - firstNewRow + 1;
-    for (auto &oldPos : m_proxyToSourceMap) {
-        if (oldPos >= firstNewRow) {
+    for (auto &oldPos : m_proxyToSourceMap)
+    {
+        if (oldPos >= firstNewRow)
+        {
             oldPos += shift;
         }
     }
 
-    //assure we have enough space for the new items (and avoid reallocations that can break iterators)
+    // assure we have enough space for the new items (and avoid reallocations that can break iterators)
     m_proxyToSourceMap.reserve(m_proxyToSourceMap.size() + newRowsMap.size());
 
-    //now merge the new rows into the mapping we already have
+    // now merge the new rows into the mapping we already have
     auto newIt = newRowsMap.begin();
     auto curIt = m_proxyToSourceMap.begin();
 
-    while (curIt != m_proxyToSourceMap.end() && newIt != newRowsMap.end()) {
-        if (lessThan(*newIt, *curIt)) {
+    while (curIt != m_proxyToSourceMap.end() && newIt != newRowsMap.end())
+    {
+        if (lessThan(*newIt, *curIt))
+        {
             auto firstInsert = newIt;
-            //see how many more items we can insert in one go
-            while (successor(newIt) != newRowsMap.end() && !lessThan(*curIt, *successor(newIt))) {
+            // see how many more items we can insert in one go
+            while (successor(newIt) != newRowsMap.end() && !lessThan(*curIt, *successor(newIt)))
+            {
                 ++newIt;
             }
             const auto insertStartPos = static_cast<int>(curIt - m_proxyToSourceMap.begin());
@@ -450,12 +493,15 @@ void SortProxyModel::handleRowsInserted(const QModelIndex &parent, int firstNewR
             ++curIt;
             endInsertRows();
             ++newIt;
-        } else {
+        }
+        else
+        {
             ++curIt;
         }
     }
     // handle case of insert at the end of the container: insert the remaining items in newRowsMap
-    if (curIt == m_proxyToSourceMap.end() && newIt != newRowsMap.end()) {
+    if (curIt == m_proxyToSourceMap.end() && newIt != newRowsMap.end())
+    {
         const auto insertStartPos = static_cast<int>(curIt - m_proxyToSourceMap.begin());
         const auto insertLength = static_cast<int>(newRowsMap.end() - newIt);
         beginInsertRows({}, insertStartPos, insertStartPos + insertLength - 1);
@@ -471,19 +517,23 @@ void SortProxyModel::handleRowsRemoved(const QModelIndex &parent, int firstRemov
     if (parent.isValid())
         return;
 
-    //reverse mapping is now invalid
+    // reverse mapping is now invalid
     m_sourceToProxyMap.clear();
 
-    //update the row indices in the mapping pointing to rows that shifted forwards and build
-    //  up list of rows to remove
+    // update the row indices in the mapping pointing to rows that shifted forwards and build
+    //   up list of rows to remove
     const int shift = lastRemovedRow - firstRemovedRow + 1;
     std::vector<int> removedRows;
     removedRows.reserve(static_cast<ulong>(shift));
     int row = 0;
-    for (auto &oldPos : m_proxyToSourceMap) {
-        if (oldPos > lastRemovedRow) {
+    for (auto &oldPos : m_proxyToSourceMap)
+    {
+        if (oldPos > lastRemovedRow)
+        {
             oldPos -= shift;
-        } else if (oldPos >= firstRemovedRow) {
+        }
+        else if (oldPos >= firstRemovedRow)
+        {
             removedRows.push_back(row);
         }
         ++row;
@@ -493,16 +543,19 @@ void SortProxyModel::handleRowsRemoved(const QModelIndex &parent, int firstRemov
 
     m_invalidatedRows = make_pair(removedRows.begin(), removedRows.end());
 
-    //iterates backwards through the list of rows to remove so the indices in removedRows stay
-    //  correct during the iteration
+    // iterates backwards through the list of rows to remove so the indices in removedRows stay
+    //   correct during the iteration
     auto it = predecessor(removedRows.end());
-    for (;;) {
+    for (;;)
+    {
         auto lastRowToRemove = *it;
-        //see if we have consecutive rows we can remove in one go
-        while (it != removedRows.begin() && *predecessor(it) == *it - 1) --it;
+        // see if we have consecutive rows we can remove in one go
+        while (it != removedRows.begin() && *predecessor(it) == *it - 1)
+            --it;
         auto firstRowToRemove = *it;
         beginRemoveRows({}, firstRowToRemove, lastRowToRemove);
-        m_proxyToSourceMap.erase(m_proxyToSourceMap.begin() + firstRowToRemove, m_proxyToSourceMap.begin() + lastRowToRemove + 1);
+        m_proxyToSourceMap.erase(m_proxyToSourceMap.begin() + firstRowToRemove,
+                                 m_proxyToSourceMap.begin() + lastRowToRemove + 1);
         m_invalidatedRows.second = it;
         endRemoveRows();
 
@@ -530,7 +583,7 @@ void SortProxyModel::handleRowsRemoved(const QModelIndex &parent, int firstRemov
  */
 bool SortProxyModel::isInvalidedRow(const int row) const
 {
-    //m_invalidatedRows only contains a valid range during a remove operation that involves multiple rows
+    // m_invalidatedRows only contains a valid range during a remove operation that involves multiple rows
     return std::any_of(m_invalidatedRows.first, m_invalidatedRows.second,
-                       [row](int invalidated) {return invalidated==row;} );
+                       [row](int invalidated) { return invalidated == row; });
 }

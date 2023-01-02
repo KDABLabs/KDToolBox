@@ -31,28 +31,29 @@
 
 #include <utility>
 
-inline namespace KDToolBox {
+inline namespace KDToolBox
+{
 
-template <typename To, typename From>
-QSharedPointer<To> static_pointer_cast(const QSharedPointer<From>& from)
+template<typename To, typename From>
+QSharedPointer<To> static_pointer_cast(const QSharedPointer<From> &from)
 {
     return from.template staticCast<To>();
 }
 
-template <typename To, typename From>
-QSharedPointer<To> dynamic_pointer_cast(const QSharedPointer<From>& from)
+template<typename To, typename From>
+QSharedPointer<To> dynamic_pointer_cast(const QSharedPointer<From> &from)
 {
     return from.template dynamicCast<To>();
 }
 
-template <typename To, typename From>
-QSharedPointer<To> const_pointer_cast(const QSharedPointer<From>& from)
+template<typename To, typename From>
+QSharedPointer<To> const_pointer_cast(const QSharedPointer<From> &from)
 {
     return from.template constCast<To>();
 }
 
-template <typename T, typename...Args>
-QSharedPointer<T> make_qshared(Args&&...args)
+template<typename T, typename... Args>
+QSharedPointer<T> make_qshared(Args &&...args)
 {
     return QSharedPointer<T>::create(std::forward<Args>(args)...);
 }

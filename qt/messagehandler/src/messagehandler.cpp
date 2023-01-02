@@ -30,12 +30,14 @@
 #include <QBasicMutex>
 
 #include <atomic>
-#include <mutex>
 #include <forward_list>
+#include <mutex>
 
-namespace {
+namespace
+{
 
-struct RegisteredCallback {
+struct RegisteredCallback
+{
     const RegisteredCallback *next;
     QtMsgType messageType;
     QRegularExpression pattern;
@@ -44,11 +46,12 @@ struct RegisteredCallback {
 
 std::once_flag oldMessageHandlerFlag;
 std::atomic<QtMessageHandler> oldMessageHandler;
-std::atomic<const RegisteredCallback*> callbacks;
+std::atomic<const RegisteredCallback *> callbacks;
 
 bool isMessageTypeCompatibleWith(QtMsgType in, QtMsgType reference)
 {
-    switch (in) {
+    switch (in)
+    {
     case QtDebugMsg:
         if (reference == QtInfoMsg)
             return false;
@@ -62,7 +65,8 @@ bool isMessageTypeCompatibleWith(QtMsgType in, QtMsgType reference)
             return false;
         break;
     case QtFatalMsg:
-        if (reference == QtCriticalMsg || reference == QtWarningMsg || reference == QtDebugMsg || reference == QtInfoMsg)
+        if (reference == QtCriticalMsg || reference == QtWarningMsg || reference == QtDebugMsg ||
+            reference == QtInfoMsg)
             return false;
         break;
     case QtInfoMsg:
@@ -74,20 +78,23 @@ bool isMessageTypeCompatibleWith(QtMsgType in, QtMsgType reference)
 
 void ourMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message)
 {
-    for (auto it = callbacks.load(std::memory_order_acquire); it; it = it->next) { // synchronizes-with store-release in registerMessageHandler
+    for (auto it = callbacks.load(std::memory_order_acquire); it; it = it->next)
+    { // synchronizes-with store-release in registerMessageHandler
         if (!isMessageTypeCompatibleWith(it->messageType, type))
             continue;
         if (message.contains(it->pattern))
             it->callback();
     }
 
-    if (auto h = oldMessageHandler.load(std::memory_order_acquire)) // synchronizes-with the store-release in installOurMessageHandler()
+    if (auto h = oldMessageHandler.load(
+            std::memory_order_acquire)) // synchronizes-with the store-release in installOurMessageHandler()
         h(type, context, message);
 }
 
 } // anonymous namespace
 
-void KDToolBox::Private::registerMessageHandler(QtMsgType type, const QRegularExpression &pattern, std::function<void()> func)
+void KDToolBox::Private::registerMessageHandler(QtMsgType type, const QRegularExpression &pattern,
+                                                std::function<void()> func)
 {
     const auto installOurMessageHandler = [] {
         oldMessageHandler.store(qInstallMessageHandler(&ourMessageHandler),
@@ -97,7 +104,9 @@ void KDToolBox::Private::registerMessageHandler(QtMsgType type, const QRegularEx
 
     auto tmp = new RegisteredCallback{nullptr, type, pattern, std::move(func)};
     auto expected = callbacks.load(std::memory_order_relaxed); // just the pointer value
-    do {
+    do
+    {
         tmp->next = expected;
-    } while (!callbacks.compare_exchange_weak(expected, tmp, std::memory_order_release)); // synchronizes-with load-acquire in outMessageHandler
+    } while (!callbacks.compare_exchange_weak(
+        expected, tmp, std::memory_order_release)); // synchronizes-with load-acquire in outMessageHandler
 }

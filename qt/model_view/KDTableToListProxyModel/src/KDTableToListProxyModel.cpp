@@ -39,7 +39,8 @@ QAbstractItemModel *KDTableToListProxyModel::sourceModel() const
     return m_sourceModel;
 }
 
-template <typename Func1, typename Func2> void KDTableToListProxyModel::connectToSourceModel(Func1 signal, Func2 slot)
+template<typename Func1, typename Func2>
+void KDTableToListProxyModel::connectToSourceModel(Func1 signal, Func2 slot)
 {
     Q_ASSERT(m_sourceModel);
     auto connection = connect(m_sourceModel, signal, this, slot);
@@ -48,14 +49,17 @@ template <typename Func1, typename Func2> void KDTableToListProxyModel::connectT
 
 void KDTableToListProxyModel::setSourceModel(QAbstractItemModel *model)
 {
-    if (m_sourceModel == model) {
+    if (m_sourceModel == model)
+    {
         return;
     }
 
     beginResetModel();
 
-    if (m_sourceModel) {
-        for (const auto &connection : m_sourceModelConnections) {
+    if (m_sourceModel)
+    {
+        for (const auto &connection : m_sourceModelConnections)
+        {
             QObject::disconnect(connection);
         }
         m_sourceModelConnections.clear();
@@ -63,30 +67,39 @@ void KDTableToListProxyModel::setSourceModel(QAbstractItemModel *model)
 
     m_sourceModel = model;
 
-    if (m_sourceModel) {
+    if (m_sourceModel)
+    {
         m_sourceModelConnections.reserve(16);
         connectToSourceModel(&QObject::destroyed, &KDTableToListProxyModel::sourceModelDestroyed);
 
         connectToSourceModel(&QAbstractItemModel::dataChanged, &KDTableToListProxyModel::dataChangedInSourceModel);
-        connectToSourceModel(&QAbstractItemModel::headerDataChanged, &KDTableToListProxyModel::headerDataChangedInSourceModel);
+        connectToSourceModel(&QAbstractItemModel::headerDataChanged,
+                             &KDTableToListProxyModel::headerDataChangedInSourceModel);
 
-        connectToSourceModel(&QAbstractItemModel::layoutAboutToBeChanged, &KDTableToListProxyModel::layoutAboutToBeChangedInSourceModel);
+        connectToSourceModel(&QAbstractItemModel::layoutAboutToBeChanged,
+                             &KDTableToListProxyModel::layoutAboutToBeChangedInSourceModel);
         connectToSourceModel(&QAbstractItemModel::layoutChanged, &KDTableToListProxyModel::layoutChangedInSourceModel);
 
-        connectToSourceModel(&QAbstractItemModel::rowsAboutToBeInserted, &KDTableToListProxyModel::rowsAboutToBeInsertedInSourceModel);
+        connectToSourceModel(&QAbstractItemModel::rowsAboutToBeInserted,
+                             &KDTableToListProxyModel::rowsAboutToBeInsertedInSourceModel);
         connectToSourceModel(&QAbstractItemModel::rowsInserted, &KDTableToListProxyModel::rowsInsertedInSourceModel);
 
-        connectToSourceModel(&QAbstractItemModel::rowsAboutToBeRemoved, &KDTableToListProxyModel::rowsAboutToBeRemovedInSourceModel);
+        connectToSourceModel(&QAbstractItemModel::rowsAboutToBeRemoved,
+                             &KDTableToListProxyModel::rowsAboutToBeRemovedInSourceModel);
         connectToSourceModel(&QAbstractItemModel::rowsRemoved, &KDTableToListProxyModel::rowsRemovedInSourceModel);
 
-        connectToSourceModel(&QAbstractItemModel::columnsInserted, &KDTableToListProxyModel::columnsInsertedInSourceModel);
+        connectToSourceModel(&QAbstractItemModel::columnsInserted,
+                             &KDTableToListProxyModel::columnsInsertedInSourceModel);
 
-        connectToSourceModel(&QAbstractItemModel::columnsRemoved, &KDTableToListProxyModel::columnsRemovedInSourceModel);
+        connectToSourceModel(&QAbstractItemModel::columnsRemoved,
+                             &KDTableToListProxyModel::columnsRemovedInSourceModel);
 
-        connectToSourceModel(&QAbstractItemModel::modelAboutToBeReset, &KDTableToListProxyModel::modelAboutToBeResetInSourceModel);
+        connectToSourceModel(&QAbstractItemModel::modelAboutToBeReset,
+                             &KDTableToListProxyModel::modelAboutToBeResetInSourceModel);
         connectToSourceModel(&QAbstractItemModel::modelReset, &KDTableToListProxyModel::modelResetInSourceModel);
 
-        connectToSourceModel(&QAbstractItemModel::rowsAboutToBeMoved, &KDTableToListProxyModel::rowsAboutToBeMovedInSourceModel);
+        connectToSourceModel(&QAbstractItemModel::rowsAboutToBeMoved,
+                             &KDTableToListProxyModel::rowsAboutToBeMovedInSourceModel);
         connectToSourceModel(&QAbstractItemModel::rowsMoved, &KDTableToListProxyModel::rowsMovedInSourceModel);
 
         connectToSourceModel(&QAbstractItemModel::columnsMoved, &KDTableToListProxyModel::columnsMovedInSourceModel);
@@ -97,12 +110,14 @@ void KDTableToListProxyModel::setSourceModel(QAbstractItemModel *model)
 
 QModelIndex KDTableToListProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
 {
-    if (!sourceIndex.isValid()) {
+    if (!sourceIndex.isValid())
+    {
         // root
         return QModelIndex();
     }
 
-    if (sourceIndex.parent().isValid()) {
+    if (sourceIndex.parent().isValid())
+    {
         // non-top-level index
         return QModelIndex();
     }
@@ -122,12 +137,15 @@ void KDTableToListProxyModel::setRoleMapping(int column, int dataRole, const QBy
     // There is no signal to notify a change in the role names... must reset the model.
     beginResetModel();
 
-    RoleMapping mapping{ dataRole, column, roleName, columnRole };
+    RoleMapping mapping{dataRole, column, roleName, columnRole};
 
     const auto it = findRoleMapping(dataRole);
-    if (it == m_roleMappings.end()) {
+    if (it == m_roleMappings.end())
+    {
         m_roleMappings.push_back(std::move(mapping));
-    } else {
+    }
+    else
+    {
         *it = std::move(mapping);
     }
 
@@ -138,7 +156,8 @@ void KDTableToListProxyModel::unsetRoleMapping(int dataRole)
 {
     Q_ASSERT(dataRole >= 0);
     const auto it = findRoleMapping(dataRole);
-    if (it == m_roleMappings.end()) {
+    if (it == m_roleMappings.end())
+    {
         return;
     }
 
@@ -163,11 +182,13 @@ QModelIndex KDTableToListProxyModel::parent(const QModelIndex &child) const
 int KDTableToListProxyModel::rowCount(const QModelIndex &parent) const
 {
     Q_ASSERT(checkIndex(parent));
-    if (parent.isValid()) {
+    if (parent.isValid())
+    {
         return 0;
     }
 
-    if (m_sourceModel) {
+    if (m_sourceModel)
+    {
         return m_sourceModel->rowCount();
     }
     return 0;
@@ -176,11 +197,13 @@ int KDTableToListProxyModel::rowCount(const QModelIndex &parent) const
 int KDTableToListProxyModel::columnCount(const QModelIndex &parent) const
 {
     Q_ASSERT(checkIndex(parent));
-    if (parent.isValid()) {
+    if (parent.isValid())
+    {
         return 0;
     }
 
-    if (m_sourceModel) {
+    if (m_sourceModel)
+    {
         return 1;
     }
     return 0;
@@ -192,7 +215,8 @@ QVariant KDTableToListProxyModel::data(const QModelIndex &index, int role) const
     Q_ASSERT(m_sourceModel);
 
     auto it = findRoleMapping(role);
-    if (it == m_roleMappings.end()) {
+    if (it == m_roleMappings.end())
+    {
         return QVariant();
     }
 
@@ -206,7 +230,8 @@ bool KDTableToListProxyModel::setData(const QModelIndex &index, const QVariant &
     Q_ASSERT(m_sourceModel);
 
     auto it = findRoleMapping(role);
-    if (it == m_roleMappings.end()) {
+    if (it == m_roleMappings.end())
+    {
         return false;
     }
 
@@ -227,12 +252,14 @@ bool KDTableToListProxyModel::setItemData(const QModelIndex &index, const QMap<i
     // Partition roles based on the column they refer to.
     // The idea is to use that column to build an index in the source model,
     // then call setItemData there (with the partition of values to set).
-    while (ok && !roles.empty()) {
+    while (ok && !roles.empty())
+    {
         auto rolesIt = roles.begin();
 
         // Find the column we're using as partitioning criterion
         const auto roleMappingIt = constFindRoleMapping(rolesIt.key());
-        if (roleMappingIt == m_roleMappings.cend()) {
+        if (roleMappingIt == m_roleMappings.cend())
+        {
             // Role not mapped to any column; remove and restart
             rolesIt = roles.erase(rolesIt);
             continue;
@@ -244,17 +271,22 @@ bool KDTableToListProxyModel::setItemData(const QModelIndex &index, const QMap<i
         // remove them from roles, and add the corresponding ones in the source
         // model to a new map.
         QMap<int, QVariant> rolesForSameSourceIndex;
-        while (rolesIt != roles.end()) {
+        while (rolesIt != roles.end())
+        {
             const auto roleMappingIt = constFindRoleMapping(rolesIt.key());
-            if (roleMappingIt == m_roleMappings.cend()) {
+            if (roleMappingIt == m_roleMappings.cend())
+            {
                 rolesIt = roles.erase(rolesIt);
                 continue;
             }
 
-            if (roleMappingIt->column == partitioningColumn) {
+            if (roleMappingIt->column == partitioningColumn)
+            {
                 rolesForSameSourceIndex.insert(roleMappingIt->columnRole, std::move(rolesIt.value()));
                 rolesIt = roles.erase(rolesIt);
-            } else {
+            }
+            else
+            {
                 ++rolesIt;
             }
         }
@@ -270,11 +302,13 @@ bool KDTableToListProxyModel::setItemData(const QModelIndex &index, const QMap<i
 
 QVariant KDTableToListProxyModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    switch (orientation) {
+    switch (orientation)
+    {
     case Qt::Horizontal:
         break;
     case Qt::Vertical:
-        if (m_sourceModel) {
+        if (m_sourceModel)
+        {
             return m_sourceModel->headerData(section, orientation, role);
         }
     }
@@ -284,11 +318,13 @@ QVariant KDTableToListProxyModel::headerData(int section, Qt::Orientation orient
 
 bool KDTableToListProxyModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
 {
-    switch (orientation) {
+    switch (orientation)
+    {
     case Qt::Horizontal:
         break;
     case Qt::Vertical:
-        if (m_sourceModel) {
+        if (m_sourceModel)
+        {
             return m_sourceModel->setHeaderData(section, orientation, value, role);
         }
     }
@@ -299,7 +335,8 @@ bool KDTableToListProxyModel::setHeaderData(int section, Qt::Orientation orienta
 bool KDTableToListProxyModel::insertRows(int row, int count, const QModelIndex &parent)
 {
     Q_ASSERT(!parent.isValid());
-    if (!m_sourceModel) {
+    if (!m_sourceModel)
+    {
         return false;
     }
     return m_sourceModel->insertRows(row, count);
@@ -308,13 +345,15 @@ bool KDTableToListProxyModel::insertRows(int row, int count, const QModelIndex &
 bool KDTableToListProxyModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     Q_ASSERT(!parent.isValid());
-    if (!m_sourceModel) {
+    if (!m_sourceModel)
+    {
         return false;
     }
     return m_sourceModel->removeRows(row, count);
 }
 
-bool KDTableToListProxyModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild)
+bool KDTableToListProxyModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int count,
+                                       const QModelIndex &destinationParent, int destinationChild)
 {
     Q_ASSERT(!sourceParent.isValid());
     Q_ASSERT(!destinationParent.isValid());
@@ -324,7 +363,8 @@ bool KDTableToListProxyModel::moveRows(const QModelIndex &sourceParent, int sour
 void KDTableToListProxyModel::fetchMore(const QModelIndex &parent)
 {
     Q_ASSERT(!parent.isValid());
-    if (!m_sourceModel) {
+    if (!m_sourceModel)
+    {
         return;
     }
     m_sourceModel->fetchMore(QModelIndex());
@@ -333,7 +373,8 @@ void KDTableToListProxyModel::fetchMore(const QModelIndex &parent)
 bool KDTableToListProxyModel::canFetchMore(const QModelIndex &parent) const
 {
     Q_ASSERT(!parent.isValid());
-    if (!m_sourceModel) {
+    if (!m_sourceModel)
+    {
         return false;
     }
     return m_sourceModel->canFetchMore(QModelIndex());
@@ -343,8 +384,10 @@ QHash<int, QByteArray> KDTableToListProxyModel::roleNames() const
 {
     QHash<int, QByteArray> result;
 
-    for (const auto &mapping : m_roleMappings) {
-        if (!mapping.roleName.isEmpty()) {
+    for (const auto &mapping : m_roleMappings)
+    {
+        if (!mapping.roleName.isEmpty())
+        {
             result[mapping.dataRole] = mapping.roleName;
         }
     }
@@ -354,19 +397,17 @@ QHash<int, QByteArray> KDTableToListProxyModel::roleNames() const
 
 std::vector<KDTableToListProxyModel::RoleMapping>::iterator KDTableToListProxyModel::findRoleMapping(int dataRole)
 {
-    return std::find_if(m_roleMappings.begin(),
-                        m_roleMappings.end(),
-                        RoleMappingComparator{dataRole});
+    return std::find_if(m_roleMappings.begin(), m_roleMappings.end(), RoleMappingComparator{dataRole});
 }
 
-std::vector<KDTableToListProxyModel::RoleMapping>::const_iterator KDTableToListProxyModel::findRoleMapping(int dataRole) const
+std::vector<KDTableToListProxyModel::RoleMapping>::const_iterator
+KDTableToListProxyModel::findRoleMapping(int dataRole) const
 {
-    return std::find_if(m_roleMappings.begin(),
-                        m_roleMappings.end(),
-                        RoleMappingComparator{dataRole});
+    return std::find_if(m_roleMappings.begin(), m_roleMappings.end(), RoleMappingComparator{dataRole});
 }
 
-std::vector<KDTableToListProxyModel::RoleMapping>::const_iterator KDTableToListProxyModel::constFindRoleMapping(int dataRole) const
+std::vector<KDTableToListProxyModel::RoleMapping>::const_iterator
+KDTableToListProxyModel::constFindRoleMapping(int dataRole) const
 {
     return findRoleMapping(dataRole);
 }
@@ -376,10 +417,12 @@ void KDTableToListProxyModel::sourceModelDestroyed()
     setSourceModel(nullptr);
 }
 
-void KDTableToListProxyModel::dataChangedInSourceModel(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
+void KDTableToListProxyModel::dataChangedInSourceModel(const QModelIndex &topLeft, const QModelIndex &bottomRight,
+                                                       const QVector<int> &roles)
 {
     Q_ASSERT(topLeft.parent() == bottomRight.parent());
-    if (topLeft.parent().isValid()) {
+    if (topLeft.parent().isValid())
+    {
         // Non-top level items changed, we don't display those
         return;
     }
@@ -394,14 +437,17 @@ void KDTableToListProxyModel::dataChangedInSourceModel(const QModelIndex &topLef
 
     QVector<int> mappedRolesChanged;
 
-    for (const auto &mapping : m_roleMappings) {
-        if (firstColumn <= mapping.column && mapping.column <= lastColumn) {
+    for (const auto &mapping : m_roleMappings)
+    {
+        if (firstColumn <= mapping.column && mapping.column <= lastColumn)
+        {
             if (roles.isEmpty() || roles.contains(mapping.columnRole))
                 mappedRolesChanged.append(mapping.dataRole);
         }
     }
 
-    if (mappedRolesChanged.isEmpty()) {
+    if (mappedRolesChanged.isEmpty())
+    {
         return;
     }
 
@@ -412,7 +458,8 @@ void KDTableToListProxyModel::dataChangedInSourceModel(const QModelIndex &topLef
 
 void KDTableToListProxyModel::headerDataChangedInSourceModel(Qt::Orientation orientation, int first, int last)
 {
-    switch (orientation) {
+    switch (orientation)
+    {
     case Qt::Horizontal:
         break;
     case Qt::Vertical:
@@ -421,7 +468,8 @@ void KDTableToListProxyModel::headerDataChangedInSourceModel(Qt::Orientation ori
     }
 }
 
-void KDTableToListProxyModel::layoutAboutToBeChangedInSourceModel(const QList<QPersistentModelIndex> &parents, QAbstractItemModel::LayoutChangeHint hint)
+void KDTableToListProxyModel::layoutAboutToBeChangedInSourceModel(const QList<QPersistentModelIndex> &parents,
+                                                                  QAbstractItemModel::LayoutChangeHint hint)
 {
     // Does the source model have any top-level item at all?
     if (!m_sourceModel->hasChildren())
@@ -431,7 +479,8 @@ void KDTableToListProxyModel::layoutAboutToBeChangedInSourceModel(const QList<QP
     if (!parents.isEmpty() && !parents.contains(QModelIndex()))
         return;
 
-    switch (hint) {
+    switch (hint)
+    {
     case QAbstractItemModel::NoLayoutChangeHint:
         // Anything could've happened here. *Any* index could have been moved
         // to *any* other position under *any* other parent; and, rows/columns
@@ -465,13 +514,11 @@ void KDTableToListProxyModel::layoutAboutToBeChangedInSourceModel(const QList<QP
         m_ownPersistentIndexesForLayoutChange = persistentIndexList();
 
         m_sourcePersistentIndexesForLayoutChange.reserve(m_ownPersistentIndexesForLayoutChange.size());
-        std::transform(m_ownPersistentIndexesForLayoutChange.cbegin(),
-                       m_ownPersistentIndexesForLayoutChange.cend(),
+        std::transform(m_ownPersistentIndexesForLayoutChange.cbegin(), m_ownPersistentIndexesForLayoutChange.cend(),
                        std::back_inserter(m_sourcePersistentIndexesForLayoutChange),
-                       [this](const QModelIndex &proxyIndex)
-        {
-            return QPersistentModelIndex(m_sourceModel->index(proxyIndex.row(), 0));
-        });
+                       [this](const QModelIndex &proxyIndex) {
+                           return QPersistentModelIndex(m_sourceModel->index(proxyIndex.row(), 0));
+                       });
 
         break;
 
@@ -482,19 +529,18 @@ void KDTableToListProxyModel::layoutAboutToBeChangedInSourceModel(const QList<QP
         // columns in our mapping (using row 0 as a dummy row number).
 
         m_dummySourceIndexesForColumnLayoutChange.reserve(m_roleMappings.size());
-        std::transform(m_roleMappings.cbegin(),
-                       m_roleMappings.cend(),
+        std::transform(m_roleMappings.cbegin(), m_roleMappings.cend(),
                        std::back_inserter(m_dummySourceIndexesForColumnLayoutChange),
-                       [this](const RoleMapping &mapping)
-        {
-            return QPersistentModelIndex(m_sourceModel->index(0, mapping.column));
-        });
+                       [this](const RoleMapping &mapping) {
+                           return QPersistentModelIndex(m_sourceModel->index(0, mapping.column));
+                       });
 
         break;
     }
 }
 
-void KDTableToListProxyModel::layoutChangedInSourceModel(const QList<QPersistentModelIndex> &parents, QAbstractItemModel::LayoutChangeHint hint)
+void KDTableToListProxyModel::layoutChangedInSourceModel(const QList<QPersistentModelIndex> &parents,
+                                                         QAbstractItemModel::LayoutChangeHint hint)
 {
     if (!m_sourceModel->hasChildren())
         return;
@@ -502,11 +548,13 @@ void KDTableToListProxyModel::layoutChangedInSourceModel(const QList<QPersistent
     if (!parents.isEmpty() && !parents.contains(QModelIndex()))
         return;
 
-    switch (hint) {
+    switch (hint)
+    {
     case QAbstractItemModel::NoLayoutChangeHint:
         endResetModel();
         break;
-    case QAbstractItemModel::VerticalSortHint: {
+    case QAbstractItemModel::VerticalSortHint:
+    {
         // For each saved index in this model, figure out where the corresponding
         // source index has moved to; use that to change our persistent model
         // indexes.
@@ -514,12 +562,8 @@ void KDTableToListProxyModel::layoutChangedInSourceModel(const QList<QPersistent
         newOwnPersistentIndexes.reserve(m_ownPersistentIndexesForLayoutChange.size());
 
         std::transform(m_sourcePersistentIndexesForLayoutChange.cbegin(),
-                       m_sourcePersistentIndexesForLayoutChange.cend(),
-                       std::back_inserter(newOwnPersistentIndexes),
-                       [this](const QPersistentModelIndex &sourceIndex)
-        {
-            return index(sourceIndex.row(), 0);
-        });
+                       m_sourcePersistentIndexesForLayoutChange.cend(), std::back_inserter(newOwnPersistentIndexes),
+                       [this](const QPersistentModelIndex &sourceIndex) { return index(sourceIndex.row(), 0); });
 
         changePersistentIndexList(m_ownPersistentIndexesForLayoutChange, newOwnPersistentIndexes);
 
@@ -556,7 +600,8 @@ void KDTableToListProxyModel::layoutChangedInSourceModel(const QList<QPersistent
 
 void KDTableToListProxyModel::rowsAboutToBeInsertedInSourceModel(const QModelIndex &parent, int start, int end)
 {
-    if (parent.isValid()) {
+    if (parent.isValid())
+    {
         // Added rows not below the root
         return;
     }
@@ -569,7 +614,8 @@ void KDTableToListProxyModel::rowsInsertedInSourceModel(const QModelIndex &paren
     Q_UNUSED(start);
     Q_UNUSED(end);
 
-    if (parent.isValid()) {
+    if (parent.isValid())
+    {
         // Added rows not below the root
         return;
     }
@@ -579,7 +625,8 @@ void KDTableToListProxyModel::rowsInsertedInSourceModel(const QModelIndex &paren
 
 void KDTableToListProxyModel::rowsAboutToBeRemovedInSourceModel(const QModelIndex &parent, int first, int last)
 {
-    if (parent.isValid()) {
+    if (parent.isValid())
+    {
         // Removed rows not below the root
         return;
     }
@@ -592,7 +639,8 @@ void KDTableToListProxyModel::rowsRemovedInSourceModel(const QModelIndex &parent
     Q_UNUSED(first);
     Q_UNUSED(last);
 
-    if (parent.isValid()) {
+    if (parent.isValid())
+    {
         // Removed rows not below the root
         return;
     }
@@ -602,7 +650,8 @@ void KDTableToListProxyModel::rowsRemovedInSourceModel(const QModelIndex &parent
 
 void KDTableToListProxyModel::columnsInsertedInSourceModel(const QModelIndex &parent, int first, int last)
 {
-    if (parent.isValid()) {
+    if (parent.isValid())
+    {
         // Added columns not below the root
         return;
     }
@@ -610,8 +659,10 @@ void KDTableToListProxyModel::columnsInsertedInSourceModel(const QModelIndex &pa
     const int columnOffset = last - first + 1;
 
     // Update the mappings to take the new columns into account.
-    for (auto &mapping : m_roleMappings) {
-        if (mapping.column >= first) {
+    for (auto &mapping : m_roleMappings)
+    {
+        if (mapping.column >= first)
+        {
             mapping.column += columnOffset;
         }
     }
@@ -619,7 +670,8 @@ void KDTableToListProxyModel::columnsInsertedInSourceModel(const QModelIndex &pa
 
 void KDTableToListProxyModel::columnsRemovedInSourceModel(const QModelIndex &parent, int first, int last)
 {
-    if (parent.isValid()) {
+    if (parent.isValid())
+    {
         // Removed columns not below the root
         return;
     }
@@ -630,22 +682,29 @@ void KDTableToListProxyModel::columnsRemovedInSourceModel(const QModelIndex &par
     QVector<int> mappedRolesChanged;
 
     auto i = m_roleMappings.begin();
-    while (i != m_roleMappings.end()) {
-        if (i->column < first) {
+    while (i != m_roleMappings.end())
+    {
+        if (i->column < first)
+        {
             // Not affected.
             ++i;
-        } else if (i->column <= last) {
+        }
+        else if (i->column <= last)
+        {
             // Mapped column got removed. Remove the mapping.
             mappedRolesChanged.append(i->dataRole);
             i = m_roleMappings.erase(i);
-        } else {
+        }
+        else
+        {
             // Mapped column was after the removed ones; adjust the mapping
             i->column -= columnOffset;
             ++i;
         }
     }
 
-    if (!mappedRolesChanged.isEmpty()) {
+    if (!mappedRolesChanged.isEmpty())
+    {
         // all rows havechanged
         Q_EMIT dataChanged(index(0, 0), index(rowCount() - 1, 0), mappedRolesChanged);
     }
@@ -661,55 +720,76 @@ void KDTableToListProxyModel::modelResetInSourceModel()
     endResetModel();
 }
 
-void KDTableToListProxyModel::rowsAboutToBeMovedInSourceModel(const QModelIndex &sourceParent, int sourceStart, int sourceEnd, const QModelIndex &destinationParent, int destinationRow)
+void KDTableToListProxyModel::rowsAboutToBeMovedInSourceModel(const QModelIndex &sourceParent, int sourceStart,
+                                                              int sourceEnd, const QModelIndex &destinationParent,
+                                                              int destinationRow)
 {
-    if (sourceParent.isValid() && destinationParent.isValid()) {
+    if (sourceParent.isValid() && destinationParent.isValid())
+    {
         // Moved rows not below the root
         return;
-    } else if (sourceParent.isValid() && !destinationParent.isValid()) {
+    }
+    else if (sourceParent.isValid() && !destinationParent.isValid())
+    {
         // Rows got moved from elsewhere to below the root: simulate an insertion
         beginInsertRows(QModelIndex(), destinationRow, destinationRow + sourceEnd - sourceStart);
-    } else if (!sourceParent.isValid() && destinationParent.isValid()) {
+    }
+    else if (!sourceParent.isValid() && destinationParent.isValid())
+    {
         // Rows from below the root got moved to elsewhere: simulate a removal
         beginRemoveRows(QModelIndex(), sourceStart, sourceEnd);
-    } else {
+    }
+    else
+    {
         // Rows were moved below the root
         beginMoveRows(QModelIndex(), sourceStart, sourceEnd, QModelIndex(), destinationRow);
     }
 }
 
-void KDTableToListProxyModel::rowsMovedInSourceModel(const QModelIndex &sourceParent, int start, int end, const QModelIndex &destinationParent, int row)
+void KDTableToListProxyModel::rowsMovedInSourceModel(const QModelIndex &sourceParent, int start, int end,
+                                                     const QModelIndex &destinationParent, int row)
 {
     Q_UNUSED(start);
     Q_UNUSED(end);
     Q_UNUSED(row);
 
-    if (sourceParent.isValid() && destinationParent.isValid()) {
+    if (sourceParent.isValid() && destinationParent.isValid())
+    {
         // Moved rows not below the root
         return;
-    } else if (sourceParent.isValid() && !destinationParent.isValid()) {
+    }
+    else if (sourceParent.isValid() && !destinationParent.isValid())
+    {
         endInsertRows();
-    } else if (!sourceParent.isValid() && destinationParent.isValid()) {
+    }
+    else if (!sourceParent.isValid() && destinationParent.isValid())
+    {
         endRemoveRows();
-    } else {
+    }
+    else
+    {
         endMoveRows();
     }
 }
 
-void KDTableToListProxyModel::columnsMovedInSourceModel(const QModelIndex &sourceParent, int start, int end, const QModelIndex &destinationParent, int column)
+void KDTableToListProxyModel::columnsMovedInSourceModel(const QModelIndex &sourceParent, int start, int end,
+                                                        const QModelIndex &destinationParent, int column)
 {
-    if (sourceParent.isValid() && destinationParent.isValid()) {
+    if (sourceParent.isValid() && destinationParent.isValid())
+    {
         // Moved columns not below the root
         return;
     }
 
-    if (sourceParent.isValid() && !destinationParent.isValid()) {
+    if (sourceParent.isValid() && !destinationParent.isValid())
+    {
         // Columns were moved from elsewhere to below the root; simulate an insertion
         columnsInsertedInSourceModel(destinationParent, column, column + end - start);
         return;
     }
 
-    if (!sourceParent.isValid() && destinationParent.isValid()) {
+    if (!sourceParent.isValid() && destinationParent.isValid())
+    {
         // Columns from below the root got moved to elsewhere: simulate a removal
         columnsRemovedInSourceModel(sourceParent, start, end);
         return;
@@ -719,7 +799,8 @@ void KDTableToListProxyModel::columnsMovedInSourceModel(const QModelIndex &sourc
     Q_ASSERT(end >= start);
     const int movedColumnCount = end - start + 1;
 
-    if (start < column) {
+    if (start < column)
+    {
         // Scenario 1: movement to the right, e.g.
         //
         //     | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
@@ -743,24 +824,33 @@ void KDTableToListProxyModel::columnsMovedInSourceModel(const QModelIndex &sourc
         //       = c + column - end - 1
         // Same result.
 
-
         Q_ASSERT(end < column);
 
         const int movementToTheRight = column - end - 1;
 
-        for (auto &mapping : m_roleMappings) {
+        for (auto &mapping : m_roleMappings)
+        {
             auto &c = mapping.column;
-            if (c < start) {
+            if (c < start)
+            {
                 /* nothing */
-            } else if (c <= end) {
+            }
+            else if (c <= end)
+            {
                 c += movementToTheRight;
-            } else if (c < column) {
+            }
+            else if (c < column)
+            {
                 c -= movedColumnCount;
-            } else {
+            }
+            else
+            {
                 /* nothing */
             }
         }
-    } else {
+    }
+    else
+    {
         // Scenario 2: movement to the left, e.g.
         //
         //     | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
@@ -777,15 +867,23 @@ void KDTableToListProxyModel::columnsMovedInSourceModel(const QModelIndex &sourc
 
         const int movementToTheLeft = start - column;
 
-        for (auto &mapping : m_roleMappings) {
+        for (auto &mapping : m_roleMappings)
+        {
             auto &c = mapping.column;
-            if (c < column) {
+            if (c < column)
+            {
                 /* nothing */
-            } else if (c < start) {
+            }
+            else if (c < start)
+            {
                 c += movedColumnCount;
-            } else if (c < column) {
+            }
+            else if (c < column)
+            {
                 c -= movementToTheLeft;
-            } else {
+            }
+            else
+            {
                 /* nothing */
             }
         }

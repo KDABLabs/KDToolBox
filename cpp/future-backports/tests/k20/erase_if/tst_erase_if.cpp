@@ -1,7 +1,8 @@
 /****************************************************************************
 **                                MIT License
 **
-** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Marc Mutz <marc.mutz@kdab.com>
+** Copyright (C) 2020-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com, author Marc Mutz
+*<marc.mutz@kdab.com>
 **
 ** This file is part of KDToolBox (https://github.com/KDAB/KDToolBox).
 **
@@ -35,7 +36,6 @@
 #include <k20/unordered_map.h>
 #include <k20/unordered_set.h>
 #include <k20/vector.h>
-
 
 class tst_erase_if : public QObject
 {
@@ -91,24 +91,38 @@ private Q_SLOTS:
     void erase_if_empty_uset_int() { erase_if_impl<std::unordered_set<int>>(); }
     void erase_if_empty_umultiset_string() { erase_if_impl<std::unordered_multiset<std::string>>(); }
 
-    void erase_if_map_int_string() { erase_if_impl<std::map<int, std::string>>({{1, "one"}, {2, "two"}}, {2, "two"}, 1); }
-    void erase_if_multimap_int_string() { erase_if_impl<std::multimap<int, std::string>>({{1, "one"}, {2, "two"}, {2, "zwei"}}, {2, "two"}, 1); }
+    void erase_if_map_int_string()
+    {
+        erase_if_impl<std::map<int, std::string>>({{1, "one"}, {2, "two"}}, {2, "two"}, 1);
+    }
+    void erase_if_multimap_int_string()
+    {
+        erase_if_impl<std::multimap<int, std::string>>({{1, "one"}, {2, "two"}, {2, "zwei"}}, {2, "two"}, 1);
+    }
     void erase_if_set_int() { erase_if_impl<std::set<int>>({-10, 2, 4, 5}, 2, 1); }
     void erase_if_multiset_string() { erase_if_impl<std::multiset<std::string>>({"1", "2", "2", "1", "3"}, "2", 2); }
-    void erase_if_umap_int_string() { erase_if_impl<std::unordered_map<int, std::string>>({{1, "one"}, {2, "two"}}, {2, "two"}, 1); }
-    void erase_if_umultimap_int_string() { erase_if_impl<std::unordered_multimap<int, std::string>>({{1, "one"}, {2, "two"}, {2, "zwei"}}, {2, "two"}, 1); }
+    void erase_if_umap_int_string()
+    {
+        erase_if_impl<std::unordered_map<int, std::string>>({{1, "one"}, {2, "two"}}, {2, "two"}, 1);
+    }
+    void erase_if_umultimap_int_string()
+    {
+        erase_if_impl<std::unordered_multimap<int, std::string>>({{1, "one"}, {2, "two"}, {2, "zwei"}}, {2, "two"}, 1);
+    }
     void erase_if_uset_int() { erase_if_impl<std::unordered_set<int>>({-10, 2, 4, 5}, 2, 1); }
-    void erase_if_umultiset_string() { erase_if_impl<std::unordered_multiset<std::string>>({"1", "2", "2", "1", "3"}, "2", 2); }
+    void erase_if_umultiset_string()
+    {
+        erase_if_impl<std::unordered_multiset<std::string>>({"1", "2", "2", "1", "3"}, "2", 2);
+    }
 
 private:
-    template <typename Container>
+    template<typename Container>
     using value_type = typename Container::value_type;
-    template <typename Container>
+    template<typename Container>
     using size_type = typename Container::size_type;
 
-    template <typename Container>
-    void erase_impl(std::initializer_list<value_type<Container>> il = {},
-                    const value_type<Container>& v = {},
+    template<typename Container>
+    void erase_impl(std::initializer_list<value_type<Container>> il = {}, const value_type<Container> &v = {},
                     size_type<Container> expected = 0)
     {
         const Container c = il;
@@ -121,9 +135,8 @@ private:
                 QVERIFY(copy == c);
         }
     }
-    template <typename Container>
-    void erase_if_impl(std::initializer_list<value_type<Container>> il = {},
-                       const value_type<Container>& v = {},
+    template<typename Container>
+    void erase_if_impl(std::initializer_list<value_type<Container>> il = {}, const value_type<Container> &v = {},
                        size_type<Container> expected = 0)
     {
         const Container c = il;

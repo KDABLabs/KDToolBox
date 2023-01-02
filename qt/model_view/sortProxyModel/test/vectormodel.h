@@ -37,49 +37,56 @@
  * This class obviously does not have production quality, it is only meant to provide a source model
  * for unit testing.
  */
-template <class T>
-class VectorModel: public QAbstractListModel
+template<class T>
+class VectorModel : public QAbstractListModel
 {
-    //cannot use Q_OBJECT but that's ok here
+    // cannot use Q_OBJECT but that's ok here
 
     int size() const noexcept { return static_cast<int>(contents.size()); }
+
 public:
     explicit VectorModel(std::initializer_list<T> initialContents, QObject *parent = nullptr)
-        : QAbstractListModel(parent),
-          contents(initialContents)
+        : QAbstractListModel(parent)
+        , contents(initialContents)
     {
     }
 
-    void setValue(int row, const T& value) {
+    void setValue(int row, const T &value)
+    {
         auto &e = contents[row];
-        if (e != value) {
+        if (e != value)
+        {
             e = value;
             const auto idx = index(row);
             Q_EMIT dataChanged(idx, idx, QVector<int>{Qt::DisplayRole});
         }
     }
 
-    void append(const T &value) {
+    void append(const T &value)
+    {
         beginInsertRows(QModelIndex(), size(), size());
         contents.push_back(value);
         endInsertRows();
     }
 
-    void append(std::initializer_list<T> values) {
-        beginInsertRows(QModelIndex(), size(), size() + static_cast<int>(values.size()) -1);
+    void append(std::initializer_list<T> values)
+    {
+        beginInsertRows(QModelIndex(), size(), size() + static_cast<int>(values.size()) - 1);
 
         contents.insert(contents.end(), values);
         endInsertRows();
     }
 
-    void insert(int row, const T& value) {
+    void insert(int row, const T &value)
+    {
         beginInsertRows({}, row, row);
         contents.insert(contents.begin() + row, value);
         endInsertRows();
     }
 
-    void insert(int row, std::initializer_list<T> values) {
-        beginInsertRows({}, row, row +  static_cast<int>(values.size()) -1);
+    void insert(int row, std::initializer_list<T> values)
+    {
+        beginInsertRows({}, row, row + static_cast<int>(values.size()) - 1);
         contents.insert(contents.begin() + row, values);
         endInsertRows();
     }
@@ -96,7 +103,8 @@ public:
 
     QVariant data(const QModelIndex &index, int role) const override
     {
-        if (role == Qt::DisplayRole) {
+        if (role == Qt::DisplayRole)
+        {
             return QVariant::fromValue(contents[index.row()]);
         }
 
@@ -108,7 +116,7 @@ public:
         if (row < 0 || count < 0 || row + count >= size())
             return false;
 
-        beginRemoveRows(parent, row, row + count -1);
+        beginRemoveRows(parent, row, row + count - 1);
         const auto first = contents.begin() + row;
         const auto last = first + count;
         contents.erase(first, last);
