@@ -14,4 +14,3 @@ sender->causeSignalEmission(); // does NOT call the slot
 ```
 
 Requires a C++14 capable compiler.
-

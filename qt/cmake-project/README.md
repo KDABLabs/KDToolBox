@@ -11,4 +11,3 @@ It supports Qt 5, Qt 6 as well not using Qt at all. For instance:
 ```
 cmake-project --qt 6
 ```
-

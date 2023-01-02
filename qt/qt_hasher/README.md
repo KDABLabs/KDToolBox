@@ -26,4 +26,3 @@ any time (breaking our code and violating ODR). Hence, we define a custom
 hasher.
 
 Requires a C++11 capable compiler.
-

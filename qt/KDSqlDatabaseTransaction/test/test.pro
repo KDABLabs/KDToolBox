@@ -5,4 +5,3 @@ QT = core sql testlib
 
 SOURCES += \
     tst_KDSqlDatabaseTransaction.cpp \
-

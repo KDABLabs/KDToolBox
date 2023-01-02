@@ -5,4 +5,3 @@ SUBDIRS += \
     ModelIterator \
     sortProxyModel \
     updateableModel \
-

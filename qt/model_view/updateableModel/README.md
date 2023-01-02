@@ -20,4 +20,3 @@ The user of class needs to:
 ## Limitations
 1. The `lessThan` function is used to uniquely identify items in the model. Item1 and Item2 are the same item if `(!(Item1 < Item2) && !(Item2 < Item1))`
 1. The model only works on "list-type" models (possibibly with multiple columns per list item). Tree models and models where data in different columns is not related are not supported.
-

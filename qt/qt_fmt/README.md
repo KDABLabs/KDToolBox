@@ -50,5 +50,3 @@ performances are paramount.
 ## Formatting options
 
 At the moment, only `{}` is supported.
-
-

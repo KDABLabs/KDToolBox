@@ -7,4 +7,3 @@ CONFIG += testcase
 
 SOURCES += \
     tst_kdtabletolistproxymodel.cpp \
-

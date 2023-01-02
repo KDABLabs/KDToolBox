@@ -82,4 +82,3 @@ void MainWindow::updateData()
     }
     m_model->update(m_data);
 }
-

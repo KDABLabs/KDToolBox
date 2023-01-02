@@ -5,4 +5,3 @@ CONFIG += testcase c++14
 
 SOURCES += \
     tst_pointer_cast.cpp \
-

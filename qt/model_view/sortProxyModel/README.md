@@ -19,4 +19,3 @@ level of the underlying model is sorted. Furthermore, the model is always
 sorting. There is no unsorted pass-through mode where the model shows the
 order of the underlying model. Also, sorting only happens by row, not by
 column.
-
