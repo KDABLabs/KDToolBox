@@ -3,7 +3,7 @@
 ##########################################################################
 ##                                MIT License
 ##
-## Copyright (C) 2022 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
+## Copyright (C) 2022-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
 ## Author: Jesper K. Pedersen <jesper.pedersen@kdab.com>
 ##
 ## This file is part of KDToolBox (https://github.com/KDAB/KDToolBox).

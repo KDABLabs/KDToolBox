@@ -2,7 +2,7 @@
 
 # MIT License
 
-# Copyright (C) 2022 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
+# Copyright (C) 2022-2023 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
