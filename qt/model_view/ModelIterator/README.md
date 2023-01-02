@@ -4,7 +4,7 @@ Sometimes, you may find yourself in a situation where your data is only availabl
 
 ## Contents
 
-ModelIterator contains two iterator types for iterating over a model: FlatIterator and DepthFirstIterator. There is a helper template class DataValueWrapper that allows directly accessing values in the model, and finally ModelAdaptor affords an easy way to wrap a model by providing a standard begin/end method pair returning a pair of iterators ready to use with standard algorithms or a ranged based for loop. 
+ModelIterator contains two iterator types for iterating over a model: FlatIterator and DepthFirstIterator. There is a helper template class DataValueWrapper that allows directly accessing values in the model, and finally ModelAdaptor affords an easy way to wrap a model by providing a standard begin/end method pair returning a pair of iterators ready to use with standard algorithms or a ranged based for loop.
 
 For details, see the documentation in ModelIterator.h
 

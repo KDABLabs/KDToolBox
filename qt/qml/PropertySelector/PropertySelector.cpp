@@ -37,8 +37,8 @@ using namespace cpp::qmltypes;
   @brief A QML Item to set one or more properties on a target based on a set of rules
 
   PropertySelector allows you to select which values to set on one or more properties based
-  on a set of other boolean properties. This enables you to easily express complex 
-  conditions, for instance to have the color of an item differ based on selection, hover, 
+  on a set of other boolean properties. This enables you to easily express complex
+  conditions, for instance to have the color of an item differ based on selection, hover,
   checked and enabled status without complex binding expressions or imperative code.
 
   PropertySelector is a class that employs custom parsing of its contents, allowing it to

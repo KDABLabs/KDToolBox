@@ -20,7 +20,7 @@ and Target Properties must be properties in the @ref target item. The Condition 
 must be boolean properties that have a notify signal, while the Target Properties must be
 writable but may otherwise be of any type.
 
-The PropertySelector binds to all Condition properties specified in the rules, and sets the 
+The PropertySelector binds to all Condition properties specified in the rules, and sets the
 target properties to the values specified in the most specific matching rule.
 
 To specify rules, PropertySelector employs the syntax for grouped properties. Each rule
