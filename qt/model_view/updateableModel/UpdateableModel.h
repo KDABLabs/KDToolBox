@@ -158,7 +158,7 @@ namespace {
 
     /**
      *  Inserts a range into the target container
-     *  @returns an interator pointing one item past the last item inserted
+     *  @returns an iterator pointing one item past the last item inserted
      *  @param container is the target container
      *  @param targetInsertBefore iterator to the item the new items should be inserted before
      *  @param sourceBegin iterator to the first item to insert into @arg container

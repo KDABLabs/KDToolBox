@@ -52,7 +52,7 @@ algorithms, poorly designed interfaces, and similar.
 Therefore: before reaching for a conversion between containers, try to
 understand if your _design_ is sound! For instance, if you want to remove
 duplicates from a sequential container, use `std::sort` + `std::unique`;
-if you want to process elements avoiding dupicate elements (without
+if you want to process elements avoiding duplicate elements (without
 altering the source container), then use
 [DuplicateTracker](https://github.com/KDAB/KDToolBox/tree/master/cpp/duplicatetracker);
 and so on.

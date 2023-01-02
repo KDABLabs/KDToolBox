@@ -9,7 +9,7 @@ enabled status without complex binding expressions or imperative code.
 
 PropertySelector is a class that employs custom parsing of its contents, allowing it to
 use the QML syntax in a slightly different way. PropertySelector operates on a *target*
-which by default is the parent item. That is the only convential property that it exposes.
+which by default is the parent item. That is the only conventional property that it exposes.
 
 
 ## Usage

@@ -118,7 +118,7 @@ private:
 //
 // You can construct an instance of the iterator using the static @ref begin and @ref end methods or
 // by using @ref ModelAdapter.
-// FlatIterator is a random-access iterator, which allows algortihms to operate in the most effecient
+// FlatIterator is a random-access iterator, which allows algorithms to operate in the most efficient
 // way.
 class FlatIterator
 {
@@ -250,7 +250,7 @@ protected:
     int m_column;
 };
 
-// Adaptor class for QAIM to make it useable in contexts where a container is exected that
+// Adaptor class for QAIM to make it usable in contexts where a container is expected that
 // provides an adaptor pair via begin() and end(). This template class allows you to use
 // standard algorithms and ranged for loops on QAbstractItemModels.
 //

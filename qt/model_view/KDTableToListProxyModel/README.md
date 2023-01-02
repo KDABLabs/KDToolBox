@@ -2,7 +2,7 @@
 
 KDTableToListProxyModel provides a convenient proxy model flattening a table model into a list model.
 
-The main use-case is Qt Quick 2: many of its views only support list models, and (ab)use multiple roles for transfering multiple pieces of information from the model to the view. In case we already have a table model, we need to flatten it
+The main use-case is Qt Quick 2: many of its views only support list models, and (ab)use multiple roles for transferring multiple pieces of information from the model to the view. In case we already have a table model, we need to flatten it
 
 ## Usage
 

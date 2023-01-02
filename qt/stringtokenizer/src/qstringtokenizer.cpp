@@ -102,7 +102,7 @@
     implementation if the compiler doesn't support separate types for
     begin and end iterators in ranged for loops
     (\link{https://wg21.link/P0184}{P1084}), in which case traditional
-    STL algorthms will \em appear to be supported, but as you migrate
+    STL algorithms will \em appear to be supported, but as you migrate
     to a compiler that supports P0184, such code will break.  We
     recommend to use only the C++20 \c{std::ranges} algorithms, or, if
     you're stuck on C++14/17 for the time being,
@@ -125,7 +125,7 @@
     \endcode
 
     If you pass named objects (lvalues), then QStringTokenizer does
-    not store a copy. You are reponsible to keep the named object's
+    not store a copy. You are responsible to keep the named object's
     data around for longer than the tokenizer operates on it:
 
     \code

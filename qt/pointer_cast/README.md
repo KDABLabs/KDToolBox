@@ -3,7 +3,7 @@ pointer-cast
 
 A collection of helper functions to ease porting from `QSharedPointer`
 to `std::shared_ptr`, by helping with the most egregious API
-incompatibilites of QSharedPointer, to wit:
+incompatibilites of QSharedPointer, namely:
 
 - static_pointer_cast overload for QSharedPointer
 - dynamic_pointer_cast overload for QSharedPointer
@@ -23,7 +23,7 @@ C++20) For this reason, the functions are defined in `inline namespace
 KDToolBox`.
 
 If you restict your code to the std-compatible subset of
-QSharedPointer and use te above four functions, then porting from
+QSharedPointer and use the above four functions, then porting from
 QSharedPointer to std::shared_ptr will be as easy as
 
     s/QSharedPointer/std::shared_ptr/

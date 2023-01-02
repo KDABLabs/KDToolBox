@@ -43,7 +43,7 @@ using namespace cpp::qmltypes;
 
   PropertySelector is a class that employs custom parsing of its contents, allowing it to
   use the QML syntax in a slightly different way. PropertySelector operates on a @ref target
-  which by default is the parent item. That is the only convential property that it exposes.
+  which by default is the parent item. That is the only conventional property that it exposes.
 
   ##Rules, Conditions, Target Properties and Values##
   PropertySelector can be used by specifying Rules. A Rule is a construct that specifies 0 or

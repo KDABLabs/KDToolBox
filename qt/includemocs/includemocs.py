@@ -36,7 +36,7 @@ def stripInitialSlash(path):
         path = path[1:]
     return path
 
-# Returns true if the path is to be exluded from the search
+# Returns true if the path is to be excluded from the search
 def shouldExclude(root, path):
     if not args.excludes:
         return False # No excludes provided
@@ -59,7 +59,7 @@ def hasMacro(fileName):
             return True
     return False
 
-# returns the mathcing .cpp file for the given .h file
+# returns the matching .cpp file for the given .h file
 def matchingCPPFile(root, fileName):
     assert root.startswith(args.root)
     root = stripInitialSlash(root[len(args.root):])
