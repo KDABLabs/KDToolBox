@@ -23,6 +23,8 @@ repos:
   rev: v2.0.1
   hooks:
   - id: autopep8
+    additional_dependencies:
+    - psutil
 - repo: https://github.com/codespell-project/codespell
   rev: v2.2.2
   hooks:

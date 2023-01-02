@@ -95,7 +95,7 @@ s_startTime = time.time()
 s_autPath = ''
 s_outputFilters = []
 s_allOutputTasks = []
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name
 
 
 def runCommandSync(cmdArgs):
