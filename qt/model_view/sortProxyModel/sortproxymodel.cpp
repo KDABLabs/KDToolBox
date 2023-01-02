@@ -34,9 +34,9 @@ namespace
 {
 void buildReverseMap(const std::vector<int> &aToB, std::vector<int> &bToA)
 {
-    const auto size = aToB.size();
+    const int size = int(aToB.size());
     bToA.resize(size);
-    for (size_t i = 0; i < size; ++i)
+    for (int i = 0; i < size; ++i)
     {
         bToA[aToB[i]] = i;
     }
