@@ -114,7 +114,7 @@ private:
     inline const QAbstractItemModel *model() const { return m_index.model(); }
     const QModelIndex nextSibling(const QModelIndex &index) const;
     const QModelIndex prevSibling(const QModelIndex &index) const;
-    const QModelIndex lastDecendant(const QModelIndex &index) const;
+    const QModelIndex lastDescendant(const QModelIndex &index) const;
 };
 
 // Flat iterator

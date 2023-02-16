@@ -94,7 +94,7 @@ DepthFirstIterator &DepthFirstIterator::operator--()
         }
         else
         {
-            m_index = lastDecendant(sibling);
+            m_index = lastDescendant(sibling);
         }
     }
 
@@ -119,13 +119,13 @@ const QModelIndex DepthFirstIterator::prevSibling(const QModelIndex &index) cons
     return {};
 }
 
-const QModelIndex DepthFirstIterator::lastDecendant(const QModelIndex &index) const
+const QModelIndex DepthFirstIterator::lastDescendant(const QModelIndex &index) const
 {
     const auto m = model();
     if (m && m->hasChildren(index))
     {
         auto lastChild = model()->index(m->rowCount(index) - 1, 0, index);
-        return lastDecendant(lastChild);
+        return lastDescendant(lastChild);
     }
     else
     {
@@ -144,7 +144,7 @@ DepthFirstIterator DepthFirstIterator::begin(QAbstractItemModel *model, int colu
 DepthFirstIterator DepthFirstIterator::end(QAbstractItemModel *model, int column)
 {
     DepthFirstIterator it = begin(model, column);
-    it.m_index = it.lastDecendant(QModelIndex());
+    it.m_index = it.lastDescendant(QModelIndex());
     it.m_atEnd = true;
 
     return it;
