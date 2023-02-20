@@ -28,3 +28,34 @@ Note that I removed the `##NAMESPACE##::` from the type name, as this file is pa
 |    Comparison with `std::unordered_multimap`    | ![std::unordered_multimap](assets/unordered_multimap.png) |
 
 There's a difference between `QMultiHash` and `std::unordered_multimap`, it's not possible to display `QMultiMap` as it's std equivalent. Note that the current representation is closest to the `QMultiHash` API anyway: it's a list of `[key, list<value>]` (so size is 2 here), not a list of `[key, value]` (with a size of 4).
+
+## QVariant
+
+## Unknown type
+If the type is unknown, it will show at least the `typeId`, so the developer can know what is inside the `QVariant`
+
+![QVariant](assets/qvariant-unknown.png)
+
+## Static primitives types
+
+![QVariant](assets/qvariant-static-primitives.png)
+
+All types handled:
+- `QMetaType::Bool`
+- `QMetaType::Int`
+- `QMetaType::UInt`
+- `QMetaType::LongLong`
+- `QMetaType::ULongLong`
+- `QMetaType::Double`
+- `QMetaType::VoidStar`
+- `QMetaType::Long`
+- `QMetaType::Short`
+- `QMetaType::Char`
+- `QMetaType::Char16`
+- `QMetaType::Char32`
+- `QMetaType::ULong`
+- `QMetaType::UShort`
+- `QMetaType::UChar`
+- `QMetaType::Float`
+- `QMetaType::SChar`
+
