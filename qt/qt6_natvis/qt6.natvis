@@ -637,6 +637,9 @@
 
         <DisplayString Condition="d.is_null">(null)</DisplayString>
 
+        <!-- Static core pointers -->
+        <DisplayString Condition="typeId() == QMetaType::QObjectStar">QObject*</DisplayString>
+
         <!-- Static core template classes -->
         <DisplayString Condition="typeId() == QMetaType::QVariantMap">{*(QMap&lt;QString,QVariant&gt;*) sharedDataStar()}</DisplayString>
         <DisplayString Condition="typeId() == QMetaType::QVariantList">{*(QList&lt;QVariant&gt;*) sharedDataStar()}</DisplayString>
@@ -693,6 +696,34 @@
         <DisplayString Condition="typeId() == QMetaType::QCborMap">QCborMap</DisplayString>
         <DisplayString Condition="typeId() == QMetaType::QModelIndex">ModelIndex</DisplayString>
         <DisplayString Condition="typeId() == QMetaType::QPersistentModelIndex">QPersistentModelIndex</DisplayString>
+
+         <!-- Static gui classes -->
+        <DisplayString Condition="typeId() == QMetaType::QFont">QFont</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QPixmap">QPixmap</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QBrush">QBrush</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QColor">QColor</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QPalette">QPalette</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QIcon">QIcon</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QImage">QImage</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QPolygon">QPolygon</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QRegion">QRegion</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QBitmap">QBitmap</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QCursor">QCursor</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QKeySequence">QKeySequence</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QPen">QPen</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QTextLength">QTextLength</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QTextFormat">QTextFormat</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QTransform">QTransform</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QMatrix4x4">QMatrix4x4</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QVector2D">QVector2D</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QVector3D">QVector3D</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QVector4D">QVector4D</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QQuaternion">QQuaternion</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QPolygonF">QPolygonF</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QColorSpace">QColorSpace</DisplayString>
+
+        <!-- Static widget classes -->
+        <DisplayString Condition="typeId() == QMetaType::QSizePolicy">QSizePolicy</DisplayString>
 
         <!-- Unhandled : display the typeId-->
         <DisplayString>QMetaType::Type ({typeId()})</DisplayString>
