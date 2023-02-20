@@ -76,3 +76,16 @@ All types handled:
 - `QMetaType::QLine`
 - `QMetaType::QPoint`
 - `QMetaType::QPointF`
+
+## Static Core Template types
+
+Like previously, you can see directly the items for the type by expanding the view.
+
+![QVariant](assets/qvariant-core-templates.png)
+
+All types handled:
+- `QMetaType::QVariantMap`
+- `QMetaType::QVariantList`
+- `QMetaType::QVariantHash`
+- `QMetaType::QByteArrayList`
+- `QMetaType::QStringList`

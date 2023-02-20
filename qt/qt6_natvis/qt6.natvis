@@ -637,7 +637,15 @@
 
         <DisplayString Condition="d.is_null">(null)</DisplayString>
 
-        <!-- Static primitives-->
+        <!-- Static core template classes -->
+        <DisplayString Condition="typeId() == QMetaType::QVariantMap">{*(QMap&lt;QString,QVariant&gt;*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QVariantList">{*(QList&lt;QVariant&gt;*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QVariantHash">{*(QHash&lt;QString,QVariant&gt;*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QVariantPair">QVariantPair</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QByteArrayList">{*(QList&lt;QByteArray&gt;*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QStringList">{*(QList&lt;QString&gt;*) sharedDataStar()}</DisplayString>
+
+       <!-- Static primitives-->
         <DisplayString Condition="typeId() == QMetaType::Bool">{*(bool*) dataStar()}</DisplayString>
         <DisplayString Condition="typeId() == QMetaType::Int">{*(int*) dataStar()}</DisplayString>
         <DisplayString Condition="typeId() == QMetaType::UInt">{*(unsigned int*) dataStar()}</DisplayString>
@@ -685,7 +693,7 @@
         <DisplayString Condition="typeId() == QMetaType::QCborMap">QCborMap</DisplayString>
         <DisplayString Condition="typeId() == QMetaType::QModelIndex">ModelIndex</DisplayString>
         <DisplayString Condition="typeId() == QMetaType::QPersistentModelIndex">QPersistentModelIndex</DisplayString>
-        
+
         <!-- Unhandled : display the typeId-->
         <DisplayString>QMetaType::Type ({typeId()})</DisplayString>
    </Type>
