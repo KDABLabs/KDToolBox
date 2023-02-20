@@ -5,3 +5,10 @@ This repository is a test suite for my changes to the official Qt6 natvis file t
 Note that I removed the `##NAMESPACE##::` from the type name, as this file is parsed and updated by the [Qt Visual Studio Tools](https://marketplace.visualstudio.com/items?itemName=TheQtCompany.QtVisualStudioTools2022).
 
 # Changes
+
+## QMap
+
+|          `QMap` before          |          `QMap` after          |
+|:-------------------------------:|:------------------------------:|
+| ![QMap](assets/qmap-before.png) | ![QMap](assets/qmap-after.png) |
+|   Comparison with `std::map`    |  ![std::map](assets/map.png)   |
