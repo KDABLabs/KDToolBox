@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "qt6.4.2-msvc",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "visualizerFile": "${workspaceFolder}/qt6.natvis",
+            "sourceFileMap": {
+                "C:/work/build/qt5_workdir/w/s": "C:/Qt/6.4.2/Src",
+                "Q:/qt5_workdir/w/s": "C:/Qt/6.4.2/Src",
+                "C:/Users/qt/work/install": "C:/Qt/6.4.2/Src",
+                "C:/Users/qt/work/qt": "C:/Qt/6.4.2/Src"
+            }
+        }
+    ]
+}

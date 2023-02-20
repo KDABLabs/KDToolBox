@@ -68,6 +68,8 @@ Qt Tools
   A replacement for `qmake -project`, generating a ready-to-use CMakeLists.txt.
 - [includemocs](https://github.com/KDAB/KDToolBox/tree/master/qt/includemocs)
   A script to add inclusion of moc files to all .cpp files in the project.
+- [qt6_natvis](https://github.com/KDAB/KDToolBox/tree/master/qt/qt6_natvis)
+  Natvis file for Qt6 debugging with Visual Studio and VS Code, with a test project.
 
 Other Code Snippets
 ===================
@@ -84,14 +86,17 @@ Squish Tools
 Licensing
 =========
 KDToolBox is (C) 2019-2023, Klarälvdalens Datakonsult AB, and is available under the
-terms of the MIT license (see the LICENSE.MIT.txt file in this repository [1]).
-
-For the "Other code snippets", which are hosted outside of this repo, please consult
-their own license.
+terms of the MIT license (see the [LICENSE.MIT.txt](https://github.com/KDAB/KDToolBox/blob/master/LICENSE.MIT.txt) file in this repository).
 
 Contact KDAB at <info@kdab.com> if you need different licensing options.
 
-[1] [License file] (https://github.com/KDAB/KDToolBox/blob/master/LICENSE.MIT.txt)
+Exceptions
+----------
+The [qt6_natvis](https://github.com/KDAB/KDToolBox/tree/master/qt/qt6_natvis) project is available under
+the terms of the GPLv3 license (see the [LICENSE.GPLv3.txt](https://github.com/KDAB/KDToolBox/blob/master/qt/qt6_natvis/LICENSE.GPLv3.txt) in this repository)
+
+For the "Other code snippets", which are hosted outside of this repo, please consult
+their own license.
 
 Get Involved
 ============
