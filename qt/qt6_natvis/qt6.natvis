@@ -456,6 +456,19 @@
         </Expand>
     </Type>
 
+    <Type Name="QHashPrivate::MultiNode&lt;*,*&gt;">
+        <DisplayString Condition="value-&gt;next == 0">{value-&gt;value}</DisplayString>
+        <DisplayString Condition="value-&gt;next != 0 &amp;&amp; value-&gt;next-&gt;next == 0">({value-&gt;value}, {value-&gt;next-&gt;value})</DisplayString>
+        <DisplayString Condition="value-&gt;next != 0 &amp;&amp; value-&gt;next-&gt;next != 0">({value-&gt;value}, {value-&gt;next-&gt;value}, ...)</DisplayString>
+        <Expand>
+            <LinkedListItems>
+                <HeadPointer>value</HeadPointer>
+                <NextPointer>next</NextPointer>
+                <ValueNode>value</ValueNode>
+            </LinkedListItems>
+        </Expand>
+    </Type>
+
     <Type Name="QHash&lt;*,*&gt;">
         <AlternativeType Name="QMultiHash&lt;*,*&gt;"/>
         <Intrinsic Name="getOffset" Category="Method" Expression="d-&gt;spans[span].offsets[offset]">
