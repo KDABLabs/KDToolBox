@@ -632,6 +632,8 @@
         </Intrinsic>
         <Intrinsic Name="dataStar" Expression="(&amp;(d.data.data))">
         </Intrinsic>
+        <Intrinsic Name="sharedDataStar" Expression="(d.is_shared ? reinterpret_cast&lt;const void *&gt;((size_t)(d.data.shared) + d.data.shared-&gt;offset) : (&amp;(d.data.data)))">
+        </Intrinsic>
 
         <DisplayString Condition="d.is_null">(null)</DisplayString>
 
@@ -654,6 +656,36 @@
         <DisplayString Condition="typeId() == QMetaType::Float">{*(float*) dataStar()}</DisplayString>
         <DisplayString Condition="typeId() == QMetaType::SChar">{*(signed char*) dataStar()}</DisplayString>
 
+        <!-- Static core classes -->
+        <DisplayString Condition="typeId() == QMetaType::QChar">{*(QChar*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QString">{*(QString*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QByteArray">{*(QByteArray*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QDate">{*(QDate*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QTime">{*(QTime*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QDateTime">QDateTime</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QUrl">QUrl</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QLocale">QLocale</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QRect">{*(QRect*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QRectF">{*(QRectF*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QSize">{*(QSize*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QSizeF">{*(QSizeF*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QLine">{*(QLine*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QLineF">{*(QLineF*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QPoint">{*(QPoint*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QPointF">{*(QPointF*) sharedDataStar()}</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QEasingCurve">EasingCurve</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QUuid">Uuid</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QRegularExpression">RegularExpression</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QJsonValue">QJsonValue</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QJsonObject">QJsonObject</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QJsonArray">QJsonArray</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QJsonDocument">QJsonDocument</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QCborValue">QCborValue</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QCborArray">QCborArray</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QCborMap">QCborMap</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QModelIndex">ModelIndex</DisplayString>
+        <DisplayString Condition="typeId() == QMetaType::QPersistentModelIndex">QPersistentModelIndex</DisplayString>
+        
         <!-- Unhandled : display the typeId-->
         <DisplayString>QMetaType::Type ({typeId()})</DisplayString>
    </Type>

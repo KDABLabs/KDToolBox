@@ -59,3 +59,20 @@ All types handled:
 - `QMetaType::Float`
 - `QMetaType::SChar`
 
+## Static Core types
+
+It's also possible to see directly the members for the type by expanding the view.
+
+![QVariant](assets/qvariant-core-classes.png)
+
+All types handled:
+- `QMetaType::QChar`
+- `QMetaType::QString`
+- `QMetaType::QByteArray`
+- `QMetaType::QDate`
+- `QMetaType::QTime`
+- `QMetaType::QRect`
+- `QMetaType::QSize`
+- `QMetaType::QLine`
+- `QMetaType::QPoint`
+- `QMetaType::QPointF`
