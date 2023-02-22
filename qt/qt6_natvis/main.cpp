@@ -22,6 +22,8 @@
 
 #include <QtCore>
 
+#include <unordered_set>
+
 int main(int argc, char *argv[])
 {
     auto mapString = std::map<int, QString>{{10, "one"}, {20, "two"}, {30, "three"}};
@@ -32,6 +34,9 @@ int main(int argc, char *argv[])
 
     auto multihashString = std::unordered_multimap<int, QString>{{10, "one"}, {10, "two"}, {10, "three"}, {20, "four"}};
     auto qmultihashString = QMultiHash<int, QString>{{10, "one"}, {10, "two"}, {10, "three"}, {20, "four"}};
+
+    auto setString = std::unordered_set<std::string>{"one", "two", "three", "four"};
+    auto qsetString = QSet<QString>{"one", "two", "three", "four"};
 
     QVariant v_null;
     QVariant v_bool = true;

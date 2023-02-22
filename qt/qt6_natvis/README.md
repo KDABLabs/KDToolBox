@@ -29,6 +29,14 @@ Note that I removed the `##NAMESPACE##::` from the type name, as this file is pa
 
 There's a difference between `QMultiHash` and `std::unordered_multimap`, it's not possible to display `QMultiMap` as it's std equivalent. Note that the current representation is closest to the `QMultiHash` API anyway: it's a list of `[key, list<value>]` (so size is 2 here), not a list of `[key, value]` (with a size of 4).
 
+# QSet
+
+| `QSet` before (with `QHash` improvements) |                  `QSet` after                   |
+|:-----------------------------------------:|:-----------------------------------------------:|
+|      ![Qset](assets/qset-before.png)      |      ![QMultiHash](assets/qset-after.png)       |
+|   Comparison with `std::unordered_set`    | ![std::unordered_set](assets/unordered_set.png) |
+
+
 ## QVariant
 
 ## Unknown type

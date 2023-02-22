@@ -627,6 +627,7 @@
         </Expand>
     </Type>
 
+
     <Type Name="QVariant">
         <Intrinsic Name="typeId" Expression="*(int*)(&amp;((const QtPrivate::QMetaTypeInterface *)(d.packedType &lt;&lt; 2))->typeId)">
         </Intrinsic>
