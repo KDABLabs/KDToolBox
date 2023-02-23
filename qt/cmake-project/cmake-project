@@ -32,12 +32,18 @@ do
   esac
 done
 
-if [ -f CMakeLists.txt ]; then
-    echo "CMakeLists.txt already exists, aborting for safety reasons"
-    exit 1
-fi
-FILES="`find -name '*.cpp' -o -name '*.qrc' -o -name '*.ui' | sed -e 's,\.\/,  ,'`"
-if [ -z "$FILES" ]; then
+#if [ -f CMakeLists.txt ]; then
+#    echo "CMakeLists.txt already exists, aborting for safety reasons"
+#    exit 1
+#fi
+
+SRC="`find -name '*.cpp' -not -path './build/*' | sed -e 's,\.\/,  ,'`"
+HEADERS="`find -name '*.h' -not -path './build/*' | sed -e 's,\.\/,  ,'`"
+INCLUDES="`find -name '*.h' -type f -not -path './build/*' | sed -E 's|/[^/]+$|/|' | sed -e 's,./,  ,' | uniq`" 
+QRCS="`find -name '*.qrc' -not -path './build/*' | sed -e 's,\.\/,  ,'`"
+UIS="`find -name '*.ui' -not -path './build/*' | sed -e 's,\.\/,  ,'`"
+UI_FOLDERS="`find -name '*.ui' -type f -not -path './build/*' | sed -E 's|/[^/]+$|/|' | sed -e 's,./,  ,' | uniq`"   
+if [ -z "$SRC" ]; then
     echo "No cpp files found in the current directory"
     exit 1
 fi
@@ -50,8 +56,8 @@ if [ "$QTVERSION" != "none" ]; then
     else
         QT=Qt$QTVERSION
     fi
-    QTLIBS="Core Gui"
-    QTTARGETS="$QT::Core $QT::Gui"
+    QTLIBS="Core Gui Widgets"
+    QTTARGETS="$QT::Core $QT::Gui $QT::Widgets"
     if [ -n "`grep QApplication *.cpp`" ]; then
         QTLIBS="$QTLIBS Widgets"
         QTTARGETS="$QTTARGETS $QT::Widgets"
@@ -59,9 +65,20 @@ if [ "$QTVERSION" != "none" ]; then
     fi
 fi
 
+if [ ! -d "cmake" ]; then
+  mkdir cmake
+fi
+SCRIPT=$(dirname -- "$(readlink -f "${BASH_SOURCE}")")
+echo "Running script path $SCRIPT"
+echo "Destination generation path : $PWD"
+
+cp -r "$SCRIPT/cmake" "$PWD"
+
 cat > CMakeLists.txt <<EOF
 cmake_minimum_required(VERSION 3.9)
 project($PROJECTNAME)
+
+set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 EOF
@@ -75,21 +92,66 @@ fi
 if [ "$QTVERSION" != "none" ]; then
 cat >> CMakeLists.txt <<EOF
 find_package($QT CONFIG REQUIRED COMPONENTS $QTLIBS)
+
+include(cmake/osdeployqt.cmake)
+
 set(CMAKE_AUTOMOC TRUE)
 set(CMAKE_AUTORCC TRUE)
-$AUTOUIC
-
+set(CMAKE_AUTOUIC TRUE)
+$AUTOUIC	
 EOF
 fi
 
 cat >> CMakeLists.txt <<EOF
-add_executable($PROJECTNAME
-$FILES
+set(SRC
+$SRC
 )
+
+EOF
+cat >> CMakeLists.txt <<EOF
+set(HEADERS
+$HEADERS
+)
+
+EOF
+cat >> CMakeLists.txt <<EOF
+set(QRCS
+$QRCS
+)
+
+EOF
+cat >> CMakeLists.txt <<EOF
+set(UI_FOLDERS
+$UI_FOLDERS
+)
+
+set(CMAKE_AUTOUIC_SEARCH_PATHS
+\${UI_FOLDERS}
+)
+
+set(UIS
+$UIS
+)
+
+EOF
+
+cat >> CMakeLists.txt <<EOF
+set(INCLUDE_FOLDERS
+	$INCLUDES
+)
+
+include_directories(
+	\${INCLUDE_FOLDERS}
+)
+
+add_executable($PROJECTNAME \${SRC} \${HEADERS} \${QRCS} \${UIS})
+
 EOF
 
 if [ "$QTVERSION" != "none" ]; then
 cat >> CMakeLists.txt <<EOF
 target_link_libraries($PROJECTNAME $QTTARGETS)
+
+osdeployqt($PROJECTNAME false)
 EOF
 fi
