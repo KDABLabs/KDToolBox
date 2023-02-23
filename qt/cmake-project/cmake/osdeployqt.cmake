@@ -1,7 +1,7 @@
-get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+get_target_property(_qmake_executable Qt${QT_VERSION_MAJOR}::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
-get_target_property(QtCore_location_Debug Qt5::Core LOCATION_Debug)
-get_target_property(QtCore_location_Release Qt5::Core LOCATION_Release)
+get_target_property(QtCore_location_Debug Qt${QT_VERSION_MAJOR}::Core LOCATION_Debug)
+get_target_property(QtCore_location_Release Qt${QT_VERSION_MAJOR}::Core LOCATION_Release)
 get_filename_component(QtFolder ${QtCore_location_Debug} DIRECTORY)
 
 message("Path of QtFolder : " ${QtFolder})

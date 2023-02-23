@@ -70,11 +70,11 @@ if [ ! -d "cmake" ]; then
   mkdir cmake
 fi
 
-SCRIPT=$(dirname -- "$(readlink -f "${BASH_SOURCE}")")
-echo "Running script path $SCRIPT"
+SCRIPTDIR=`dirname $0`
+echo "Running script path $SCRIPTDIR"
 echo "Destination generation path : $PWD"
 
-cp -r "$SCRIPT/cmake" "$PWD"
+cp -r "$SCRIPTDIR/cmake" "$PWD"
 
 cat > CMakeLists.txt <<EOF
 cmake_minimum_required(VERSION 3.9)
