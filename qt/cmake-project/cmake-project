@@ -32,10 +32,10 @@ do
   esac
 done
 
-#if [ -f CMakeLists.txt ]; then
-#    echo "CMakeLists.txt already exists, aborting for safety reasons"
-#    exit 1
-#fi
+if [ -f CMakeLists.txt ]; then
+    echo "CMakeLists.txt already exists, making a backup."
+    cp CMakeLists.txt CMakeLists.txt.bak
+fi
 
 SRC="`find -name '*.cpp' -not -path './build/*' | sed -e 's,\.\/,  ,'`"
 HEADERS="`find -name '*.h' -not -path './build/*' | sed -e 's,\.\/,  ,'`"
@@ -56,9 +56,10 @@ if [ "$QTVERSION" != "none" ]; then
     else
         QT=Qt$QTVERSION
     fi
-    QTLIBS="Core Gui Widgets"
-    QTTARGETS="$QT::Core $QT::Gui $QT::Widgets"
-    if [ -n "`grep QApplication *.cpp`" ]; then
+    QTLIBS="Core Gui"
+    QTTARGETS="$QT::Core $QT::Gui"
+    if [ -n "`grep QApplication $SRC`" ]; then
+        echo "QApplication detected"
         QTLIBS="$QTLIBS Widgets"
         QTTARGETS="$QTTARGETS $QT::Widgets"
         AUTOUIC="set(CMAKE_AUTOUIC TRUE)"
@@ -68,6 +69,7 @@ fi
 if [ ! -d "cmake" ]; then
   mkdir cmake
 fi
+
 SCRIPT=$(dirname -- "$(readlink -f "${BASH_SOURCE}")")
 echo "Running script path $SCRIPT"
 echo "Destination generation path : $PWD"
@@ -97,8 +99,8 @@ include(cmake/osdeployqt.cmake)
 
 set(CMAKE_AUTOMOC TRUE)
 set(CMAKE_AUTORCC TRUE)
-set(CMAKE_AUTOUIC TRUE)
-$AUTOUIC	
+$AUTOUIC
+
 EOF
 fi
 
@@ -126,7 +128,7 @@ $UI_FOLDERS
 )
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS
-\${UI_FOLDERS}
+	\${UI_FOLDERS}
 )
 
 set(UIS
