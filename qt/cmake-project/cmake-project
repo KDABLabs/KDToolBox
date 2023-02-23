@@ -71,8 +71,6 @@ if [ ! -d "cmake" ]; then
 fi
 
 SCRIPTDIR=`dirname $0`
-echo "Running script path $SCRIPTDIR"
-echo "Destination generation path : $PWD"
 
 cp -r "$SCRIPTDIR/cmake" "$PWD"
 
