@@ -627,6 +627,12 @@
         </Expand>
     </Type>
 
+    <Type Name="QSet&lt;*&gt;">
+        <DisplayString>{{ size={q_hash.d-&gt;size} }}</DisplayString>
+        <Expand>
+            <ExpandedItem>q_hash</ExpandedItem>
+        </Expand>
+    </Type>
 
     <Type Name="QVariant">
         <Intrinsic Name="typeId" Expression="*(int*)(&amp;((const QtPrivate::QMetaTypeInterface *)(d.packedType &lt;&lt; 2))->typeId)">
