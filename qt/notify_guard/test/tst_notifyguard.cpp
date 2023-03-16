@@ -59,8 +59,13 @@ struct CustomType
     friend bool operator==(CustomType lhs, CustomType rhs) noexcept { return lhs.iValue == rhs.iValue; }
     friend bool operator!=(CustomType lhs, CustomType rhs) noexcept { return lhs.iValue != rhs.iValue; }
 };
-
 Q_DECLARE_METATYPE(CustomType);
+
+struct NonComparableType
+{
+    int iValue;
+};
+Q_DECLARE_METATYPE(NonComparableType);
 
 class TestClass : public QObject
 {
@@ -69,16 +74,29 @@ class TestClass : public QObject
     Q_PROPERTY(int intProperty READ intProperty NOTIFY intPropertyChanged)
     Q_PROPERTY(int intProperty1 MEMBER m_intProperty2 NOTIFY intPropertyChanged)
     Q_PROPERTY(CustomType customProperty MEMBER m_customProperty NOTIFY customPropertyChanged)
+    Q_PROPERTY(NonComparableType nonComparableProperty READ nonComparableProperty
+                   WRITE setNonComparableProperty NOTIFY nonComparablePropertyChanged)
 
 public:
     using QObject::QObject;
-
     int intProperty() const { return m_intProperty; }
+
+    NonComparableType nonComparableProperty() const { return m_nonComparable; }
+
+    void setNonComparableProperty(const NonComparableType &value)
+    {
+        if (value.iValue != m_nonComparable.iValue)
+        {
+            m_nonComparable = value;
+            Q_EMIT nonComparablePropertyChanged();
+        }
+    }
 
 Q_SIGNALS:
     void stringPropertyChanged(QString);
     void intPropertyChanged();
     void customPropertyChanged();
+    void nonComparablePropertyChanged();
     void nonPropertySignal();
 
 public:
@@ -86,6 +104,7 @@ public:
     int m_intProperty = 0;
     int m_intProperty2 = 0;
     CustomType m_customProperty{0};
+    NonComparableType m_nonComparable{0};
 };
 
 void NotifyGuardTest::test_noChange()
@@ -340,18 +359,19 @@ void NotifyGuardTest::test_invalidGuards()
         QVERIFY(!guard.isActive());
     }
 
+    qDebug() << "Note: we expect some warning messages below; we're testing expected fail cases.";
     {
         NotifyGuard guard(&test, "invalidProperty");
         QVERIFY(!guard.isActive());
     }
 
-    qDebug() << "++++++++";
     {
         NotifyGuard guard(&test, &TestClass::nonPropertySignal);
         QVERIFY(!guard.isActive());
     }
 
-    // try with unregistered custom type
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    // try with unregistered custom type. There is no need for explicit registration with Qt 6, so guard construction would fail-to-fail.
     {
         NotifyGuard guard(&test, "customProperty");
         QVERIFY(!guard.isActive());
@@ -364,6 +384,20 @@ void NotifyGuardTest::test_invalidGuards()
 
     // now, register the comparator, and try again
     QMetaType::registerEqualsComparator<CustomType>();
+#else
+    // try with non-comparable type. This one should not be auto-registered with Qt 6
+    {
+        NotifyGuard guard(&test, "nonComparableProperty");
+        QVERIFY(!guard.isActive());
+    }
+
+    {
+        NotifyGuard guard(&test, &TestClass::nonComparablePropertyChanged);
+        QVERIFY(!guard.isActive());
+    }
+#endif
+    qDebug() << "End of expected warning messages.";
+
     {
         NotifyGuard guard(&test, "customProperty");
         QVERIFY(guard.isActive());

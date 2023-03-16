@@ -110,13 +110,20 @@ NotifyGuard::NotifyGuard(QObject *target, const char *property, GuardOptions opt
         return;
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    if (!prop.metaType().isEqualityComparable())
+#else
     if (prop.type() == QVariant::UserType && !QMetaType::hasRegisteredComparators(prop.userType()))
+#endif
     {
         qCWarning(cat) << "Error: Constructing NotifyGuard on property" << prop.name()
                        << "which is of a user-defined type" << prop.typeName()
                        << "that does not have a comparison operator registered. "
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) //no need for explicit registration any more in Qt6
                           "Register a comparison operator for this type using QMetaType::registerEqualsComparator<"
-                       << prop.typeName() << ">().";
+                       << prop.typeName() << ">()."
+#endif
+            ;
         return;
     }
 
@@ -191,7 +198,11 @@ NotifyGuard::NotifyGuard(QObject *target, QMetaMethod notifySignal, NotifyGuard:
         if (property.notifySignal() == notifySignal)
         {
             // check if the types are comparable
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            if (property.metaType().isEqualityComparable())
+#else
             if (property.type() != QVariant::UserType || QMetaType::hasRegisteredComparators(property.userType()))
+#endif
             {
                 foundProperties = true;
                 if (!data->contains(property))
@@ -206,9 +217,11 @@ NotifyGuard::NotifyGuard(QObject *target, QMetaMethod notifySignal, NotifyGuard:
                     << "that is used for property" << property.name() << "which is of a user-defined type"
                     << property.typeName()
                     << "that does not have a comparison operator registered. "
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) //no need for explicit registration any more in Qt6
                        "Register a comparison operator for this type using QMetaType::registerEqualsComparator<"
                     << property.typeName()
                     << ">(). "
+#endif
                        "Property"
                     << property.name() << "will not be used.";
                 foundUncomparableProperties = true;
