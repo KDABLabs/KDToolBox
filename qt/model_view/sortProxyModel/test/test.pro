@@ -1,5 +1,5 @@
 CONFIG += testcase
-QT       += testlib
+QT       += testlib core-private
 
 TARGET = tst_sortproxymodeltest
 CONFIG   += console

@@ -14,7 +14,7 @@ SUBDIRS += \
     tabWindow \
     ui_watchdog \
 
-versionAtLeast(QT_VERSION, 5.14):SUBDIRS += \
+versionAtLeast(QT_VERSION, 5.14):versionAtMost(QT_VERSION, 5.15):SUBDIRS += \
     stringtokenizer \
 
 linux {

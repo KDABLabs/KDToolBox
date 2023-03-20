@@ -143,7 +143,11 @@ void tst_KDFunctionalSortFilterProxyModel::sort()
         auto getNumberBeforeDash = [](const QModelIndex &index) {
             const auto contents = index.data().toString();
             const auto dash = contents.indexOf(u'-');
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             return contents.leftRef(dash).toInt();
+#else
+            return QStringView(contents).left(dash).toInt();
+#endif
         };
 
         auto lhsIsEven = getNumberBeforeDash(lhs) % 2 == 0;

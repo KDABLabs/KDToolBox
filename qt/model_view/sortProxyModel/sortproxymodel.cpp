@@ -30,6 +30,8 @@
 #include <QVariant>
 #include <iterator>
 
+#include <private/qabstractitemmodel_p.h>
+
 namespace
 {
 void buildReverseMap(const std::vector<int> &aToB, std::vector<int> &bToA)
@@ -231,10 +233,7 @@ bool SortProxyModel::lessThan(const QModelIndex &source_left, const QModelIndex 
     }
     else
     {
-        QT_WARNING_PUSH
-        QT_WARNING_DISABLE_DEPRECATED
-        return lhs < rhs;
-        QT_WARNING_POP
+        return QAbstractItemModelPrivate::isVariantLessThan(lhs, rhs, m_caseSensitivity, false);
     }
 }
 
