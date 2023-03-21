@@ -118,28 +118,42 @@ using IsContainerConstructibleFromRange =
 // Pipeline operators
 
 template<typename Container>
-struct ToContainerDummyPipelineParameter
+struct ToContainerDummyPipelineParameter;
+
+struct ToContainerDummyPipelineParameterBase
 {
-    template<typename Range, typename AContainer,
+    template<typename Range, typename Container,
              std::enable_if_t<conjunction<IsRange<Range>, IsContainerConstructibleFromRange<Container, Range>>::value,
                               bool> = true>
-    friend constexpr auto operator|(const Range &r, ToContainerDummyPipelineParameter<AContainer>)
+    friend constexpr auto operator|(const Range &r, ToContainerDummyPipelineParameter<Container>)
     {
-        return AContainer(std::begin(r), std::end(r));
+        return Container(std::begin(r), std::end(r));
+    }
+};
+
+template<typename Container>
+struct ToContainerDummyPipelineParameter : ToContainerDummyPipelineParameterBase
+{
+};
+
+template<template<typename...> typename C>
+struct ToContainerTemplateDummyPipelineParameter;
+
+struct ToContainerTemplateDummyPipelineParameterBase
+{
+    template<typename Range, template<typename...> class C,
+             std::enable_if_t<
+                 conjunction<IsRange<Range>, IsContainerConstructibleFromRange<C<RangeValueT<Range>>, Range>>::value,
+                 bool> = true>
+    friend constexpr auto operator|(const Range &r, ToContainerTemplateDummyPipelineParameter<C>)
+    {
+        return C<RangeValueT<Range>>(std::begin(r), std::end(r));
     }
 };
 
 template<template<typename...> typename C>
-struct ToContainerTemplateDummyPipelineParameter
+struct ToContainerTemplateDummyPipelineParameter : ToContainerTemplateDummyPipelineParameterBase
 {
-    template<typename Range, template<typename...> class AC,
-             std::enable_if_t<
-                 conjunction<IsRange<Range>, IsContainerConstructibleFromRange<C<RangeValueT<Range>>, Range>>::value,
-                 bool> = true>
-    friend constexpr auto operator|(const Range &r, ToContainerTemplateDummyPipelineParameter<AC>)
-    {
-        return AC<RangeValueT<Range>>(std::begin(r), std::end(r));
-    }
 };
 
 } // namespace Private
