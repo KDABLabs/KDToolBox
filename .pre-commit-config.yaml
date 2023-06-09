@@ -19,6 +19,7 @@ repos:
   rev: v2.15.9
   hooks:
   - id: pylint
+    additional_dependencies: ["psutil"]
 - repo: https://github.com/pre-commit/mirrors-autopep8
   rev: v2.0.1
   hooks:

@@ -53,6 +53,7 @@ for an example.
 
 The top level attributes are:
   - 'aut'               : Mandatory, specifies the name of the binary to be tested, known as the AUT in squish lingo.
+  - 'startScript'       : Optional, specifies the name of the script that starts the AUT. In case we do not start the AUT directly
 
 The supported attributes for each test %s are:
 
@@ -93,6 +94,7 @@ s_maxFlakyRuns = 1
 os.environ['SQUISH_NO_CAPTURE_OUTPUT'] = '1'  # fixes corrupt output by squish
 s_startTime = time.time()
 s_autPath = ''
+s_startScriptPath = ''
 s_outputFilters = []
 s_allOutputTasks = []
 # pylint: enable=invalid-name
@@ -456,6 +458,7 @@ class TestsRunner:
     def __init__(self) -> None:
         self.tests = []
         self.aut = ''
+        self.startScript = ''
         self.globalScriptDir = ''
         self.loadTests()
         self.testsAborted = False
@@ -483,6 +486,9 @@ class TestsRunner:
             self.globalScriptDir = os.path.abspath(self.globalScriptDir)
         if 'aut' in decoded:
             self.aut = decoded['aut']
+
+        if 'startScript' in decoded:
+            self.startScript = decoded['startScript']
 
         if 'env' in decoded:
             for key in decoded['env']:
@@ -625,6 +631,12 @@ class TestsRunner:
         if runCommandSync(commonArgs + ['--config', 'addAUT', self.aut, s_autPath]).returncode != 0:
             print("ERROR: Could not set AUT %s/%s" % (self.aut, s_autPath))
             sys.exit(1)
+
+        # if a startScriptPath is mentioned - Add that path to the server.ini file
+        if s_startScriptPath:
+            if runCommandSync(commonArgs + ['--config', 'addAUT', self.startScript, s_startScriptPath]).returncode != 0:
+                print("ERROR: Could not set AUT %s/%s" % (self.startScript, s_startScriptPath))
+                sys.exit(1)
 
     def suiteNames(self):
         suites = map(lambda test: test.suite, self.tests)
@@ -774,6 +786,10 @@ parser.add_argument('-o', '--outputdir', required=False,
 parser.add_argument('-a', '--autPath', required=False,
                     help='Directory containing the AUT. Required the first time only, '
                           'since it will be written to server.ini')
+parser.add_argument('-start', '--startScriptPath', required=False,
+                    help='Directory containing the script that starts the AUT '
+                    '(see --startScript). Required if needed the first time only, '
+                    'since it will be written to server.ini')
 parser.add_argument('squishdir', metavar='<Squish Directory>', nargs=1,
                     help='squish directory containing your tests and the %s file' % TESTS_JSON_FILENAME)
 parser.add_argument('-j', '--jobs', required=False, type=int,
@@ -790,6 +806,9 @@ args = parser.parse_args()
 s_verbose = args.verbose
 if args.autPath:
     s_autPath = os.path.abspath(args.autPath)
+
+if args.startScriptPath:
+    s_startScriptPath = os.path.abspath(args.startScriptPath)
 
 if s_verbose:
     print("cd %s" % args.squishdir[0])
