@@ -107,11 +107,6 @@ void QtFmtTest::testQtFmt()
     QCOMPARE(fmt::format("{}", QUuid()), "QUuid({00000000-0000-0000-0000-000000000000})");
     QCOMPARE(fmt::format("{}", QRect()), "QRect(0,0 0x0)");
     QCOMPARE(fmt::format("{}", QSizeF()), "QSizeF(-1, -1)");
-    {
-        QFile f;
-        const QString result = QString::fromStdString(fmt::format("{}", &f)); // pointer to QObject
-        QVERIFY(result.contains(QRegularExpression("^QFile\\(0x[0-9a-z]+\\)$")));
-    }
 
     // Q_FLAG / Q_ENUM
     QCOMPARE(fmt::format("{}", Qt::Alignment(Qt::AlignLeft | Qt::AlignVCenter)),
@@ -122,6 +117,26 @@ void QtFmtTest::testQtFmt()
     QCOMPARE(fmt::format("{}", CustomClass()), "CustomClass()");
     QCOMPARE(fmt::format("{}", BothFmtAndQDebugClass()), "BothFmtAndQDebugClass via fmt");
 }
+
+static_assert(Qt_fmt::exclude_from_qdebug_fmt<int>::value);
+static_assert(Qt_fmt::exclude_from_qdebug_fmt<const int>::value);
+static_assert(Qt_fmt::exclude_from_qdebug_fmt<float>::value);
+static_assert(Qt_fmt::exclude_from_qdebug_fmt<int *>::value);
+static_assert(Qt_fmt::exclude_from_qdebug_fmt<const int *>::value);
+static_assert(Qt_fmt::exclude_from_qdebug_fmt<char *>::value);
+static_assert(Qt_fmt::exclude_from_qdebug_fmt<const char *>::value);
+static_assert(Qt_fmt::exclude_from_qdebug_fmt<char[]>::value);
+static_assert(Qt_fmt::exclude_from_qdebug_fmt<const char[]>::value);
+static_assert(Qt_fmt::exclude_from_qdebug_fmt<char[42]>::value);
+static_assert(Qt_fmt::exclude_from_qdebug_fmt<const char[42]>::value);
+static_assert(Qt_fmt::exclude_from_qdebug_fmt<void *>::value);
+static_assert(Qt_fmt::exclude_from_qdebug_fmt<const void *>::value);
+static_assert(Qt_fmt::exclude_from_qdebug_fmt<QObject *>::value);
+static_assert(Qt_fmt::exclude_from_qdebug_fmt<const QObject *>::value);
+static_assert(!Qt_fmt::exclude_from_qdebug_fmt<QByteArray>::value);
+static_assert(!Qt_fmt::exclude_from_qdebug_fmt<QString>::value);
+static_assert(!Qt_fmt::exclude_from_qdebug_fmt<QList<int>>::value);
+static_assert(!Qt_fmt::exclude_from_qdebug_fmt<QDateTime>::value);
 
 QTEST_APPLESS_MAIN(QtFmtTest)
 

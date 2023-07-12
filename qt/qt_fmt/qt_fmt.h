@@ -56,17 +56,36 @@ struct is_specialization_of<Primary<Args...>, Primary> : std::true_type
 //
 // Note: keeping this in sync between fmt and QDebug sounds like a
 // nightmare.
+// clang-format off
 template<typename T, typename Enable = void>
 struct exclude_from_qdebug_fmt
-    : std::disjunction<std::is_fundamental<T>, std::is_convertible<T, const char *>,
-                       std::conjunction<std::is_convertible<T, const void *>,
-                                        std::negation<std::is_convertible<T, const QObject *>>>,
+    : std::disjunction<std::is_fundamental<T>,
+                       // QByteArray is a thorn in the side.
+                       // fmt handles automatically types that convert to const char *,
+                       // but not types that convert to const void *. QByteArray by default
+                       // converts to both; so be careful about it here.
+                       std::conjunction<
+                           std::is_convertible<T, const void *>,
+                           std::negation<std::is_same<std::remove_cv_t<T>, QByteArray>>
+                       >,
+                       std::conjunction<
+                           std::is_convertible<T, const char *>,
+                           std::negation<std::is_same<std::remove_cv_t<T>, QByteArray>>
+                       >,
+                       // Re-include char-arrays, since the above would exclude them
+                       std::conjunction<
+                           std::is_array<T>,
+                           std::is_same<std::remove_cv_t<T>, char>
+                       >,
                        // fmt doesn't necessarily offer these as builtins, but let's be conservative
-                       detail::is_specialization_of<T, std::pair>, detail::is_specialization_of<T, std::vector>,
-                       detail::is_specialization_of<T, std::list>, detail::is_specialization_of<T, std::map>,
+                       detail::is_specialization_of<T, std::pair>,
+                       detail::is_specialization_of<T, std::vector>,
+                       detail::is_specialization_of<T, std::list>,
+                       detail::is_specialization_of<T, std::map>,
                        detail::is_specialization_of<T, std::multimap>>
 {
 };
+// clang-format on
 
 } // namespace Qt_fmt
 
