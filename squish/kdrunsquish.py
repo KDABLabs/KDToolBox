@@ -86,6 +86,7 @@ Example usage:
 
 s_numCPUs = multiprocessing.cpu_count()
 s_verbose = False
+s_continuous_output = False
 s_isOffscreen = False
 s_resultDir = ''
 s_stdoutLock = threading.Lock()
@@ -125,6 +126,8 @@ async def _handleStdout(process, output):
         line = data.decode('utf-8')
         if not _ignoreLine(line):
             output.write(line)
+            if s_continuous_output:
+                print(line)
 
 
 def matchPlatform(value):
@@ -354,7 +357,7 @@ class SquishTest:
         success = passedExpectedly or failedExpectedly
 
         # Print squish's output if needed:
-        if s_verbose or returncode != 0:
+        if not s_continuous_output and (s_verbose or returncode != 0):
             with s_stdoutLock:
                 print(self.serverStdout.getvalue())
                 print(self.runnerStdout.getvalue())
@@ -796,6 +799,10 @@ parser.add_argument('-j', '--jobs', required=False, type=int,
                     help='Number of squishrunner sessions to be run in parallel')
 parser.add_argument('--maxFlakyRuns', required=False, type=int, default=1,
                     help='Runs a test at most N times until it passes.')
+parser.add_argument('--continuousOutput', action='store_true', required=False,
+                    help='Print squish runner and server output directly to std out as '
+                    'tests are run. WARNING if multiple tests are run in parallel '
+                    'then their outputs will be interleaved')
 
 # Not to be confused with squishrunner's abortOnFail, that one we always want.
 parser.add_argument('--abortOnFail', action='store_true', required=False, default=False,
@@ -804,6 +811,8 @@ parser.add_argument('--abortOnFail', action='store_true', required=False, defaul
 args = parser.parse_args()
 
 s_verbose = args.verbose
+s_continuous_output = args.continuousOutput
+
 if args.autPath:
     s_autPath = os.path.abspath(args.autPath)
 
