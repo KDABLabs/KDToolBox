@@ -106,33 +106,68 @@ def cppHasMOCInclude(fileName):
         return includeStatement in fileHandle.read()
 
 
+def getMocInsertionLocation(filename, content):
+    headerIncludeRegex = re.compile(r'#include "%s\.h".*\n' % fileNameWithoutExtension(filename), re.M)
+    match = headerIncludeRegex.search(content)
+    if match:
+        return match.end()
+    return 0
+
+
+def trimExistingMocInclude(content, cppFileName):
+    mocStrRegex = re.compile(r'#include "moc_%s\.cpp"\n' % fileNameWithoutExtension(cppFileName))
+    match = mocStrRegex.search(content)
+    if match:
+        return content[:match.start()] + content[match.end():]
+    return content
+
+
 def processFile(root, fileName):
     # pylint: disable=global-statement
     global dirty
     macroFound = hasMacro(root+"/"+fileName)
-    if args.verbose:
-        print("Inspecting %s %s" % (root+"/"+fileName, "[Has Q_OBJECT / Q_GADGET / Q_NAMESPACE]" if macroFound else ""))
+    logVerbose("Inspecting %s %s" %
+               (root+"/"+fileName, "[Has Q_OBJECT / Q_GADGET / Q_NAMESPACE]" if macroFound else ""))
 
     if macroFound:
         cppFileName = matchingCPPFile(root, fileName)
-        if args.verbose:
-            print("  -> %s" % cppFileName)
+        logVerbose("  -> %s" % cppFileName)
 
         if not os.path.exists(cppFileName):
-            if not args.quiet:
-                print("file %s didn't exist (which might not be an error)" % cppFileName)
+            log("file %s didn't exist (which might not be an error)" % cppFileName)
             return
 
-        if not cppHasMOCInclude(cppFileName):
+        if args.replaceExisting or not cppHasMOCInclude(cppFileName):
             dirty = True
             if args.dryRun:
-                if not args.quiet:
-                    print("Missing moc include file: %s" % cppFileName)
+                log("Missing moc include file: %s" % cppFileName)
             else:
-                if not args.quiet:
-                    print("Updating %s" % cppFileName)
-                with open(cppFileName, "a", encoding="utf8") as fileHandle:
-                    fileHandle.write('\n#include "moc_%s.cpp"\n' % fileNameWithoutExtension(cppFileName))
+                log("Updating %s" % cppFileName)
+
+                with open(cppFileName, "r", encoding="utf8") as f:
+                    content = f.read()
+
+                if args.replaceExisting:
+                    content = trimExistingMocInclude(content, cppFileName)
+
+                loc = getMocInsertionLocation(cppFileName, content)
+                if args.insertAtEnd:
+                    with open(cppFileName, "a", encoding="utf8") as f:
+                        f.write('\n#include "moc_%s.cpp"\n' % fileNameWithoutExtension(cppFileName))
+                else:
+                    with open(cppFileName, "w", encoding="utf8") as f:
+                        f.write(content[:loc] + ('#include "moc_%s.cpp"\n' %
+                                fileNameWithoutExtension(cppFileName)) + content[loc:])
+
+
+def log(content):
+    if not args.quiet:
+        print(content)
+
+
+def logVerbose(content):
+    if args.verbose:
+        print(content)
 
 
 ################################ MAIN #################################
@@ -151,6 +186,10 @@ if __name__ == "__main__":
     parser.add_argument("--excludes", metavar="directory", dest="excludes", nargs="*",
                         help="directories to be excluded, might either be in the form of a directory name, "
                         "e.g. 3rdparty or a partial directory prefix from the root, e.g 3rdparty/parser")
+    parser.add_argument("--insert-at-end", dest="insertAtEnd", action='store_true',
+                        help="insert the moc include at the end of the file instead of the beginning")
+    parser.add_argument("--replace-existing", dest="replaceExisting", action='store_true',
+                        help="delete and readd existing MOC include statements")
     parser.add_argument(dest="root", default=".", metavar="directory",
                         nargs="?", help="root directory for the operation")
 
@@ -169,7 +208,7 @@ if __name__ == "__main__":
             if file.endswith(".h") or file.endswith(".hpp"):
                 processFile(root, file)
 
-    if not args.quiet and not dirty:
-        print("No changes needed")
+    if not dirty:
+        log("No changes needed")
 
     sys.exit(-1 if dirty else 0)
