@@ -99,6 +99,23 @@ def cppHasMOCInclude(fileName):
     f = open(fileName, encoding="utf8")
     return includeStatement in f.read()
 
+headerGuardRegex = re.compile(r'#ifndef ([a-zA-Z_]+)\s*( \/\/.*[^\\])?\n#define \1\n')
+def hasHeaderGuard(filename):
+    with open(filename, "r", encoding="utf8") as f:
+        content = f.read()
+    match = headerGuardRegex.match(content)
+    if match:
+        return True, match.end()
+    return False, -1
+
+pragmaOnceRegex = re.compile(r'#pragma once')
+def hasPragmaOnce(filename):
+    with open(filename, "r", encoding="utf8") as f:
+        content = f.read()
+    match = pragmaOnceRegex.match(content)
+    if match:
+        return True, match.end()
+    return False, -1
 
 def processFile(root, fileName):
     global dirty
@@ -124,8 +141,16 @@ def processFile(root, fileName):
             else:
                 if not args.quiet:
                     print("Updating %s" % cppFileName)
-                f = open(cppFileName, "a", encoding="utf8")
-                f.write('\n#include "moc_%s.cpp"\n' % fileNameWithoutExtension(cppFileName))
+                shouldOffset, loc = hasHeaderGuard(cppFileName)
+                if shouldOffset == False:
+                    shouldOffset, loc = hasPragmaOnce(cppFileName)
+                with open(cppFileName, "r", encoding="utf8") as f:
+                    content = f.read()
+                with open(cppFileName, "w", encoding="utf8") as f:
+                    if shouldOffset:
+                        f.write(content[:loc] + ('\n#include "moc_%s.cpp"\n' % fileNameWithoutExtension(cppFileName)) + content[loc:])
+                    else:
+                        f.write(('#include "moc_%s.cpp"\n\n'% fileNameWithoutExtension(cppFileName)) + content)
 
 
 ################################ MAIN #################################
