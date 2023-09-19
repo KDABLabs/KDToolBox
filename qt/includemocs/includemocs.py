@@ -141,16 +141,21 @@ def processFile(root, fileName):
             else:
                 if not args.quiet:
                     print("Updating %s" % cppFileName)
-                shouldOffset, loc = hasHeaderGuard(cppFileName)
-                if shouldOffset == False:
-                    shouldOffset, loc = hasPragmaOnce(cppFileName)
-                with open(cppFileName, "r", encoding="utf8") as f:
-                    content = f.read()
-                with open(cppFileName, "w", encoding="utf8") as f:
-                    if shouldOffset:
-                        f.write(content[:loc] + ('\n#include "moc_%s.cpp"\n' % fileNameWithoutExtension(cppFileName)) + content[loc:])
-                    else:
-                        f.write(('#include "moc_%s.cpp"\n\n'% fileNameWithoutExtension(cppFileName)) + content)
+
+                if args.insertAtEnd:
+                    f = open(cppFileName, "a", encoding="utf8")
+                    f.write('\n#include "moc_%s.cpp"\n' % fileNameWithoutExtension(cppFileName))
+                else:
+                    shouldOffset, loc = hasHeaderGuard(cppFileName)
+                    if not shouldOffset:
+                        shouldOffset, loc = hasPragmaOnce(cppFileName)
+                    with open(cppFileName, "r", encoding="utf8") as f:
+                        content = f.read()
+                    with open(cppFileName, "w", encoding="utf8") as f:
+                        if shouldOffset:
+                            f.write(content[:loc] + ('\n#include "moc_%s.cpp"\n' % fileNameWithoutExtension(cppFileName)) + content[loc:])
+                        else:
+                            f.write(('#include "moc_%s.cpp"\n\n'% fileNameWithoutExtension(cppFileName)) + content)
 
 
 ################################ MAIN #################################
@@ -167,6 +172,8 @@ if __name__ == "__main__":
     parser.add_argument("--source-prefix", metavar="directory", dest="sourcePrefix", help="see --header-prefix")
     parser.add_argument("--excludes", metavar="directory", dest="excludes", nargs="*",
                         help="directories to be excluded, might either be in the form of a directory name, e.g. 3rdparty or a partial directory prefix from the root, e.g 3rdparty/parser")
+    parser.add_argument("--insert-at-end", dest="insertAtEnd", action='store_true',
+                        help="insert the moc include at the end of the file instead of the beginning")
     parser.add_argument(dest="root", default=".", metavar="directory",
                         nargs="?", help="root directory for the operation")
 
