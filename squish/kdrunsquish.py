@@ -321,7 +321,6 @@ class SquishTest:
             # Doesn't happen
             print("ERROR: Test %s was already executed" % self.name)
             sys.exit(1)
-            return
 
         self.__numRuns = self.__numRuns + 1
 
@@ -713,7 +712,6 @@ class XvfbPlatform(Platform):
         except:
             print()
             sys.exit('Failed to find xfwm4. Please install it.')
-            return False
         return True
 
     @staticmethod
@@ -722,7 +720,6 @@ class XvfbPlatform(Platform):
             subprocess.run(["xvfb-run", "--help"], capture_output=True, check=False)
         except:
             sys.exit('Failed to find xvfb-run. Please install it.')
-            return False
         return True
 
     def __init__(self):
@@ -741,7 +738,6 @@ class XvfbPlatform(Platform):
                 return True
         except:
             sys.exit('Failed to run: {}'.format(' '.join(cmd)))
-            return False
 
     @staticmethod
     def supported():
