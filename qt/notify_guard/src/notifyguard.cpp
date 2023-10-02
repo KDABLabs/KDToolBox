@@ -119,7 +119,7 @@ NotifyGuard::NotifyGuard(QObject *target, const char *property, GuardOptions opt
         qCWarning(cat) << "Error: Constructing NotifyGuard on property" << prop.name()
                        << "which is of a user-defined type" << prop.typeName()
                        << "that does not have a comparison operator registered. "
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) //no need for explicit registration any more in Qt6
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) // no need for explicit registration any more in Qt6
                           "Register a comparison operator for this type using QMetaType::registerEqualsComparator<"
                        << prop.typeName() << ">()."
 #endif
@@ -217,7 +217,7 @@ NotifyGuard::NotifyGuard(QObject *target, QMetaMethod notifySignal, NotifyGuard:
                     << "that is used for property" << property.name() << "which is of a user-defined type"
                     << property.typeName()
                     << "that does not have a comparison operator registered. "
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) //no need for explicit registration any more in Qt6
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) // no need for explicit registration any more in Qt6
                        "Register a comparison operator for this type using QMetaType::registerEqualsComparator<"
                     << property.typeName()
                     << ">(). "

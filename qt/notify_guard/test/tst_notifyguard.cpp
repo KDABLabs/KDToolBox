@@ -74,8 +74,8 @@ class TestClass : public QObject
     Q_PROPERTY(int intProperty READ intProperty NOTIFY intPropertyChanged)
     Q_PROPERTY(int intProperty1 MEMBER m_intProperty2 NOTIFY intPropertyChanged)
     Q_PROPERTY(CustomType customProperty MEMBER m_customProperty NOTIFY customPropertyChanged)
-    Q_PROPERTY(NonComparableType nonComparableProperty READ nonComparableProperty
-                   WRITE setNonComparableProperty NOTIFY nonComparablePropertyChanged)
+    Q_PROPERTY(NonComparableType nonComparableProperty READ nonComparableProperty WRITE setNonComparableProperty NOTIFY
+                   nonComparablePropertyChanged)
 
 public:
     using QObject::QObject;
@@ -371,7 +371,8 @@ void NotifyGuardTest::test_invalidGuards()
     }
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    // try with unregistered custom type. There is no need for explicit registration with Qt 6, so guard construction would fail-to-fail.
+    // try with unregistered custom type. There is no need for explicit registration with Qt 6, so guard construction
+    // would fail-to-fail.
     {
         NotifyGuard guard(&test, "customProperty");
         QVERIFY(!guard.isActive());
