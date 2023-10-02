@@ -1,5 +1,11 @@
 #! /usr/bin/env python3
 
+'''
+Script to add inclusion of mocs to files recursively.
+'''
+
+# pylint: disable=redefined-outer-name
+
 ##########################################################################
 # MIT License
 #
@@ -29,7 +35,6 @@
 
 import os
 import re
-import os.path
 import argparse
 import sys
 
@@ -45,6 +50,7 @@ def stripInitialSlash(path):
 
 
 def shouldExclude(root, path):
+    # pylint: disable=used-before-assignment
     if not args.excludes:
         return False  # No excludes provided
 
@@ -63,11 +69,11 @@ regexp = re.compile("\\s*(Q_OBJECT|Q_GADGET|Q_NAMESPACE)\\s*")
 
 
 def hasMacro(fileName):
-    f = open(fileName, "r", encoding="utf8")
-    for line in f:
-        if regexp.match(line):
-            return True
-    return False
+    with open(fileName, "r", encoding="utf8") as fileHandle:
+        for line in fileHandle:
+            if regexp.match(line):
+                return True
+        return False
 
 # returns the matching .cpp file for the given .h file
 
@@ -96,11 +102,12 @@ def fileNameWithoutExtension(fileName):
 
 def cppHasMOCInclude(fileName):
     includeStatement = '#include "moc_%s.cpp"' % fileNameWithoutExtension(fileName)
-    f = open(fileName, encoding="utf8")
-    return includeStatement in f.read()
+    with open(fileName, encoding="utf8") as fileHandle:
+        return includeStatement in fileHandle.read()
 
 
 def processFile(root, fileName):
+    # pylint: disable=global-statement
     global dirty
     macroFound = hasMacro(root+"/"+fileName)
     if args.verbose:
@@ -124,8 +131,8 @@ def processFile(root, fileName):
             else:
                 if not args.quiet:
                     print("Updating %s" % cppFileName)
-                f = open(cppFileName, "a", encoding="utf8")
-                f.write('\n#include "moc_%s.cpp"\n' % fileNameWithoutExtension(cppFileName))
+                with open(cppFileName, "a", encoding="utf8") as fileHandle:
+                    fileHandle.write('\n#include "moc_%s.cpp"\n' % fileNameWithoutExtension(cppFileName))
 
 
 ################################ MAIN #################################
@@ -138,10 +145,12 @@ if __name__ == "__main__":
     parser.add_argument("--quiet", "-q", dest="quiet", action='store_true', help="suppress output")
     parser.add_argument("--verbose", "-v", dest="verbose", action='store_true')
     parser.add_argument("--header-prefix", metavar="directory", dest="headerPrefix",
-                        help="This directory will be replaced with source-prefix when searching for matching source files")
+                        help="This directory will be replaced with source-prefix when "
+                             "searching for matching source files")
     parser.add_argument("--source-prefix", metavar="directory", dest="sourcePrefix", help="see --header-prefix")
     parser.add_argument("--excludes", metavar="directory", dest="excludes", nargs="*",
-                        help="directories to be excluded, might either be in the form of a directory name, e.g. 3rdparty or a partial directory prefix from the root, e.g 3rdparty/parser")
+                        help="directories to be excluded, might either be in the form of a directory name, "
+                        "e.g. 3rdparty or a partial directory prefix from the root, e.g 3rdparty/parser")
     parser.add_argument(dest="root", default=".", metavar="directory",
                         nargs="?", help="root directory for the operation")
 
