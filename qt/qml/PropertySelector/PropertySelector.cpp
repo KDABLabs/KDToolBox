@@ -169,7 +169,7 @@ void PropertySelector::connectChangeSignals()
         }
         else
         {
-            qWarning() << "PropertySelector: specified target does not have (notifyable) boolean property" << condition;
+            qWarning() << "PropertySelector: specified target does not have (notifiable) boolean property" << condition;
         }
     }
 }

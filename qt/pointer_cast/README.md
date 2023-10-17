@@ -22,7 +22,7 @@ explicit template arguments doesn't find candidates by ADL prior to
 C++20) For this reason, the functions are defined in `inline namespace
 KDToolBox`.
 
-If you restict your code to the std-compatible subset of
+If you restrict your code to the std-compatible subset of
 QSharedPointer and use the above four functions, then porting from
 QSharedPointer to std::shared_ptr will be as easy as
 
