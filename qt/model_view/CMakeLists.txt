@@ -1,0 +1,5 @@
+add_subdirectory(KDFunctionalSortFilterProxyModel)
+add_subdirectory(KDTableToListProxyModel)
+add_subdirectory(ModelIterator)
+add_subdirectory(sortProxyModel)
+add_subdirectory(updateableModel)

@@ -30,7 +30,7 @@
 
 int main(int argc, char **argv)
 {
-    QApplication::setApplicationName("Colors with long names");
+    QApplication::setApplicationName(QStringLiteral("Colors with long names"));
     QApplication app(argc, argv);
 
     QStandardItemModel model;

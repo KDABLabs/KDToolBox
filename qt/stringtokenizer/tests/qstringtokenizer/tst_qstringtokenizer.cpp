@@ -114,7 +114,10 @@ void tst_QStringTokenizer::basics() const
     QFETCH(const Qt::SplitBehavior, sb);
     QFETCH(const Qt::CaseSensitivity, cs);
 
-    auto expected = QStringList{"", "a", "b", "c", "d", "e", ""};
+    auto expected = QStringList{
+        QStringLiteral(""),  QStringLiteral("a"), QStringLiteral("b"), QStringLiteral("c"),
+        QStringLiteral("d"), QStringLiteral("e"), QStringLiteral(""),
+    };
     if (sb & Qt::SkipEmptyParts)
         expected = skipped(expected);
     QCOMPARE(toQStringList(qTokenize(u",a,b,c,d,e,", u',', sb, cs)), expected);

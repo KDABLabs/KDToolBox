@@ -79,46 +79,46 @@ void tst_SingleShot_Connect::singleshot()
         QVERIFY(c);
         QCOMPARE(o.m_slotCounter, 0);
 
-        Q_EMIT o.aSignal(1, "Hello");
+        Q_EMIT o.aSignal(1, QStringLiteral("Hello"));
         QVERIFY(!c);
         QCOMPARE(o.m_i, 1);
-        QCOMPARE(o.m_s, "Hello");
+        QCOMPARE(o.m_s, QStringLiteral("Hello"));
         QCOMPARE(o.m_slotCounter, 1);
 
-        Q_EMIT o.aSignal(2, "World");
+        Q_EMIT o.aSignal(2, QStringLiteral("World"));
         QVERIFY(!c);
         QCOMPARE(o.m_i, 1);
-        QCOMPARE(o.m_s, "Hello");
+        QCOMPARE(o.m_s, QStringLiteral("Hello"));
         QCOMPARE(o.m_slotCounter, 1);
 
         c = KDToolBox::connectSingleShot(&o, &Object::aSignal, &o, &Object::aSlot);
         QVERIFY(c);
         disconnect(c);
         QVERIFY(!c);
-        Q_EMIT o.aSignal(3, "!");
+        Q_EMIT o.aSignal(3, QStringLiteral("!"));
         QCOMPARE(o.m_i, 1);
-        QCOMPARE(o.m_s, "Hello");
+        QCOMPARE(o.m_s, QStringLiteral("Hello"));
         QCOMPARE(o.m_slotCounter, 1);
 
         c = KDToolBox::connectSingleShot(&o, &Object::aSignal, &o, &Object::aSlot);
         QVERIFY(c);
-        Q_EMIT o.aSignal(42, "The Answer");
+        Q_EMIT o.aSignal(42, QStringLiteral("The Answer"));
         QVERIFY(!c);
         QCOMPARE(o.m_i, 42);
-        QCOMPARE(o.m_s, "The Answer");
+        QCOMPARE(o.m_s, QStringLiteral("The Answer"));
         QCOMPARE(o.m_slotCounter, 2);
 
 #if __cplusplus >= 201703L
         c = KDToolBox::connectSingleShot(&o, &Object::aSignal, &o, &Object::aSlotWithOneArgLess);
         QVERIFY(c);
-        Q_EMIT o.aSignal(1, "Hello");
+        Q_EMIT o.aSignal(1, QStringLiteral("Hello"));
         QVERIFY(!c);
         QCOMPARE(o.m_i, 1);
         QCOMPARE(o.m_slotCounter, 3);
 
         c = KDToolBox::connectSingleShot(&o, &Object::aSignal, &o, &Object::noArgSlot);
         QVERIFY(c);
-        Q_EMIT o.aSignal(1, "Hello");
+        Q_EMIT o.aSignal(1, QStringLiteral("Hello"));
         QVERIFY(!c);
         QCOMPARE(o.m_i, 1);
         QCOMPARE(o.m_slotCounter, 4);
@@ -126,7 +126,7 @@ void tst_SingleShot_Connect::singleshot()
         int x = 0;
         c = KDToolBox::connectSingleShot(&o, &Object::aSignal, [&x](int i) { x = i; });
         QVERIFY(c);
-        Q_EMIT o.aSignal(33, "Hello");
+        Q_EMIT o.aSignal(33, QStringLiteral("Hello"));
         QVERIFY(!c);
         QCOMPARE(x, 33);
 #endif
@@ -162,15 +162,15 @@ void tst_SingleShot_Connect::singleshot()
         QMetaObject::Connection c;
         c = KDToolBox::connectSingleShot(&o, &Object::aSignal, std::move(f));
         QVERIFY(c);
-        Q_EMIT o.aSignal(-123, "test");
+        Q_EMIT o.aSignal(-123, QStringLiteral("test"));
         QVERIFY(!c);
         QCOMPARE(i, -123);
-        QCOMPARE(s, "test");
+        QCOMPARE(s, QStringLiteral("test"));
 
-        Q_EMIT o.aSignal(42, "bar");
+        Q_EMIT o.aSignal(42, QStringLiteral("bar"));
         QVERIFY(!c);
         QCOMPARE(i, -123);
-        QCOMPARE(s, "test");
+        QCOMPARE(s, QStringLiteral("test"));
     }
 }
 

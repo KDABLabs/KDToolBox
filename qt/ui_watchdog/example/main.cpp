@@ -37,9 +37,9 @@ int main(int argc, char **argv)
 
     QWidget w;
     auto layout = new QVBoxLayout(&w);
-    auto button = new QPushButton("Block UI completely");
-    auto button2 = new QPushButton("Sleep every other second");
-    auto button3 = new QPushButton("Cancel sleep");
+    auto button = new QPushButton(QStringLiteral("Block UI completely"));
+    auto button2 = new QPushButton(QStringLiteral("Sleep every other second"));
+    auto button3 = new QPushButton(QStringLiteral("Cancel sleep"));
     layout->addWidget(button);
     layout->addWidget(button2);
     layout->addStretch();

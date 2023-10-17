@@ -64,35 +64,35 @@ void tst_QtHasher::hash()
 
     std::unordered_set<QRegularExpression, KDToolBox::QtHasher<QRegularExpression>> regexpSet;
 
-    regexpSet.insert(QRegularExpression("a.*b"));
-    regexpSet.insert(QRegularExpression("a|b"));
+    regexpSet.insert(QRegularExpression(QStringLiteral("a.*b")));
+    regexpSet.insert(QRegularExpression(QStringLiteral("a|b")));
     QCOMPARE(regexpSet.size(), std::size_t(2));
-    QVERIFY(regexpSet.find(QRegularExpression("a|b")) != regexpSet.end());
-    QVERIFY(regexpSet.find(QRegularExpression("a+b")) == regexpSet.end());
+    QVERIFY(regexpSet.find(QRegularExpression(QStringLiteral("a|b"))) != regexpSet.end());
+    QVERIFY(regexpSet.find(QRegularExpression(QStringLiteral("a+b"))) == regexpSet.end());
 
-    regexpSet.insert(QRegularExpression("a+b"));
+    regexpSet.insert(QRegularExpression(QStringLiteral("a+b")));
     QCOMPARE(regexpSet.size(), std::size_t(3));
-    QVERIFY(regexpSet.find(QRegularExpression("a|b")) != regexpSet.end());
-    QVERIFY(regexpSet.find(QRegularExpression("a+b")) != regexpSet.end());
+    QVERIFY(regexpSet.find(QRegularExpression(QStringLiteral("a|b"))) != regexpSet.end());
+    QVERIFY(regexpSet.find(QRegularExpression(QStringLiteral("a+b"))) != regexpSet.end());
 
     regexpSet.erase(QRegularExpression());
     QCOMPARE(regexpSet.size(), std::size_t(3));
 
-    regexpSet.erase(QRegularExpression("a|b"));
+    regexpSet.erase(QRegularExpression(QStringLiteral("a|b")));
     QCOMPARE(regexpSet.size(), std::size_t(2));
-    QVERIFY(regexpSet.find(QRegularExpression("a|b")) == regexpSet.end());
-    QVERIFY(regexpSet.find(QRegularExpression("a+b")) != regexpSet.end());
+    QVERIFY(regexpSet.find(QRegularExpression(QStringLiteral("a|b"))) == regexpSet.end());
+    QVERIFY(regexpSet.find(QRegularExpression(QStringLiteral("a+b"))) != regexpSet.end());
 
     std::unordered_set<QUrl, KDToolBox::QtHasher<QUrl>> urlSet;
-    urlSet.insert(QUrl("https://www.kdab.com"));
-    urlSet.insert(QUrl("https://www.qt.io"));
+    urlSet.insert(QUrl(QStringLiteral("https://www.kdab.com")));
+    urlSet.insert(QUrl(QStringLiteral("https://www.qt.io")));
     QCOMPARE(urlSet.size(), std::size_t(2));
 
-    urlSet.insert(QUrl("https://isocpp.org"));
+    urlSet.insert(QUrl(QStringLiteral("https://isocpp.org")));
     QCOMPARE(urlSet.size(), std::size_t(3));
 
-    QVERIFY(urlSet.find(QUrl("https://www.kdab.com")) != urlSet.end());
-    QVERIFY(urlSet.find(QUrl("https://www.google.com")) == urlSet.end());
+    QVERIFY(urlSet.find(QUrl(QStringLiteral("https://www.kdab.com"))) != urlSet.end());
+    QVERIFY(urlSet.find(QUrl(QStringLiteral("https://www.google.com"))) == urlSet.end());
 }
 
 namespace TestNS

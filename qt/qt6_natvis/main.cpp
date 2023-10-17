@@ -26,17 +26,28 @@
 
 int main(int argc, char *argv[])
 {
-    auto mapString = std::map<int, QString>{{10, "one"}, {20, "two"}, {30, "three"}};
-    auto qmapString = QMap<int, QString>{{10, "one"}, {20, "two"}, {30, "three"}};
+    auto mapString =
+        std::map<int, QString>{{10, QStringLiteral("one")}, {20, QStringLiteral("two")}, {30, QStringLiteral("three")}};
+    auto qmapString =
+        QMap<int, QString>{{10, QStringLiteral("one")}, {20, QStringLiteral("two")}, {30, QStringLiteral("three")}};
 
-    auto hashString = std::unordered_map<int, QString>{{10, "one"}, {20, "two"}, {30, "three"}};
-    auto qhashString = QHash<int, QString>{{10, "one"}, {20, "two"}, {30, "three"}};
+    auto hashString = std::unordered_map<int, QString>{
+        {10, QStringLiteral("one")}, {20, QStringLiteral("two")}, {30, QStringLiteral("three")}};
+    auto qhashString =
+        QHash<int, QString>{{10, QStringLiteral("one")}, {20, QStringLiteral("two")}, {30, QStringLiteral("three")}};
 
-    auto multihashString = std::unordered_multimap<int, QString>{{10, "one"}, {10, "two"}, {10, "three"}, {20, "four"}};
-    auto qmultihashString = QMultiHash<int, QString>{{10, "one"}, {10, "two"}, {10, "three"}, {20, "four"}};
+    auto multihashString = std::unordered_multimap<int, QString>{{10, QStringLiteral("one")},
+                                                                 {10, QStringLiteral("two")},
+                                                                 {10, QStringLiteral("three")},
+                                                                 {20, QStringLiteral("four")}};
+    auto qmultihashString = QMultiHash<int, QString>{{10, QStringLiteral("one")},
+                                                     {10, QStringLiteral("two")},
+                                                     {10, QStringLiteral("three")},
+                                                     {20, QStringLiteral("four")}};
 
     auto setString = std::unordered_set<std::string>{"one", "two", "three", "four"};
-    auto qsetString = QSet<QString>{"one", "two", "three", "four"};
+    auto qsetString =
+        QSet<QString>{QStringLiteral("one"), QStringLiteral("two"), QStringLiteral("three"), QStringLiteral("four")};
 
     QVariant v_null;
     QVariant v_bool = true;
@@ -48,13 +59,13 @@ int main(int argc, char *argv[])
     QVariant v_double = 1.602'176'634e-19;
     QVariant v_char = QVariant::fromValue(static_cast<char>('V'));
 
-    QVariant v_qchar = QChar('V');
-    QVariant v_qstring = "Hello World!";
+    QVariant v_qchar = QChar(u'V');
+    QVariant v_qstring = QStringLiteral("Hello World!");
     QVariant v_qbytearray = QByteArray("Hello World!");
     QVariant v_qdate = QDate::currentDate();
     QVariant v_qtime = QTime::currentTime();
     QVariant v_qdatetime = QDateTime::currentDateTime(); // NOK
-    QVariant v_qurl = QUrl("https://www.kdab.com");      // NOK
+    QVariant v_qurl = QUrl(QStringLiteral("https://www.kdab.com")); // NOK
     QVariant v_qlocale = QLocale();                      // NOK
     QVariant v_qrect = QRect(5, 5, 42, 42);
     QVariant v_qrectf = QRectF(5., 5., 4.2, 4.2);
@@ -65,10 +76,12 @@ int main(int argc, char *argv[])
     QVariant v_qpoint = QPoint(5, 42);
     QVariant v_qpointf = QPointF(5., 4.2);
 
-    auto v_map = QVariantMap{{"string", v_qstring}, {"double", v_double}, {"rect", v_qrect}};
+    auto v_map = QVariantMap{
+        {QStringLiteral("string"), v_qstring}, {QStringLiteral("double"), v_double}, {QStringLiteral("rect"), v_qrect}};
     auto v_list = QVariantList{v_qstring, v_double, v_qrect};
-    auto v_hash = QVariantHash{{"string", v_qstring}, {"double", v_double}, {"rect", v_qrect}};
-    auto v_stringlist = QStringList{"one", "two", "three"};
+    auto v_hash = QVariantHash{
+        {QStringLiteral("string"), v_qstring}, {QStringLiteral("double"), v_double}, {QStringLiteral("rect"), v_qrect}};
+    auto v_stringlist = QStringList{QStringLiteral("one"), QStringLiteral("two"), QStringLiteral("three")};
 
     return 0;
 }

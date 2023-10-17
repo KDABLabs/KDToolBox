@@ -38,7 +38,7 @@ void addSubtree(T *node, int depth, int count, const QString &text)
 {
     for (int i = 0; i < count; ++i)
     {
-        QString itemText = text + "." + QString::number(i);
+        QString itemText = text + QLatin1Char('.') + QString::number(i);
         auto item = new QStandardItem(itemText);
         if (depth > 1)
         {
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     QStandardItemModel model;
 
     // build up test tree
-    addSubtree(&model, 3, 5, QString("node "));
+    addSubtree(&model, 3, 5, QStringLiteral("node "));
 
     qDebug() << "root row count" << model.rowCount();
 
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 
     qDebug() << "\n\nDepth-first iterator, std::find_if:";
     auto it = std::find_if(adapter2.begin(), adapter2.end(),
-                           [](const QModelIndex &index) { return index.data().toString() == "node .3.2.4"; });
+                           [](const QModelIndex &index) { return index.data().toString() == u"node .3.2.4"; });
     if (it == adapter2.end())
     {
         qDebug() << "Node not found!";
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
             qDebug() << index.data() << index; // Should not yield anything
         }
         auto invalidIt = std::find_if(emptyAdaptor.begin(), emptyAdaptor.end(),
-                                      [](const QModelIndex &index) { return index.data().toString() == "test"; });
+                                      [](const QModelIndex &index) { return index.data().toString() == u"test"; });
         if (invalidIt == emptyAdaptor.end())
         {
             qDebug() << "   Item not found in empty model.";
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
     const auto end2 = DataValueWrapper<DepthFirstIterator, QString>::end(&model);
 
     qDebug() << "\n\nDepth-first iterator, std::find on DataValueWrapped iterators:";
-    auto findit = std::find(it2, end2, "node .3.2.4"); // we're looking directly for the value
+    auto findit = std::find(it2, end2, QStringLiteral("node .3.2.4")); // we're looking directly for the value
     if (findit == end2)
     {
         qDebug() << "Node not found!";

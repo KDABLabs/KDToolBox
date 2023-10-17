@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    QPushButton b("Hello World");
+    QPushButton b(QStringLiteral("Hello World"));
     QPushButton *button = &b; // avoid cluttering the code with &
 
     button->setMouseTracking(true);

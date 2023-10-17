@@ -321,7 +321,7 @@ private:
 
 int main(int argc, char **argv)
 {
-    QApplication::setApplicationName("KDSignalThrottler demo");
+    QApplication::setApplicationName(QStringLiteral("KDSignalThrottler demo"));
 
     QApplication app(argc, argv);
     DemoWidget w;

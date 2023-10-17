@@ -1,0 +1,1 @@
+add_subdirectory(asan_assert_fail)

@@ -1,0 +1,19 @@
+find_package(Qt${QT_VERSION_MAJOR} ${QT_REQUIRED_VERSION} CONFIG REQUIRED Core Test)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include_directories(
+  ../../../include
+)
+
+set(tst_qstringtokenizer_cxx20_SOURCES
+  ../tst_qstringtokenizer.cpp
+)
+
+add_executable(tst_qstringtokenizer_cxx20 ${tst_qstringtokenizer_cxx20_SOURCES})
+target_link_libraries(tst_qstringtokenizer_cxx20
+  PUBLIC
+    Qt::Core
+    Qt::Test
+)

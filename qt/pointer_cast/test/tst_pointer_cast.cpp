@@ -71,10 +71,10 @@ void tst_pointer_cast::makeQShared()
         QCOMPARE(*p, 42);
     }
     {
-        auto p = make_qshared<QString>("Hello");
+        auto p = make_qshared<QString>(QStringLiteral("Hello"));
         Q_STATIC_ASSERT((std::is_same<decltype(p), QSharedPointer<QString>>::value));
         QVERIFY(p);
-        QCOMPARE(*p, "Hello");
+        QCOMPARE(*p, QStringLiteral("Hello"));
     }
 }
 

@@ -232,7 +232,7 @@ void SortProxyModelTest::dumpModelContents(QAbstractItemModel &model)
         contents << model.index(row, 0).data().toString();
     }
 
-    qDebug() << "model contents:" << contents.join(", ");
+    qDebug() << "model contents:" << contents.join(QLatin1String(", "));
 }
 
 void SortProxyModelTest::changeSingleValueLeft()

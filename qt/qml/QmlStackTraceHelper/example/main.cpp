@@ -46,8 +46,8 @@ int main(int a, char **b)
     QGuiApplication app(a, b);
 
     QQuickView view;
-    view.rootContext()->setContextProperty("_controller", new Controller());
-    view.setSource(QUrl("qrc:/main.qml"));
+    view.rootContext()->setContextProperty(QStringLiteral("_controller"), new Controller());
+    view.setSource(QUrl(QStringLiteral("qrc:/main.qml")));
     view.show();
 
     return app.exec();

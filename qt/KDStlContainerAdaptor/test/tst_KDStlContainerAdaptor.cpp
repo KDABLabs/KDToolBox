@@ -32,6 +32,8 @@
 class tst_KDStlContainerAdaptor : public QObject
 {
     Q_OBJECT
+public:
+    explicit tst_KDStlContainerAdaptor(QObject *parent = nullptr);
 
 private Q_SLOTS:
     void vectorAdaptorConstruction();
@@ -47,6 +49,11 @@ private Q_SLOTS:
 
 using IntVec = KDToolBox::StlContainerAdaptor::StdVectorAdaptor<int>;
 using StringVec = KDToolBox::StlContainerAdaptor::StdVectorAdaptor<QString>;
+
+tst_KDStlContainerAdaptor::tst_KDStlContainerAdaptor(QObject *parent)
+    : QObject{parent}
+{
+}
 
 void tst_KDStlContainerAdaptor::vectorAdaptorConstruction()
 {
@@ -223,9 +230,12 @@ void tst_KDStlContainerAdaptor::vectorAdaptorRemoval()
     QCOMPARE(v.takeAt(0), 5);
     QCOMPARE(v, (IntVec{}));
 
-    StringVec sv = {"foo", "bar", "baz", "fie", "fax"};
-    QCOMPARE(sv.removeIf([](auto &&s) { return s.startsWith('f'); }), 3);
-    QCOMPARE(sv, (StringVec{"bar", "baz"}));
+    StringVec sv = {
+        QStringLiteral("foo"), QStringLiteral("bar"), QStringLiteral("baz"),
+        QStringLiteral("fie"), QStringLiteral("fax"),
+    };
+    QCOMPARE(sv.removeIf([](auto &&s) { return s.startsWith(QLatin1Char('f')); }), 3);
+    QCOMPARE(sv, (StringVec{QStringLiteral("bar"), QStringLiteral("baz")}));
 }
 
 void tst_KDStlContainerAdaptor::vectorAdaptorSearch()
@@ -391,9 +401,8 @@ void tst_KDStlContainerAdaptor::vectorAdaptorOperators()
     StringVec sv;
     sv << sv;
     QVERIFY(sv.isEmpty());
-    sv << "hello"
-       << "world";
-    QCOMPARE(sv, (StringVec{"hello", "world"}));
+    sv << QStringLiteral("hello") << QStringLiteral("world");
+    QCOMPARE(sv, (StringVec{QStringLiteral("hello"), QStringLiteral("world")}));
 }
 
 QTEST_MAIN(tst_KDStlContainerAdaptor)

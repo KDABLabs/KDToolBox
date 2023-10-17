@@ -1,0 +1,19 @@
+find_package(Qt${QT_VERSION_MAJOR} ${QT_REQUIRED_VERSION} CONFIG REQUIRED Core Test)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include_directories(
+  ../../../../include
+)
+
+set(tst_erase_if_17_SOURCES
+  ../tst_erase_if.cpp
+)
+
+add_executable(tst_erase_if_17 ${tst_erase_if_17_SOURCES})
+target_link_libraries(tst_erase_if_17
+  PUBLIC
+    Qt::Core
+    Qt::Test
+)

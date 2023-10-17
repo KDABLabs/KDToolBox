@@ -100,7 +100,7 @@ void QtFmtTest::testQtFmt()
     QCOMPARE(fmt::format("{}", "hello"sv), "hello");
 
     // Qt types
-    QCOMPARE(fmt::format("{}", QString("hello")), "hello");
+    QCOMPARE(fmt::format("{}", QStringLiteral("hello")), "hello");
     QCOMPARE(fmt::format("{}", QByteArray("hello")), "hello");
     QCOMPARE(fmt::format("{}", QDateTime(QDate(2000, 2, 29), QTime(12, 12, 12), Qt::UTC)),
              "QDateTime(2000-02-29 12:12:12.000 UTC Qt::UTC)");

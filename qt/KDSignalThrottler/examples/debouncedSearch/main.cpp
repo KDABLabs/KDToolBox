@@ -87,7 +87,7 @@ private:
 
 int main(int argc, char **argv)
 {
-    QApplication::setApplicationName("Debouncer example");
+    QApplication::setApplicationName(QStringLiteral("Debouncer example"));
 
     QApplication app(argc, argv);
     Widget w;

@@ -124,7 +124,7 @@ public:
         , m_uiTimer(new QTimer(this))
         , m_options(options)
     {
-        QLoggingCategory::setFilterRules("uidelays.debug=false");
+        QLoggingCategory::setFilterRules(QStringLiteral("uidelays.debug=false"));
         qCDebug(uidelays) << "UiWatchdog created";
         connect(m_uiTimer, &QTimer::timeout, this, &UiWatchdog::onUiBeat);
     }

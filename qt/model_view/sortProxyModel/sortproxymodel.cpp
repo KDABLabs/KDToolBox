@@ -227,7 +227,11 @@ bool SortProxyModel::lessThan(const QModelIndex &source_left, const QModelIndex 
     const QVariant lhs = source_left.data(m_sortRole);
     const QVariant rhs = source_right.data(m_sortRole);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    if (lhs.typeId() == QMetaType::QString && rhs.typeId() == QMetaType::QString)
+#else
     if (lhs.type() == QVariant::String && rhs.type() == QVariant::String)
+#endif
     {
         return QString::compare(lhs.toString(), rhs.toString(), m_caseSensitivity) < 0;
     }
@@ -350,7 +354,7 @@ void SortProxyModel::reorder()
                 {
                     contents << index(row).data(m_sortRole).toString();
                 }
-                qWarning() << "moving failed. Current contents:" << contents.join(", ");
+                qWarning() << "moving failed. Current contents:" << contents.join(QLatin1String(", "));
             }
             auto rotateEnd = successor(unorderedIt);
             std::rotate(it, it + moveCount, rotateEnd);

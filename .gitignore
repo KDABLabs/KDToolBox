@@ -5,3 +5,4 @@ debug
 *.o
 /qt/ui_watchdog/example/ui_watchdog_example
 *~
+build*
