@@ -1,1 +1,1 @@
-SKIP /qt/qt_fmt/fmt|/test/
+SKIP /qt/qt_fmt/fmt|/test/|/qt/qt6_natvis/
