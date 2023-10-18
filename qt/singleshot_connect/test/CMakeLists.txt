@@ -3,14 +3,7 @@ find_package(Qt${QT_VERSION_MAJOR} ${QT_REQUIRED_VERSION} CONFIG REQUIRED Core T
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(tst_singleshot_connect_SOURCES
-  ../singleshot_connect.h
-  tst_singleshot_connect.cpp
-)
+set(tst_singleshot_connect_SOURCES ../singleshot_connect.h tst_singleshot_connect.cpp)
 
 add_executable(tst_singleshot_connect ${tst_singleshot_connect_SOURCES})
-target_link_libraries(tst_singleshot_connect
-  PUBLIC
-    Qt::Core
-    Qt::Test
-)
+target_link_libraries(tst_singleshot_connect PUBLIC Qt::Core Qt::Test)

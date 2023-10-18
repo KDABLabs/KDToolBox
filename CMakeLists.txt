@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(KDToolBox
-    LANGUAGES CXX
-)
+project(KDToolBox LANGUAGES CXX)
 
 option(KDTOOLBOX_CXX20 "Enabling C++20 tests" OFF)
 
@@ -15,8 +13,8 @@ set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
 
 set(QT_REQUIRED_VERSION "5.15.0")
 set(QT_VERSION_MAJOR 5) # KDAB CI fails with Qt6
-if (NOT DEFINED QT_VERSION_MAJOR)
-  find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+if(NOT DEFINED QT_VERSION_MAJOR)
+    find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 endif()
 find_package(Qt${QT_VERSION_MAJOR} ${QT_REQUIRED_VERSION} CONFIG REQUIRED Core Gui)
 

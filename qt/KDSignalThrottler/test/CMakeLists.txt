@@ -3,19 +3,9 @@ find_package(Qt${QT_VERSION_MAJOR} ${QT_REQUIRED_VERSION} CONFIG REQUIRED Core T
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(
-  ../src/
-)
+include_directories(../src/)
 
-set(test_SOURCES
-  ../src/KDSignalThrottler.cpp
-  ../src/KDSignalThrottler.h
-  tst_KDSignalThrottler.cpp
-)
+set(test_SOURCES ../src/KDSignalThrottler.cpp ../src/KDSignalThrottler.h tst_KDSignalThrottler.cpp)
 
 add_executable(test ${test_SOURCES})
-target_link_libraries(test
-  PUBLIC
-    Qt::Core
-    Qt::Test
-)
+target_link_libraries(test PUBLIC Qt::Core Qt::Test)

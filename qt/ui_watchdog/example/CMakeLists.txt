@@ -1,19 +1,17 @@
-find_package(Qt${QT_VERSION_MAJOR} ${QT_REQUIRED_VERSION} CONFIG REQUIRED Core Gui Widgets)
-
-include_directories(
-  ..
+find_package(
+    Qt${QT_VERSION_MAJOR}
+    ${QT_REQUIRED_VERSION}
+    CONFIG
+    REQUIRED
+    Core
+    Gui
+    Widgets
 )
 
-MESSAGE(STATUS "console was found. Need to port to cmake")
-set(ui_watchdog_example_SOURCES
-  ../uiwatchdog.h
-  main.cpp
-)
+include_directories(..)
+
+message(STATUS "console was found. Need to port to cmake")
+set(ui_watchdog_example_SOURCES ../uiwatchdog.h main.cpp)
 
 add_executable(ui_watchdog_example ${ui_watchdog_example_SOURCES})
-target_link_libraries(ui_watchdog_example
-  PUBLIC
-    Qt::Core
-    Qt::Gui
-    Qt::Widgets
-)
+target_link_libraries(ui_watchdog_example PUBLIC Qt::Core Qt::Gui Qt::Widgets)

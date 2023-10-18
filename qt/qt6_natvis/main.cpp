@@ -64,9 +64,9 @@ int main(int argc, char *argv[])
     QVariant v_qbytearray = QByteArray("Hello World!");
     QVariant v_qdate = QDate::currentDate();
     QVariant v_qtime = QTime::currentTime();
-    QVariant v_qdatetime = QDateTime::currentDateTime(); // NOK
+    QVariant v_qdatetime = QDateTime::currentDateTime();            // NOK
     QVariant v_qurl = QUrl(QStringLiteral("https://www.kdab.com")); // NOK
-    QVariant v_qlocale = QLocale();                      // NOK
+    QVariant v_qlocale = QLocale();                                 // NOK
     QVariant v_qrect = QRect(5, 5, 42, 42);
     QVariant v_qrectf = QRectF(5., 5., 4.2, 4.2);
     QVariant v_size = QSize(5, 42);

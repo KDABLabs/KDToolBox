@@ -3,17 +3,9 @@ find_package(Qt${QT_VERSION_MAJOR} ${QT_REQUIRED_VERSION} CONFIG REQUIRED Core T
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(
-  ../../../include
-)
+include_directories(../../../include)
 
-set(tst_qstringtokenizer_cxx11_SOURCES
-  ../tst_qstringtokenizer.cpp
-)
+set(tst_qstringtokenizer_cxx11_SOURCES ../tst_qstringtokenizer.cpp)
 
 add_executable(tst_qstringtokenizer_cxx11 ${tst_qstringtokenizer_cxx11_SOURCES})
-target_link_libraries(tst_qstringtokenizer_cxx11
-  PUBLIC
-    Qt::Core
-    Qt::Test
-)
+target_link_libraries(tst_qstringtokenizer_cxx11 PUBLIC Qt::Core Qt::Test)

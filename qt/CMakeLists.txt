@@ -15,7 +15,7 @@ add_subdirectory(ui_watchdog)
 add_subdirectory(asan_assert_fail_qt)
 add_subdirectory(qt6_natvis)
 
-if (QT_VERSION_MAJOR EQUAL 5)
-  # Qt6 has it's own QStringTokenizer
-  add_subdirectory(stringtokenizer)
-endif ()
+if(QT_VERSION_MAJOR EQUAL 5)
+    # Qt6 has it's own QStringTokenizer
+    add_subdirectory(stringtokenizer)
+endif()
