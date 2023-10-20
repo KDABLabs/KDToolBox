@@ -1,12 +1,13 @@
-CHECKSETS qt5,c++,foss
+CHECKSETS qt5,c++
 
 #KDAB-specific checks
-EXTRA kdabcopyright
+EXTRA kdabcopyright-reuse,fosslicense-reuse
 
 #exclude checks now being done by clazy or clang-tools
-EXCLUDE strings,explicit,normalize,passbyvalue,operators,nullstrcompare,nullstrassign,doublequote_chars,qobject,sigsandslots,staticobjects,includes
+EXCLUDE strings,explicit,normalize,passbyvalue,operators,nullstrcompare,nullstrassign,doublequote_chars,qobject,sigsandslots,staticobjects,dpointer,inline,postfixop
+#exclude spelling as codespell is much, much better tool
+EXCLUDE spelling
 #exclude more checks
-EXCLUDE qminmax,captruefalse
 EXCLUDE style
 
 #skip these
@@ -14,5 +15,6 @@ SKIP /examples/|/example/
 #forwardinging headers
 SKIP /qt/stringtokenizer/include/QtCore/
 SKIP /squish/tests\.json
+SKIP \.cmake-format\.py
 #3rdparty
 SKIP /qt/qt_fmt/fmt

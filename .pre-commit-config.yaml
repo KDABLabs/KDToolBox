@@ -42,3 +42,7 @@ repos:
     exclude: (.py.cmake|Doxyfile.cmake)
   - id: cmake-format
     exclude: (.py.cmake|Doxyfile.cmake)
+- repo: https://github.com/fsfe/reuse-tool
+  rev: v2.1.0
+  hooks:
+  - id: reuse

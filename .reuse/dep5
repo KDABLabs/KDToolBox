@@ -1,0 +1,34 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: KDToolBox
+Upstream-Contact:  <info@kdab.com>
+Source: http://github.com/KDABLabs/KDToolBox
+
+#misc source code
+Files: qt/stringtokenizer/include/QStringTokenizer qt/stringtokenizer/include/QtCore/QStringTokenizer *.qrc *.json *.ui
+Copyright: 2019-2023 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
+License: MIT
+
+#misc documentation
+Files: *.md
+Copyright: 2019-2023 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
+License: MIT
+
+#misc config files
+Files: .clang-format .clazy .cmake-format.py .codespellrc .gitignore .gitmodules .gitreview .krazy .pep8 .pre-commit-config.yaml .pylintrc .qmake.conf .travis.yml appveyor.yml
+Copyright: 2019-2023 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
+License: MIT
+
+#artwork
+Files: *.png
+Copyright: 2019-2023 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
+License: MIT
+
+#3rdparty fmt
+Files: qt/qt_fmt/fmt
+Copyright: Copyright (c) 2012 - present, Victor Zverovich and {fmt} contributors
+License: MIT
+
+#3rdparty from Qt
+Files: qt/qt6_natvis/qt6.natvis
+Copyright: Copyright (C) 2022 The Qt Company Ltd.
+License:  LicenseRef-Qt-GPL-3.0_EXCEPTION OR LicenseRef-Qt-Commercial

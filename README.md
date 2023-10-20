@@ -87,15 +87,15 @@ Squish Tools
 
 Licensing
 =========
-KDToolBox is (C) 2019-2023, Klarälvdalens Datakonsult AB, and is available under the
-terms of the MIT license (see the [LICENSE.MIT.txt](https://github.com/KDAB/KDToolBox/blob/master/LICENSE.MIT.txt) file in this repository).
+KDToolBox is (C) 2019-2023, Klarälvdalens Datakonsult AB (KDAB) and is
+made available under the terms of the [MIT](LICENSES/MIT.txt) license.
 
 Contact KDAB at <info@kdab.com> if you need different licensing options.
 
 Exceptions
 ----------
 The [qt6_natvis](https://github.com/KDAB/KDToolBox/tree/master/qt/qt6_natvis) project is available under
-the terms of the GPLv3 license (see the [LICENSE.GPLv3.txt](https://github.com/KDAB/KDToolBox/blob/master/qt/qt6_natvis/LICENSE.GPLv3.txt) in this repository)
+the terms of the [The Qt Company GPL Exception for GPL3 license](LICENSES/LicenseRef-Qt-GPL-3.0_EXCEPTION.txt).
 
 For the "Other code snippets", which are hosted outside of this repo, please consult
 their own license.

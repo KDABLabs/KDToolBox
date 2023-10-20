@@ -1,3 +1,9 @@
+# This file is part of KDToolBox.
+#
+# SPDX-FileCopyrightText: 2023 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
+#
+# SPDX-License-Identifier: MIT
+#
 cmake_minimum_required(VERSION 3.14)
 
 project(debug LANGUAGES CXX)
