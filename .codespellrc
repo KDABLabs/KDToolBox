@@ -1,3 +1,5 @@
 [codespell]
 skip = ./build-*,.git,./qt/qt_fmt/fmt
 interactive = 3
+#ignore camelCase, regardless. also mixed case words with correct spelling
+ignore-regex = \b([a-z]+[A-Z0-9][a-z0-9]*|THEREFROM|uffer)\b
