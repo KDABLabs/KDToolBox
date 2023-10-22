@@ -1,9 +1,9 @@
-DuplicateTracker
-=====================
+# DuplicateTracker
 
 DuplicateTracker is a helper class to keep track of "seen" elements, e.g.
 to avoid handling duplicate elements:
 
+```cpp
     DuplicateTracker<QString> tracker;
 
     for (auto &e : collection) {
@@ -11,6 +11,7 @@ to avoid handling duplicate elements:
             continue;
         peruse(e);
     }
+```
 
 DuplicateTracker transparently wraps `std::pmr::unordered_set` with a
 `std::pmr::monotonic_memory_resource` in a non-copyable, non-movable
@@ -20,6 +21,7 @@ class with a narrowly-focussed API (basically, `hasSeen()`). If C++17
 
 Porting from, say, `QSet` to `DuplicateTracker` is simple:
 
+```cpp
     -    QSet<QString> seen;
     -    seen.reserve(expectedNumElements);
     +    DuplicateTracker<QString> tracker(expectedNumElements);
@@ -30,6 +32,7 @@ Porting from, say, `QSet` to `DuplicateTracker` is simple:
     -    }
     +    if (!tracker.hasSeen(x))
     +        peruse(x);
+```
 
 The second template argument (a size) instructs DuplicateTracker to size its
 internal static buffer such that it can hold that many elements without
@@ -41,7 +44,9 @@ If you use `DuplicateTracker` with Qt types that don't have `std::hash`-support,
 yet, you want to use [Qt Hasher](https://github.com/KDAB/KDToolBox/tree/master/qt/qt_hasher)
 as the third template argument:
 
+```cpp
     DuplicateTracker<QModelIndex, 16, QtHasher<QModelIndex>> tracker(expectedNumElements);
+```
 
 Do _not_ specialize `std::hash` for types you don't control (that includes Qt types).
 `QtHasher` works with Qt 5.14 and 5.15. If you specialized `std::hash` instead, it would

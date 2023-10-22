@@ -11,9 +11,10 @@ PropertySelector is a class that employs custom parsing of its contents, allowin
 use the QML syntax in a slightly different way. PropertySelector operates on a *target*
 which by default is the parent item. That is the only conventional property that it exposes.
 
-
 ## Usage
+
 ### Rules, Conditions, Target Properties and Values
+
 PropertySelector can be used by specifying Rules. A Rule is a construct that specifies 0 or
 more Conditions, a Target Property and a (Value) Binding for that property. Both Conditions
 and Target Properties must be properties in the @ref target item. The Condition properties
@@ -29,6 +30,7 @@ with the Target Property taking the place of the (grouped) property. The Value B
 the value that should be set if the rule matches the actual conditions on the target item.
 
 For example:
+
 ```qml
 PropertySelector {
     checked.color: "red"
@@ -39,6 +41,7 @@ PropertySelector {
 ```
 
 The nested syntax for grouped properties is available too, so you can also use:
+
 ```qml
 PropertySelector {
     checked {
@@ -52,6 +55,7 @@ PropertySelector {
 ```
 
 ### Order of evaluation
+
 In the examples above, we have four different Rules all specifying the same Target Property
 `color` for different Conditions. The rules to determine which Rule is used when are as
 follows: For any Target Property, the rule with the highest number of properties that are
@@ -65,11 +69,13 @@ specific rule that matches the Conditions. If only the `checked` Condition is fu
 the `red` Value Binding would be applied.
 
 ### Use cases
+
 This Item may be used to simplify the specification of complex conditions for properties,
 which would otherwise require complex cascades of tenairy conditions in a binding or
 imperative code.
 
 ### Workings and limitations
+
 This Item works by writing values the values from the Value Bindings to the Target
 Properties. Expressions for these values are supported, but currently don't result in
 actual property bindings. Instead, they are evaluated at the moment the assignment is
@@ -81,6 +87,7 @@ place for each Target property as the default value.
 ## Registration in C++
 
 Add the property PropertySelector class to your project, and register the class like this:
+
 ```cpp
 #include "PropertySelector.h"
 static cpp::qmltypes::PropertySelectorCustomParser propertySelectorParser;

@@ -7,7 +7,7 @@ kind of behavior you see in modern browsers.
 Note that behind the scene, the `TabWindow` is using a singleton manager, so it's not possible to
 have multiple `TabWindow` in the same application.
 
-# Example Usage
+## Example Usage
 
 This widget is working like the `QTabWidget`, here is a small example:
 

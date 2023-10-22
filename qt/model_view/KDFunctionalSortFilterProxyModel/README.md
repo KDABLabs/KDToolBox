@@ -1,8 +1,9 @@
 # Functional Sort/Filter Proxy Model
 
-This is a convenience `QSortFilterProxyModel` subclass that allows to filter rows/columns using a functional predicate, removing the need to subclass.
+This is a convenience `QSortFilterProxyModel` subclass that allows to
+filter rows/columns using a functional predicate, removing the need to subclass.
 
-```
+```cpp
 KDFunctionalSortFilterProxyModel *proxy = new KDFunctionalSortFilterProxyModel;
 
 auto acceptFunction = [](const QAbstractItemModel *model, int source_row, const QModelIndex &parent)
@@ -19,7 +20,7 @@ view->setModel(proxy);
 
 Similarly, you can set a sorting predicate:
 
-```
+```cpp
 KDFunctionalSortFilterProxyModel *proxy = new KDFunctionalSortFilterProxyModel;
 
 auto lessThanFunction = [](const QModelIndex &lhs, const QModelIndex &rhs)
@@ -33,4 +34,5 @@ proxy->setSourceModel(sourceModel);
 view->setModel(proxy);
 ```
 
-Note that when a sorting predicate is set `KDFunctionalSortFilterProxyModel` will *not* fall back to `QSortFilterProxyModel` default implementation.
+Note that when a sorting predicate is set `KDFunctionalSortFilterProxyModel`
+will *not* fall back to `QSortFilterProxyModel` default implementation.

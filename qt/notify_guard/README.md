@@ -1,5 +1,5 @@
-NotifyGuard
-===========
+# NotifyGuard
+
 This class is a generic property notification guard, that can
 monitor if a property was modified between the point of construction
 and destruction of the guard object. If the property was modified,
@@ -19,7 +19,7 @@ indicated property will be monitored for changes. When using a
 pointer to a notify signal, all properties using that notification
 signal will be monitored for changes.
 
-```
+```cpp
 NotifyGuard singlePropertyGuard(this, "thePropertyName");
 NotifyGuard potentiallyMultiPropertyGuard(this, &ThisClass::theNotifySignal);
 ```
@@ -33,8 +33,9 @@ signal is only emitted once, from the outermost scope created for
 the given notify signal. This minimizes the number of signal
 emissions to prevent potentially expensive updates.
 
-```
+```cpp
 NotifyGuard singlePropertyGuard(this, "thePropertyName", NotifyGuard::SingleScope);
 NotifyGuard potentiallyMultiPropertyGuard(this, &ThisClass::theNotifySignal, NotifyGuard::RecursiveScope);
 ```
+
 RecursiveScope is the default mode and may be left off.

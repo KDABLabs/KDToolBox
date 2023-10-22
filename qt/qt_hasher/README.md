@@ -1,10 +1,9 @@
-QtHasher
-========
+# QtHasher
 
 A hasher to be able to use Qt datatypes in the unordered associative containers from
 the Standard Library.
 
-```
+```cpp
 std::unordered_map<QtType, Foo, KDToolBox::QtHasher<QtType>> map;
 
 map.insert(~~~);

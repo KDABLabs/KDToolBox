@@ -17,7 +17,7 @@ a function or so.
 function, while being more general, as it works between any range-like
 type (as the source) and any container-like type (as the destination):
 
-```
+```cpp
 using namespace KDToolBox::Ranges;
 
 QList<int> myList = ~~~;

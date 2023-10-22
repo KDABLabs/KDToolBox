@@ -11,9 +11,11 @@ exactly as the `std` component.
 Example: `k17::optional`
 
 Ok difference:
+
 - leave out `value_or()`
 
 Not ok:
+
 - make `value()` return by value
 - not have a trivial copy ctor for trivially-copyable payloads
 

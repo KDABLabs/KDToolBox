@@ -1,15 +1,13 @@
-ASAN assert_fail
-===========
+# ASAN assert_fail
 
 The `asan_assert_fail_qt` library can be preloaded to any application compiled with
 ASAN support enabled to get fancy backtraces for assertion failures:
 
-Example Usage
-==============
+## Example Usage
 
 Let's take the following code and compile it with ASAN:
 
-```
+```text
 $ cat test-asan.cpp
 #include <qglobal.h>
 
@@ -24,7 +22,7 @@ $ g++ -fsanitize=address -fPIC -lQt5Core -I/usr/include/qt -I/usr/include/qt/QtC
 When you run this as-is, the ASAN crash handler ASAN will not kick in, so all
 you are left with is the normal assertion output:
 
-```
+```text
 $ ./test-asan
 0.000 fatal: unknown[test_qt.cpp:5]: ASSERT: "argc == 2" in file test_qt.cpp, line 5
 Aborted (core dumped)
@@ -33,7 +31,7 @@ Aborted (core dumped)
 When we add our little `libasan_assert_fail_qt.so` utility, we do get a nice backtrace
 instead. We have to also explicitly preload `libasan.so` as it has to come first:
 
-```
+```text
 $ LD_PRELOAD="$(readlink -f /usr/lib/libasan.so) $(readlink -f path/to/libasan_assert_fail_qt.so)" ./test-asan
 0.000 warning: unknown[unknown:0]: ASSERT: "argc == 2" in file test_qt.cpp, line 5
 =================================================================

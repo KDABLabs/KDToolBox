@@ -1,13 +1,16 @@
 # propagate_const
 
-**A minimal reimplementation of `std::experimental_::propagate_const` from the C++ Extensions for Library Fundamentals version 3.**
+**
+A minimal reimplementation of `std::experimental_::propagate_const` from
+the C++ Extensions for Library Fundamentals version 3.
+**
 
 The propagate_const class is a deep-const wrapper for pointers and
 smart pointers. If you have a class and want to ensure const
 correctness even for its data members that are held by (smart)
 pointer, wrap them in a propagate_const:
 
-```
+```cpp
 class MyClass {
     KDToolBox::propagate_const<Data *> m_data;
 

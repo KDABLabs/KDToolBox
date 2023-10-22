@@ -1,5 +1,4 @@
-Includemocs
-===========
+# Includemocs
 
 When you use Q_OBJECT in a header file a moc file will be generated
 which needs to be compiled with the rest of your project.
@@ -20,7 +19,6 @@ This script does exactly that.
 
 Run it using -h for details.
 
-git-hook
-========
+## git-hook
 
 The file *check-includemocs-hook.sh* is a git hook to ensure all files which need it have moc files included.

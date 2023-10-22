@@ -1,5 +1,4 @@
-MessageHandler
-==============
+# MessageHandler
 
 Some convenience code to debug messages logged through Qt's logging facilities
 (qDebug(), qWarning(), etc.).
@@ -7,7 +6,7 @@ Some convenience code to debug messages logged through Qt's logging facilities
 You can use this code to figure out under what conditions a certain warning is
 printed, for instance like this:
 
-```
+```cpp
 KDToolBox::handleMessage(QtWarningMsg,
                          QRegularExpression("SomeClass::someFunction: .*"),
                          [](){ /* put a breakpoint here */ });

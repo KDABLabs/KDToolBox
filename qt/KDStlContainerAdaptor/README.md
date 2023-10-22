@@ -6,7 +6,7 @@ KDStlContainerAdaptor
 Qt containers feature a somehow richer and easy-to-use API than the STL
 counterparts. For instance, this is possible on a QVector:
 
-```
+```cpp
 QVector<int> v;
 
 v << 1 << 2 << 3;     // chained push_back via operator<<
@@ -33,7 +33,7 @@ To ease porting from `QVector` (and possibly `QList`) just use the
 `StdVectorAdaptor` class template. It transparently inherits from
 `std::vector`, but adds back the Qt-specific APIs:
 
-```
+```cpp
 // Use this instead of QVector<int>
 using IntVector = KDToolBox::StlContainerAdaptor::StdVectorAdaptor<int>;
 IntVector v;  // is-a std::vector

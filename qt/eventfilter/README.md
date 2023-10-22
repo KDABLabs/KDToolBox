@@ -1,5 +1,4 @@
-EventFilter
-===========
+# EventFilter
 
 A header only class to quickly "connect" an event to a callback.
 
@@ -8,7 +7,7 @@ For example, QWidget::isEnabled() doesn't emit any signal when enabled changed.
 
 You can now simply write:
 
-```
+```cpp
 auto filter = KDToolBox::installEventFilter(button, QEvent::EnabledChange, [button] {
     qDebug() << "Enabled changed" << button->isEnabled();
     return false;
