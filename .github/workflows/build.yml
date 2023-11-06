@@ -1,0 +1,72 @@
+# SPDX-FileCopyrightText: 2023 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
+#
+# SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only
+
+name: CI
+
+on:
+  push:
+    branches:
+      - 2.0
+  pull_request:
+    branches:
+      - 2.0
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - ubuntu-22.04
+          - ubuntu-20.04
+          - windows-2022
+          - windows-2019
+          - macos-13
+          - macos-12
+
+        config:
+          - qt_version: "5.15"
+          - qt_version: "6.3.*"
+          - qt_version: "6.6.*"
+
+    steps:
+      - name: Install Qt ${{ matrix.config.qt_version }} with options and default aqtversion
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ matrix.config.qt_version }}
+          cache: true
+
+      - name: Install ninja-build tool (must be after Qt due PATH changes)
+        uses: turtlesec-no/get-ninja@main
+
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Make sure MSVC is found when Ninja generator is in use
+        if: ${{ runner.os == 'Windows' }}
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure project
+        run: cmake -S . -B ./build
+
+      - name: Build Project
+        run: cmake --build ./build
+
+      - name: Run tests on Linux (offscreen)
+        if: ${{ runner.os == 'Linux' }}
+        run: ctest --test-dir ./build-${{ matrix.preset.name }} --output-on-failure
+        env:
+          QT_QPA_PLATFORM: offscreen
+          QT_QUICK_BACKEND: software
+
+      - name: Run tests on Window/macOS
+        if: ${{ runner.os != 'Linux' }}
+        run: ctest --test-dir ./build-${{ matrix.preset.name }} --output-on-failure
+
+      - name: Read tests log when it fails
+        uses: andstor/file-reader-action@v1
+        if: ${{ failure() && startsWith(matrix.preset.name, 'ci-dev-') }}
+        with:
+          path: "./build-${{ matrix.preset.name }}/Testing/Temporary/LastTest.log"
