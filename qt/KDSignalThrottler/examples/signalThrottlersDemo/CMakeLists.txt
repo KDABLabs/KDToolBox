@@ -4,6 +4,9 @@
 #
 # SPDX-License-Identifier: MIT
 #
+
+set(CMAKE_CXX_STANDARD 14)
+
 find_package(
     Qt${QT_VERSION_MAJOR}
     ${QT_REQUIRED_VERSION}

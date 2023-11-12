@@ -10,6 +10,8 @@ project(KDToolBox LANGUAGES CXX)
 
 option(KDTOOLBOX_CXX20 "Enabling C++20 tests" OFF)
 
+include(GNUInstallDirs)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -18,13 +20,16 @@ set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE TRUE)
 set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
 
 set(QT_REQUIRED_VERSION "5.15.0")
-set(QT_VERSION_MAJOR 5) # KDAB CI fails with Qt6
 if(NOT DEFINED QT_VERSION_MAJOR)
     find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 endif()
 find_package(Qt${QT_VERSION_MAJOR} ${QT_REQUIRED_VERSION} CONFIG REQUIRED Core Gui)
 
 set(CMAKE_AUTOMOC ON)
+
+if (MSVC)
+    add_compile_options(/Zc:__cplusplus)
+endif()
 
 add_definitions(
     -DQT_NO_CAST_TO_ASCII

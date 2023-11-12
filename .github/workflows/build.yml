@@ -7,24 +7,21 @@ name: CI
 on:
   push:
     branches:
-      - 2.0
+      - master
   pull_request:
     branches:
-      - 2.0
+      - master
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: true
+      fail-fast: false #TODO enable true on CI passes
       matrix:
         os:
-          - ubuntu-22.04
-          - ubuntu-20.04
-          - windows-2022
-          - windows-2019
-          - macos-13
-          - macos-12
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
 
         config:
           - qt_version: "5.15"
@@ -44,6 +41,9 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
 
+      - name: Fetch Git submodule
+        run: git submodule update --init --recursive
+
       - name: Make sure MSVC is found when Ninja generator is in use
         if: ${{ runner.os == 'Windows' }}
         uses: ilammy/msvc-dev-cmd@v1
@@ -56,17 +56,17 @@ jobs:
 
       - name: Run tests on Linux (offscreen)
         if: ${{ runner.os == 'Linux' }}
-        run: ctest --test-dir ./build-${{ matrix.preset.name }} --output-on-failure
+        run: ctest --test-dir ./build --output-on-failure
         env:
           QT_QPA_PLATFORM: offscreen
           QT_QUICK_BACKEND: software
 
       - name: Run tests on Window/macOS
         if: ${{ runner.os != 'Linux' }}
-        run: ctest --test-dir ./build-${{ matrix.preset.name }} --output-on-failure
+        run: ctest --test-dir ./build --output-on-failure
 
       - name: Read tests log when it fails
         uses: andstor/file-reader-action@v1
         if: ${{ failure() && startsWith(matrix.preset.name, 'ci-dev-') }}
         with:
-          path: "./build-${{ matrix.preset.name }}/Testing/Temporary/LastTest.log"
+          path: "./build/Testing/Temporary/LastTest.log"

@@ -13,15 +13,20 @@ add_subdirectory(model_view)
 add_subdirectory(notify_guard)
 add_subdirectory(pointer_cast)
 add_subdirectory(qml)
-add_subdirectory(qt_fmt)
 add_subdirectory(qt_hasher)
 add_subdirectory(singleshot_connect)
 add_subdirectory(tabWindow)
 add_subdirectory(ui_watchdog)
-add_subdirectory(asan_assert_fail_qt)
 add_subdirectory(qt6_natvis)
+
+if(LINUX)
+    add_subdirectory(asan_assert_fail_qt)
+endif()
 
 if(QT_VERSION_MAJOR EQUAL 5)
     # Qt6 has it's own QStringTokenizer
     add_subdirectory(stringtokenizer)
+
+    # fails to build with with Qt6
+    add_subdirectory(qt_fmt)
 endif()
