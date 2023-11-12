@@ -7,10 +7,10 @@ name: CI
 on:
   push:
     branches:
-      - 2.0
+      - master
   pull_request:
     branches:
-      - 2.0
+      - master
 
 jobs:
   build:
@@ -19,12 +19,9 @@ jobs:
       fail-fast: true
       matrix:
         os:
-          - ubuntu-22.04
-          - ubuntu-20.04
-          - windows-2022
-          - windows-2019
-          - macos-13
-          - macos-12
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
 
         config:
           - qt_version: "5.15"
@@ -43,6 +40,9 @@ jobs:
 
       - name: Checkout sources
         uses: actions/checkout@v4
+
+      - name: Fetch Git submodule
+        run: git submodule update --init --recursive
 
       - name: Make sure MSVC is found when Ninja generator is in use
         if: ${{ runner.os == 'Windows' }}
