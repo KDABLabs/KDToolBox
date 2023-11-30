@@ -6,7 +6,11 @@
 #
 find_package(Qt${QT_VERSION_MAJOR} ${QT_REQUIRED_VERSION} CONFIG REQUIRED Core Test)
 
-set(CMAKE_CXX_STANDARD 20)
+if(MSVC)
+    set(CMAKE_CXX_STANDARD 20)
+else()
+    set(CMAKE_CXX_STANDARD 17)
+endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(tst_propagate_const_SOURCES tst_propagate_const.cpp)

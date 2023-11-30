@@ -1,0 +1,58 @@
+# SPDX-FileCopyrightText: 2023 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
+#
+# SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only
+
+name: CI Nightly
+
+on:
+  schedule:
+  - cron: '0 3 * * *'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - ubuntu-latest
+
+        config:
+          - name: clang-tidy
+            cmake_arg: '-DCMAKE_CXX_CLANG_TIDY=clang-tidy'
+            qt_version: "5.15"
+
+          - name: clazy
+            cmake_arg: '-DCMAKE_CXX_COMPILER=clazy'
+            qt_version: "6.6.0"
+            apt_pgks:
+              - clazy
+
+    steps:
+      - name: Install Qt ${{ matrix.config.qt_version }} with options and default aqtversion
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ matrix.config.qt_version }}
+          cache: true
+
+      - name: Install ninja-build tool (must be after Qt due PATH changes)
+        uses: turtlesec-no/get-ninja@main
+
+      - name: Install dependencies on Ubuntu (${{ join(matrix.config.apt_pgks, ' ') }})
+        if: ${{ runner.os == 'Linux' && matrix.config.apt_pgks }}
+        run: |
+          sudo apt update -qq
+          echo ${{ join(matrix.config.apt_pgks, ' ') }} | xargs sudo apt install -y
+
+      - uses: actions/checkout@v4
+
+      - name: Fetch Git submodule
+        run: git submodule update --init --recursive
+
+      - name: Configure project
+        run: >
+          cmake -S . -B ./build -G Ninja ${{ matrix.config.cmake_arg }}
+          -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build Project
+        run: cmake --build ./build

@@ -16,7 +16,6 @@ find_package(
 
 include_directories(..)
 
-message(STATUS "console was found. Need to port to cmake")
 set(ui_watchdog_example_SOURCES ../uiwatchdog.h main.cpp)
 
 add_executable(ui_watchdog_example ${ui_watchdog_example_SOURCES})
