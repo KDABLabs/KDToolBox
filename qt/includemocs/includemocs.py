@@ -75,7 +75,7 @@ regexp = re.compile("\\s*(Q_OBJECT|Q_GADGET|Q_NAMESPACE)\\s*")
 
 
 def hasMacro(fileName):
-    with open(fileName, "r", encoding="utf8") as fileHandle:
+    with open(fileName, "r", encoding="ISO-8859-1") as fileHandle:
         for line in fileHandle:
             if regexp.match(line):
                 return True
