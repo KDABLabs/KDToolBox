@@ -25,8 +25,7 @@ jobs:
 
         config:
           - qt_version: "5.15"
-          - qt_version: "6.3.*"
-          - qt_version: "6.6.*"
+          - qt_version: "6.5.*"
 
     steps:
       - name: Install Qt ${{ matrix.config.qt_version }} with options and default aqtversion
