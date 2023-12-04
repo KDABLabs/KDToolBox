@@ -16,7 +16,7 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false #TODO enable true on CI passes
+      fail-fast: true
       matrix:
         os:
           - ubuntu-latest
@@ -25,7 +25,7 @@ jobs:
 
         config:
           - qt_version: "5.15"
-          - qt_version: "6.6.*"
+          - qt_version: "6.4.*" # Qt 6.5+ requires newer xcode 14.3.1 unavailabe atm
 
     steps:
       - name: Install Qt ${{ matrix.config.qt_version }} with options and default aqtversion
@@ -33,11 +33,6 @@ jobs:
         with:
           version: ${{ matrix.config.qt_version }}
           cache: true
-
-      - uses: maxim-lobanov/setup-xcode@v1
-        if: ${{ runner.os == 'macOS' }}
-        with:
-          xcode-version: '14.3.1' # Required for Qt 6.6
 
       - name: Install ninja-build tool (must be after Qt due PATH changes)
         uses: turtlesec-no/get-ninja@main
