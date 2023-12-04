@@ -15,7 +15,6 @@ find_package(
 )
 
 add_definitions(-DQT_DEPRECATED_WARNINGS)
-message(STATUS "console was found. Need to port to cmake")
 set(tst_sortproxymodeltest_SOURCES ../sortproxymodel.cpp ../sortproxymodel.h tst_sortproxymodeltest.cpp vectormodel.h)
 
 add_executable(tst_sortproxymodeltest ${tst_sortproxymodeltest_SOURCES})

@@ -17,7 +17,6 @@ find_package(
 add_definitions(-Wall)
 include_directories(../src/)
 
-message(STATUS "console was found. Need to port to cmake")
 set(test_tmp_1_SOURCES ../src/notifyguard.cpp ../src/notifyguard.h tst_notifyguard.cpp)
 
 add_executable(test_tmp_1 ${test_tmp_1_SOURCES})
