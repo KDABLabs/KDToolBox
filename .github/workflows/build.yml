@@ -25,7 +25,7 @@ jobs:
 
         config:
           - qt_version: "5.15"
-          - qt_version: "6.5.*"
+          - qt_version: "6.6.*"
 
     steps:
       - name: Install Qt ${{ matrix.config.qt_version }} with options and default aqtversion
@@ -33,6 +33,11 @@ jobs:
         with:
           version: ${{ matrix.config.qt_version }}
           cache: true
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        if: ${{ runner.os == 'macOS' }}
+        with:
+          xcode-version: '14.3.1' # Required for Qt 6.6
 
       - name: Install ninja-build tool (must be after Qt due PATH changes)
         uses: turtlesec-no/get-ninja@main
