@@ -36,7 +36,7 @@ if [ -f CMakeLists.txt ]; then
     echo "CMakeLists.txt already exists, aborting for safety reasons"
     exit 1
 fi
-FILES="`find -name '*.cpp' -o -name '*.qrc' -o -name '*.ui' | sed -e 's,\.\/,  ,'`"
+FILES="`find -name '*.cpp' -o -name '*.qrc' -o -name '*.ui' | sed -e 's,\.\/,  ,' | sort -V`"
 if [ -z "$FILES" ]; then
     echo "No cpp files found in the current directory"
     exit 1
