@@ -88,8 +88,8 @@ KDAB's collection of miscellaneous useful C++ classes and stuff.
 
 ## Licensing
 
-KDToolBox is (C) 2019-2023, Klarälvdalens Datakonsult AB (KDAB) and is
-made available under the terms of the [MIT](LICENSES/MIT.txt) license.
+KDToolBox is © Klarälvdalens Datakonsult AB (KDAB) and is made available
+under the terms of the [MIT](LICENSES/MIT.txt) license.
 
 Contact KDAB at <info@kdab.com> if you need different licensing options.
 
