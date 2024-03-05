@@ -1,75 +1,17 @@
 /*
   This file is part of KDToolBox.
 
-  SPDX-FileCopyrightText: 2019 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
+  SPDX-FileCopyrightText: 2024 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
 
   SPDX-License-Identifier: MIT
 */
 
 #pragma once
 
+#include "qt_fmt_helpers.h"
+
 #include <fmt/format.h>
-
-#include <type_traits>
-
 #include <QDebug>
-#include <QString>
-
-namespace Qt_fmt
-{
-namespace detail
-{
-
-template<typename T, template<typename...> typename Primary>
-struct is_specialization_of : std::false_type
-{
-};
-
-template<template<typename...> typename Primary, typename... Args>
-struct is_specialization_of<Primary<Args...>, Primary> : std::true_type
-{
-};
-
-} // namespace detail
-
-// Offering this as a customization point for users who might want to
-// define both QDebug streaming and fmt formatters, so they need a way
-// to shut down this path.
-//
-// Note: keeping this in sync between fmt and QDebug sounds like a
-// nightmare.
-// clang-format off
-template<typename T, typename Enable = void>
-struct exclude_from_qdebug_fmt
-    : std::disjunction<std::is_fundamental<T>,
-                       // QByteArray is a thorn in the side.
-                       // fmt handles automatically types that convert to const char *,
-                       // but not types that convert to const void *. QByteArray by default
-                       // converts to both; so be careful about it here.
-                       std::conjunction<
-                           std::is_convertible<T, const void *>,
-                           std::negation<std::is_same<std::remove_cv_t<T>, QByteArray>>
-                       >,
-                       std::conjunction<
-                           std::is_convertible<T, const char *>,
-                           std::negation<std::is_same<std::remove_cv_t<T>, QByteArray>>
-                       >,
-                       // Re-include char-arrays, since the above would exclude them
-                       std::conjunction<
-                           std::is_array<T>,
-                           std::is_same<std::remove_cv_t<T>, char>
-                       >,
-                       // fmt doesn't necessarily offer these as builtins, but let's be conservative
-                       detail::is_specialization_of<T, std::pair>,
-                       detail::is_specialization_of<T, std::vector>,
-                       detail::is_specialization_of<T, std::list>,
-                       detail::is_specialization_of<T, std::map>,
-                       detail::is_specialization_of<T, std::multimap>>
-{
-};
-// clang-format on
-
-} // namespace Qt_fmt
 
 template<typename T>
 struct fmt::formatter<T, char,
@@ -86,7 +28,7 @@ struct fmt::formatter<T, char,
     }
 
     template<typename FormatContext>
-    auto format(const T &t, FormatContext &ctx)
+    auto format(const T &t, FormatContext &ctx) const
     {
         // This is really expensive (lots of allocations). Unfortunately
         // there isn't something as easy to do that also performs better.
