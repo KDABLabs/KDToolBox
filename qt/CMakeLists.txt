@@ -18,6 +18,7 @@ add_subdirectory(singleshot_connect)
 add_subdirectory(tabWindow)
 add_subdirectory(ui_watchdog)
 add_subdirectory(qt6_natvis)
+add_subdirectory(qt_fmt)
 
 if(LINUX)
     add_subdirectory(asan_assert_fail_qt)
@@ -26,7 +27,4 @@ endif()
 if(QT_VERSION_MAJOR EQUAL 5)
     # Qt6 has it's own QStringTokenizer
     add_subdirectory(stringtokenizer)
-
-    # fails to build with with Qt6
-    add_subdirectory(qt_fmt)
 endif()
