@@ -50,7 +50,7 @@ struct fmt::formatter<BothFmtAndQDebugClass, char>
         return it;
     }
     template<typename FormatContext>
-    auto format(const BothFmtAndQDebugClass &, FormatContext &ctx)
+    auto format(const BothFmtAndQDebugClass &, FormatContext &ctx) const
     {
         return fmt::format_to(ctx.out(), "BothFmtAndQDebugClass via fmt");
     }
