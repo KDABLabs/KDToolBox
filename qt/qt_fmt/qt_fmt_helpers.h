@@ -20,6 +20,8 @@
 #include <list>
 #include <unordered_map>
 #include <unordered_set>
+#include <string>
+#include <string_view>
 
 namespace Qt_fmt
 {
@@ -65,6 +67,8 @@ struct exclude_from_qdebug_fmt
                            std::is_array<T>,
                            std::is_same<std::remove_cv_t<T>, char>
                        >,
+                       detail::is_specialization_of<T, std::basic_string>,
+                       detail::is_specialization_of<T, std::basic_string_view>,
                        // fmt doesn't necessarily offer these as builtins, but let's be conservative
                        detail::is_specialization_of<T, std::pair>,
                        detail::is_specialization_of<T, std::tuple>,
