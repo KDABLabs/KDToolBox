@@ -14,7 +14,7 @@ Copyright: Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
 License: MIT
 
 #misc config files
-Files: .clang-format .clazy .cmake-format.py .codespellrc .gitignore .gitmodules .gitreview .krazy .pep8 .pre-commit-config.yaml .pylintrc .qmake.conf .travis.yml appveyor.yml .mdlrc .mdlrc.rb
+Files: .clang-format .clazy .cmake-format.py .codespellrc .gitignore .gitmodules .gitreview .krazy .pep8 .pre-commit-config.yaml .pylintrc .qmake.conf appveyor.yml .mdlrc .mdlrc.rb
 Copyright: Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
 License: MIT
 
