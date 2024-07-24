@@ -82,6 +82,7 @@ private:
     void handleDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
     void handleRowsInserted(const QModelIndex &parent, int firstNewRow, int lastNewRow);
     void handleRowsRemoved(const QModelIndex &parent, int firstRemovedRow, int lastRemovedRow);
+    void handleModelReset();
 
     bool isInvalidedRow(const int row) const;
 
