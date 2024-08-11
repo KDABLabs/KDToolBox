@@ -24,8 +24,10 @@ jobs:
           - macos-latest
 
         config:
-          - qt_version: "5.15"
-          - qt_version: "6.4.*" # Qt 6.5+ requires newer xcode 14.3.1 unavailabe atm
+          - qt_version: 5.15.2
+            macos_architectures: "x86_64"
+          - qt_version: 6.6.2
+            macos_architectures: "x86_64;arm64"
 
     steps:
       - name: Install Qt ${{ matrix.config.qt_version }} with options and default aqtversion
@@ -39,16 +41,17 @@ jobs:
 
       - name: Checkout sources
         uses: actions/checkout@v4
-
-      - name: Fetch Git submodule
-        run: git submodule update --init --recursive
+        with:
+          submodules: recursive
 
       - name: Make sure MSVC is found when Ninja generator is in use
         if: ${{ runner.os == 'Windows' }}
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Configure project
-        run: cmake -S . -B ./build
+        run: >
+            cmake -S . -B ./build
+            -DCMAKE_OSX_ARCHITECTURES="${{ matrix.config.macos_architectures }}"
 
       - name: Build Project
         run: cmake --build ./build
