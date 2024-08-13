@@ -133,6 +133,7 @@ void SortProxyModel::setSourceModel(QAbstractItemModel *model)
             connect(model, &QAbstractItemModel::dataChanged, this, &SortProxyModel::handleDataChanged);
             connect(model, &QAbstractItemModel::rowsInserted, this, &SortProxyModel::handleRowsInserted);
             connect(model, &QAbstractItemModel::rowsRemoved, this, &SortProxyModel::handleRowsRemoved);
+            connect(model, &QAbstractItemModel::modelReset, this, &SortProxyModel::handleModelReset);
         }
         endResetModel();
     }
@@ -552,6 +553,23 @@ void SortProxyModel::handleRowsRemoved(const QModelIndex &parent, int firstRemov
     m_invalidatedRows = make_pair(m_proxyToSourceMap.end(), m_proxyToSourceMap.end());
 
     buildReverseMap(m_proxyToSourceMap, m_sourceToProxyMap);
+}
+
+void SortProxyModel::handleModelReset()
+{
+    if (!sourceModel())
+        return;
+
+    const int sourceModelRowCount = sourceModel()->rowCount();
+    if (sourceModelRowCount > 0)
+    {
+        if (sourceModelRowCount != rowCount())
+            resetInternalData();
+
+        handleDataChanged(sourceModel()->index(0, 0),
+                          sourceModel()->index(sourceModel()->rowCount() - 1, 0),
+                          QList<int>());
+    }
 }
 
 /**
