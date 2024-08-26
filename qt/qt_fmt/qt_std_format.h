@@ -12,15 +12,14 @@
 #error "This header requires C++20"
 #endif
 
-#include <format>
-#include <QDebug>
 #include "qt_fmt_helpers.h"
+#include <QDebug>
+#include <format>
 
 namespace Qt_fmt::detail
 {
 template<typename T>
-concept IsFormattableViaQDebug = requires(QDebug &d, const T &t)
-{
+concept IsFormattableViaQDebug = requires(QDebug &d, const T &t) {
     d << t;
     requires !Qt_fmt::exclude_from_qdebug_fmt<T>::value;
 };

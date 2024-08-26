@@ -10,18 +10,18 @@
 
 #include <type_traits>
 
+#include <QByteArray>
 #include <QDebug>
 #include <QString>
-#include <QByteArray>
-#include <utility>
-#include <vector>
+#include <list>
 #include <map>
 #include <set>
-#include <list>
-#include <unordered_map>
-#include <unordered_set>
 #include <string>
 #include <string_view>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
 namespace Qt_fmt
 {
@@ -88,4 +88,3 @@ struct exclude_from_qdebug_fmt
 // clang-format on
 
 } // namespace Qt_fmt
-

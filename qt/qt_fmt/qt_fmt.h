@@ -10,8 +10,8 @@
 
 #include "qt_fmt_helpers.h"
 
-#include <fmt/format.h>
 #include <QDebug>
+#include <fmt/format.h>
 
 template<typename T>
 struct fmt::formatter<T, char,

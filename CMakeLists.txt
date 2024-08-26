@@ -27,7 +27,7 @@ find_package(Qt${QT_VERSION_MAJOR} ${QT_REQUIRED_VERSION} CONFIG REQUIRED Core G
 
 set(CMAKE_AUTOMOC ON)
 
-if (MSVC)
+if(MSVC)
     add_compile_options(/Zc:__cplusplus)
 endif()
 

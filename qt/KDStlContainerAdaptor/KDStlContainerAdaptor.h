@@ -296,7 +296,7 @@ struct StdVectorAdaptor : std::vector<T, Args...>
     void swapItemsAt(size_type i, size_type j) { qSwap(at(i), at(j)); }
 
     // Misc operators
-    decltype(auto) operator+=(const StdVectorAdaptor & other)
+    decltype(auto) operator+=(const StdVectorAdaptor &other)
     {
         append(other);
         return *this;
@@ -304,14 +304,14 @@ struct StdVectorAdaptor : std::vector<T, Args...>
 };
 
 template<typename T>
-decltype(auto) operator<<(StdVectorAdaptor<T> &adaptor, const typename StdVectorAdaptor<T>::value_type & v)
+decltype(auto) operator<<(StdVectorAdaptor<T> &adaptor, const typename StdVectorAdaptor<T>::value_type &v)
 {
     adaptor.push_back(v);
     return adaptor;
 }
 
 template<typename T>
-decltype(auto) operator<<(StdVectorAdaptor<T> &adaptor, typename StdVectorAdaptor<T>::value_type && v)
+decltype(auto) operator<<(StdVectorAdaptor<T> &adaptor, typename StdVectorAdaptor<T>::value_type &&v)
 {
     adaptor.push_back(std::move(v));
     return adaptor;

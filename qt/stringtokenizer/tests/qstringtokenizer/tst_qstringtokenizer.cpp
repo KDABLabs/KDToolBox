@@ -96,7 +96,7 @@ void tst_QStringTokenizer::basics() const
     QFETCH(const Qt::CaseSensitivity, cs);
 
     auto expected = QStringList{
-        QLatin1String(""),  QStringLiteral("a"), QStringLiteral("b"), QStringLiteral("c"),
+        QLatin1String(""),   QStringLiteral("a"), QStringLiteral("b"), QStringLiteral("c"),
         QStringLiteral("d"), QStringLiteral("e"), QLatin1String(""),
     };
     if (sb & Qt::SkipEmptyParts)
