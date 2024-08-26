@@ -32,7 +32,7 @@ def stripInitialSlash(path):
 
 
 def shouldExclude(root, path):
-    # pylint: disable=used-before-assignment
+    # pylint: disable=used-before-assignment,possibly-used-before-assignment
     if not args.excludes:
         return False  # No excludes provided
 

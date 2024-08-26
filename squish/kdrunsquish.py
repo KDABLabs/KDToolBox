@@ -347,6 +347,7 @@ class SquishTest:
                 print(self.serverStdout.getvalue())
                 print(self.runnerStdout.getvalue())
 
+        tag = ""
         if passedUnexpectedly:
             tag = '[XOK ]'
         elif passedExpectedly:
