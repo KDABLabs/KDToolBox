@@ -31,4 +31,4 @@ License: MIT
 #3rdparty from Qt
 Files: qt/qt6_natvis/qt6.natvis
 Copyright: Copyright (C) 2022 The Qt Company Ltd.
-License:  LicenseRef-Qt-GPL-3.0_EXCEPTION OR LicenseRef-Qt-Commercial
+License:  LicenseRef-Qt-GPL-3.0-EXCEPTION OR LicenseRef-Qt-Commercial
