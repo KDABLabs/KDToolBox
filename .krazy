@@ -18,3 +18,4 @@ SKIP /squish/tests\.json
 SKIP \.cmake-format\.py
 #3rdparty
 SKIP /qt/qt_fmt/fmt
+SKIP /qt/qt6_natvis/qt6.natvis
