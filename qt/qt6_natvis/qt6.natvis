@@ -369,6 +369,33 @@
         </Expand>
     </Type>
 
+    <Type Name="QHostAddress">
+        <Intrinsic Name="a" Expression="((quint32*)d.d)[12]"/>
+        <Intrinsic Name="a6" Expression="((unsigned char*)d.d)[32+offset]">
+            <Parameter Name="offset" Type="quint8"/>
+        </Intrinsic>
+        <Intrinsic Name="protocol" Expression="((char*)d.d)[52]"/>
+        <Intrinsic Name="isIpv4" Expression="protocol()==QAbstractSocket::NetworkLayerProtocol::IPv4Protocol"/>
+        <Intrinsic Name="isIpv6" Expression="protocol()==QAbstractSocket::NetworkLayerProtocol::IPv6Protocol"/>
+        <Intrinsic Name="rshift" Expression="(value&gt;&gt;by)&amp;0xff">
+            <Parameter Name="value" Type="quint32"/>
+            <Parameter Name="by" Type="quint32"/>
+        </Intrinsic>
+        <Intrinsic Name="lshift" Expression="(value&lt;&lt;by)">
+            <Parameter Name="value" Type="quint8"/>
+            <Parameter Name="by" Type="quint8"/>
+        </Intrinsic>
+        <DisplayString Condition="isIpv4()">{rshift(a(),24),d}.{rshift(a(),16),d}.{rshift(a(),8),d}.{rshift(a(),0),d}</DisplayString>
+        <DisplayString Condition="isIpv6()">{(unsigned short)(lshift(0xffff&amp;a6(0),8)|a6(1)),nvoXb}:{(unsigned short)(lshift(0xffff&amp;a6(2),8)|a6(3)),nvoXb}:{(unsigned
+            short)(lshift(0xffff&amp;a6(4),8)|a6(5)),nvoXb}:{(unsigned short)(lshift(0xffff&amp;a6(6),8)|a6(7)),nvoXb}:{(unsigned short)(lshift(0xffff&amp;a6(8),8)|a6(9)),nvoXb}:{(unsigned
+            short)(lshift(0xffff&amp;a6(10),8)|a6(11)),nvoXb}:{(unsigned short)(lshift(0xffff&amp;a6(12),8)|a6(13)),nvoXb}:{(unsigned short)(lshift(0xffff&amp;a6(14),8)|a6(15)),nvoXb}
+        </DisplayString>
+        <Expand>
+            <Item Name="scopeId">*((QString*)(((char*)d.d)+8))</Item>
+            <Item Name="protocol">(QAbstractSocket::NetworkLayerProtocol)protocol()</Item>
+        </Expand>
+    </Type>
+
     <Type Name="QDate">
         <DisplayString>{{ julian day = {jd} }}</DisplayString>
     </Type>
