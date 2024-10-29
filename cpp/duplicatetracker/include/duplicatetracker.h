@@ -94,9 +94,9 @@ protected:
 
     explicit DuplicateTrackerBase(std::size_t numBuckets, const Hash &h, const Equal &e)
 #ifdef __cpp_lib_memory_resource
-        : Base(this->m_buffer, sizeof(this->m_buffer), std::max(numBuckets, Prealloc), h, e){}
+        : Base(this->m_buffer, sizeof(this->m_buffer), (std::max)(numBuckets, Prealloc), h, e){}
 #else
-        : Base(std::max(numBuckets, Prealloc), h, e)
+        : Base((std::max)(numBuckets, Prealloc), h, e)
     {
     }
 #endif

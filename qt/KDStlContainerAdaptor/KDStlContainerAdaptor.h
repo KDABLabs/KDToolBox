@@ -275,7 +275,7 @@ struct StdVectorAdaptor : std::vector<T, Args...>
 
         if (len < 0)
             len = s;
-        len = std::min(len, s - pos);
+        len = (std::min)(len, s - pos);
 
         const auto b = this->begin() + pos;
         const auto e = b + len;
