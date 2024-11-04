@@ -9,6 +9,7 @@ cmake_minimum_required(VERSION 3.5)
 project(KDToolBox LANGUAGES CXX)
 
 option(KDTOOLBOX_CXX20 "Enabling C++20 tests" OFF)
+option(KDTOOLBOX_CXX23 "Enabling C++23 tests" OFF)
 
 include(GNUInstallDirs)
 
