@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: MIT
 #
 add_subdirectory(eventfilter)
+add_subdirectory(KDCoro)
 add_subdirectory(KDSignalThrottler)
 add_subdirectory(KDSqlDatabaseTransaction)
 add_subdirectory(KDStlContainerAdaptor)
