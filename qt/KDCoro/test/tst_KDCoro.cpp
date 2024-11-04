@@ -7,8 +7,8 @@
 */
 
 #include <QPoint>
-#include <QTimer>
 #include <QTest>
+#include <QTimer>
 
 #include "../KDCoro.h"
 
@@ -20,19 +20,19 @@ class MyLibrary : public QObject
 {
     Q_OBJECT
 public:
-    MyLibrary() {
+    MyLibrary()
+    {
         auto timer = new QTimer;
-        timer->setSingleShot(false); // kdCoroSignal() behaves like a singleShot connection, you can only await it one time
+        timer->setSingleShot(
+            false); // kdCoroSignal() behaves like a singleShot connection, you can only await it one time
         timer->setInterval(1s);
         timer->start();
 
-        QObject::connect(timer, &QTimer::timeout, this, [this] {
-            Q_EMIT textChanged(u"some text"_s);
-        });
+        QObject::connect(timer, &QTimer::timeout, this, [this] { Q_EMIT textChanged(u"some text"_s); });
     }
 
-    KDCoroExpected<QPoint> doSomethingLater(bool error) {
-
+    KDCoroExpected<QPoint> doSomethingLater(bool error)
+    {
         auto timer = new QTimer;
         timer->setInterval(1s);
         timer->start();
@@ -45,9 +45,12 @@ public:
         QObject::connect(timer, &QTimer::timeout, [exp, unexp, error, timer] {
             timer->deleteLater();
 
-            if (error) {
+            if (error)
+            {
                 unexp(u"finished with error"_s);
-            } else {
+            }
+            else
+            {
                 exp(QPoint{800, 600});
             }
         });
@@ -55,8 +58,8 @@ public:
         return awaitable;
     }
 
-    KDCoroExpected<QPointF> doSomethingError() {
-
+    KDCoroExpected<QPointF> doSomethingError()
+    {
         auto timer = new QTimer;
         timer->setInterval(1s);
         timer->start();
@@ -90,33 +93,32 @@ private Q_SLOTS:
     void testSignals();
 
 private:
-    void coroFinished() {
-        if (--m_coroRunning == 0) {
+    void coroFinished()
+    {
+        if (--m_coroRunning == 0)
+        {
             qApp->quit();
         }
     }
     int m_coroRunning = 0;
 };
 
-void tst_KDCoro::initTestCase()
-{
-
-}
+void tst_KDCoro::initTestCase() {}
 
 void tst_KDCoro::testCoro()
 {
     QEventLoop loop;
 
-           // This lambda is a coroutine
+    // This lambda is a coroutine
     auto coroTests = [&loop, this]() -> KDCoroTerminator {
         MyLibrary lib;
 
-               // Expected
+        // Expected
         auto resultTrue = co_await lib.doSomethingLater(false); // Wait till started timer finish
         KDCOROCOMPARE_EQ(resultTrue.has_value(), true);
         KDCOROCOMPARE_EQ(resultTrue.value(), QPoint(800, 600));
 
-               // Unexpected
+        // Unexpected
         auto awaitableError = lib.doSomethingError(); // Timer false starts now
 
         auto resultFalse = co_await awaitableError; // Wait till started timer finish

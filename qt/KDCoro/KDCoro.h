@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <QPointer>
 #include <QLoggingCategory>
+#include <QPointer>
 #include <QtDebug>
 #include <qtestcase.h>
 
@@ -19,20 +19,18 @@
 namespace KDToolBox
 {
 
-template <typename T>
+template<typename T>
 class KDCoroExpected
 {
     Q_DISABLE_COPY(KDCoroExpected)
 public:
-    bool await_ready() const noexcept
-    {
-        return m_result.has_value() || !m_result.error().isEmpty();
-    }
+    bool await_ready() const noexcept { return m_result.has_value() || !m_result.error().isEmpty(); }
 
     bool await_suspend(std::coroutine_handle<> h) noexcept
     {
         m_handle = h;
-        if (m_sender) {
+        if (m_sender)
+        {
             m_receiverConn = QObject::connect(m_sender, &QObject::destroyed, [h, this] {
                 m_result = std::unexpected(QStringLiteral("KDCoroExpected: QObject receiver* destroyed"));
                 h.resume();
@@ -51,7 +49,8 @@ public:
             m_result = result;
             QObject::disconnect(m_lambdaConn);
 
-            if (m_handle) {
+            if (m_handle)
+            {
                 m_handle.resume();
             }
         };
@@ -60,12 +59,14 @@ public:
             m_result = std::unexpected(error);
             QObject::disconnect(m_lambdaConn);
 
-            if (m_handle) {
+            if (m_handle)
+            {
                 m_handle.resume();
             }
         };
 
-        if (receiver) {
+        if (receiver)
+        {
             m_receiverConn = QObject::connect(receiver, &QObject::destroyed, [this] {
                 m_result = std::unexpected(QStringLiteral("KDCoroExpected: QObject receiver* destroyed"));
                 m_handle.resume();
@@ -76,7 +77,8 @@ public:
     std::suspend_never initial_suspend() const noexcept { return {}; }
     std::suspend_never final_suspend() noexcept { return {}; }
 
-    KDCoroExpected(KDCoroExpected &&other) {
+    KDCoroExpected(KDCoroExpected &&other)
+    {
         callbackExpected = std::move(other.callbackExpected);
         callbackUnexpected = std::move(other.callbackUnexpected);
 
@@ -87,7 +89,8 @@ public:
         m_result = std::move(other.m_result);
         m_handle = std::move(other.m_handle);
     }
-    ~KDCoroExpected() {
+    ~KDCoroExpected()
+    {
         QObject::disconnect(m_senderConn);
         QObject::disconnect(m_receiverConn);
     }
@@ -104,14 +107,14 @@ public:
 };
 
 template<typename T, typename Func1>
-inline auto kdCoroSignal(typename QtPrivate::FunctionPointer<Func1>::Object *sender, Func1 signal)
-    -> KDCoroExpected<T> {
-
+inline auto kdCoroSignal(typename QtPrivate::FunctionPointer<Func1>::Object *sender, Func1 signal) -> KDCoroExpected<T>
+{
     KDCoroExpected<T> awaiter(sender);
 
     auto cb = awaiter.callbackExpected;
     awaiter.m_lambdaConn = QObject::connect(sender, std::forward<Func1>(signal), [cb](const T &args) mutable {
-        if (cb) {
+        if (cb)
+        {
             cb(std::move(args));
         }
     });
@@ -120,14 +123,15 @@ inline auto kdCoroSignal(typename QtPrivate::FunctionPointer<Func1>::Object *sen
 }
 
 template<typename T, typename Func1>
-inline auto kdCoroSignal(typename QtPrivate::FunctionPointer<Func1>::Object *sender, Func1 signal, QObject *receiver)
-    -> KDCoroExpected<T> {
-
+inline auto kdCoroSignal(typename QtPrivate::FunctionPointer<Func1>::Object *sender, Func1 signal,
+                         QObject *receiver) -> KDCoroExpected<T>
+{
     KDCoroExpected<T> awaiter(sender);
 
     auto cb = awaiter.callbackExpected;
     awaiter.m_lambdaConn = QObject::connect(sender, std::forward<Func1>(signal), receiver, [cb](const T &args) mutable {
-        if (cb) {
+        if (cb)
+        {
             cb(std::move(args));
         }
     });
@@ -138,13 +142,15 @@ inline auto kdCoroSignal(typename QtPrivate::FunctionPointer<Func1>::Object *sen
 class KDCoroTerminator
 {
 public:
-    struct promise_type {
+    struct promise_type
+    {
         std::coroutine_handle<promise_type> handle;
         std::vector<QMetaObject::Connection> connections;
 
         void clean()
         {
-            for (auto &conn : connections) {
+            for (auto &conn : connections)
+            {
                 QObject::disconnect(conn);
             }
             connections.clear();
@@ -168,7 +174,8 @@ public:
         {
             auto conn = QObject::connect(obj, &QObject::destroyed, [this] {
                 clean();
-                if (handle) {
+                if (handle)
+                {
                     handle.destroy();
                 }
             });
@@ -187,21 +194,21 @@ public:
 // case they are temporary objects.
 // We also use IILE to prevent potential name clashes and shadowing of variables
 // from user code. A drawback of the approach is that it looks ugly :(
-#define KDCOROCOMPARE_OP_IMPL(lhs, rhs, op, opId) \
-do { \
-        if (![](auto &&qt_lhs_arg, auto &&qt_rhs_arg) { \
-                    /* assumes that op does not actually move from qt_{lhs, rhs}_arg */ \
-                    return QTest::reportResult(std::forward<decltype(qt_lhs_arg)>(qt_lhs_arg) \
-                                               op \
-                                               std::forward<decltype(qt_rhs_arg)>(qt_rhs_arg), \
-                                               [&qt_lhs_arg] { return QTest::toString(qt_lhs_arg); }, \
-                                               [&qt_rhs_arg] { return QTest::toString(qt_rhs_arg); }, \
-#lhs, #rhs, QTest::ComparisonOperation::opId, \
-                                               __FILE__, __LINE__); \
-            }(lhs, rhs)) { \
-            co_return; \
-    } \
-} while (false)
+#define KDCOROCOMPARE_OP_IMPL(lhs, rhs, op, opId)                                                                      \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (![](auto &&qt_lhs_arg, auto &&qt_rhs_arg) {                                                                \
+                /* assumes that op does not actually move from qt_{lhs, rhs}_arg */                                    \
+                return QTest::reportResult(                                                                            \
+                    std::forward<decltype(qt_lhs_arg)>(qt_lhs_arg) op std::forward<decltype(qt_rhs_arg)>(qt_rhs_arg),  \
+                    [&qt_lhs_arg] { return QTest::toString(qt_lhs_arg); },                                             \
+                    [&qt_rhs_arg] { return QTest::toString(qt_rhs_arg); }, #lhs, #rhs,                                 \
+                    QTest::ComparisonOperation::opId, __FILE__, __LINE__);                                             \
+            }(lhs, rhs))                                                                                               \
+        {                                                                                                              \
+            co_return;                                                                                                 \
+        }                                                                                                              \
+    } while (false)
 
 #define KDCOROCOMPARE_EQ(computed, baseline) KDCOROCOMPARE_OP_IMPL(computed, baseline, ==, Equal)
 #define KDCOROCOMPARE_NE(computed, baseline) KDCOROCOMPARE_OP_IMPL(computed, baseline, !=, NotEqual)

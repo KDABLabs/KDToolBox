@@ -5,7 +5,6 @@
 # SPDX-License-Identifier: MIT
 #
 add_subdirectory(eventfilter)
-add_subdirectory(KDCoro)
 add_subdirectory(KDSignalThrottler)
 add_subdirectory(KDSqlDatabaseTransaction)
 add_subdirectory(KDStlContainerAdaptor)
@@ -28,4 +27,8 @@ endif()
 if(QT_VERSION_MAJOR EQUAL 5)
     # Qt6 has it's own QStringTokenizer
     add_subdirectory(stringtokenizer)
+endif()
+
+if(KDTOOLBOX_CXX23)
+    add_subdirectory(KDCoro)
 endif()
