@@ -10,6 +10,7 @@ usage()
 {
   echo "Usage: $0 [ -q | --qt 5 | 6 | 5-and-6 | none ]"
   echo "The -q or --qt option allows to choose between Qt 5, Qt 6, both, or no Qt dependency"
+  echo "Qt 6 is used by default"
   exit 2
 }
 
@@ -21,7 +22,7 @@ fi
 
 eval set -- "$PARSED_ARGUMENTS"
 
-QTVERSION=5
+QTVERSION=6
 while :
 do
   case "$1" in
