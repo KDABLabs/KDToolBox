@@ -1,0 +1,46 @@
+version = 1
+SPDX-PackageName = "KDToolBox"
+SPDX-PackageSupplier = "<info@kdab.com>"
+SPDX-PackageDownloadLocation = "http://github.com/KDABLabs/KDToolBox"
+
+#misc source code
+[[annotations]]
+path = ["qt/stringtokenizer/include/QStringTokenizer", "qt/stringtokenizer/include/QtCore/QStringTokenizer", "**.qrc", "**.json", "**.ui"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>"
+SPDX-License-Identifier = "MIT"
+
+#misc documentation
+[[annotations]]
+path = "**.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>"
+SPDX-License-Identifier = "MIT"
+
+#misc config files
+[[annotations]]
+path = [".clang-format", ".clazy", ".cmake-format.py", ".codespellrc", ".gitignore", ".gitmodules", ".gitreview", ".krazy", ".pep8", ".pre-commit-config.yaml", ".pylintrc", ".qmake.conf", ".mdlrc", ".mdlrc.rb", "REUSE.toml"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>"
+SPDX-License-Identifier = "MIT"
+
+#artwork
+[[annotations]]
+path = "**.png"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>"
+SPDX-License-Identifier = "MIT"
+
+#3rdparty fmt
+[[annotations]]
+path = "qt/qt_fmt/fmt"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Copyright (c) 2012 - present, Victor Zverovich and {fmt} contributors"
+SPDX-License-Identifier = "MIT"
+
+#3rdparty from Qt
+[[annotations]]
+path = "qt/qt6_natvis/qt6.natvis"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Copyright (C) 2022 The Qt Company Ltd."
+SPDX-License-Identifier = "LicenseRef-Qt-GPL-3.0-EXCEPTION OR LicenseRef-Qt-Commercial"
