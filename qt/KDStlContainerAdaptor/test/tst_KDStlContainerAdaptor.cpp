@@ -71,9 +71,18 @@ void tst_KDStlContainerAdaptor::vectorAdaptorIterators()
 }
 
 // For Qt5 (without C++17) and Qt6/C++17 compatibility
-template <typename T> struct AddConst { typedef const T type; };
-template <typename T> constexpr typename AddConst<T>::type &asConst(T &t) noexcept { return t; }
-template <typename T> void asConst(const T &&) = delete; // prevent rvalue arguments
+template<typename T>
+struct AddConst
+{
+    typedef const T type;
+};
+template<typename T>
+constexpr typename AddConst<T>::type &asConst(T &t) noexcept
+{
+    return t;
+}
+template<typename T>
+void asConst(const T &&) = delete; // prevent rvalue arguments
 
 void tst_KDStlContainerAdaptor::vectorAdaptorDataAccess()
 {
