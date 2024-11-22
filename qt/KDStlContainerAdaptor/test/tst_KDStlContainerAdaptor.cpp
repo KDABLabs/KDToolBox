@@ -70,6 +70,11 @@ void tst_KDStlContainerAdaptor::vectorAdaptorIterators()
     QCOMPARE(result, 15);
 }
 
+// For Qt5 (without C++17) and Qt6/C++17 compatibility
+template <typename T> struct AddConst { typedef const T type; };
+template <typename T> constexpr typename AddConst<T>::type &asConst(T &t) noexcept { return t; }
+template <typename T> void asConst(const T &&) = delete; // prevent rvalue arguments
+
 void tst_KDStlContainerAdaptor::vectorAdaptorDataAccess()
 {
     IntVec v{1, 2, 3, 4, 5};
@@ -80,7 +85,7 @@ void tst_KDStlContainerAdaptor::vectorAdaptorDataAccess()
         QCOMPARE(v.constData()[i], expected);
         QCOMPARE(v.at(i), expected);
         QCOMPARE(v[i], expected);
-        QCOMPARE(qAsConst(v)[i], expected);
+        QCOMPARE(asConst(v)[i], expected);
         QCOMPARE(v.value(i), expected);
     }
 
@@ -93,14 +98,14 @@ void tst_KDStlContainerAdaptor::vectorAdaptorDataAccess()
     QCOMPARE(v.first(), -1);
     v.first() = 123;
     QCOMPARE(v.first(), 123);
-    QCOMPARE(qAsConst(v).first(), 123);
+    QCOMPARE(asConst(v).first(), 123);
     QCOMPARE(v.constFirst(), 123);
 
     v[4] = -1;
     QCOMPARE(v.last(), -1);
     v.last() = 456;
     QCOMPARE(v.last(), 456);
-    QCOMPARE(qAsConst(v).last(), 456);
+    QCOMPARE(asConst(v).last(), 456);
     QCOMPARE(v.constLast(), 456);
 }
 

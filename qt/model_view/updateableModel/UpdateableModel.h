@@ -352,7 +352,11 @@ private:
         // reconstruct vector of changed roles
         QVector<int> roles;
         roles.reserve(m_changedRoles.count());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        for (int role : std::as_const(m_changedRoles))
+#else
         for (int role : qAsConst(m_changedRoles))
+#endif
         {
             roles.append(role);
         }
