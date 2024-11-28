@@ -82,7 +82,11 @@ void TabWindowManager::removeWindow(TabWindow *window)
 
 TabWindow *TabWindowManager::possibleWindow(TabWindow *currentWindow, QPoint globalPos)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    for (auto tabWindow : std::as_const(m_windows))
+#else
     for (auto tabWindow : qAsConst(m_windows))
+#endif
     {
         if (tabWindow == currentWindow)
             continue;
