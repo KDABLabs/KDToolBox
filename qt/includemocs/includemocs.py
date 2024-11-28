@@ -93,6 +93,15 @@ def getMocInsertionLocation(filename, content):
     match = headerIncludeRegex.search(content)
     if match:
         return match.end()
+
+    # If we did not find #include of a current file, then it would be sufficient to #include a MOC file after all
+    # includes. This can happen if header file has different name from source file, or path to a header is not relative
+    # (e.g. /path/to/header.h instead of header.h).
+    headerIncludeRegex = re.compile(r'#include ".*?\.h"\n')
+    match = headerIncludeRegex.search(content)
+    if match:
+        return match.start()
+
     return 0
 
 
