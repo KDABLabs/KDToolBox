@@ -7,7 +7,7 @@ ci:
 exclude: ^(qt/qt6_natvis/qt6.natvis)
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.6.0
+  rev: v5.0.0
   hooks:
   - id: trailing-whitespace
   - id: end-of-file-fixer
@@ -17,11 +17,11 @@ repos:
     args: [--allow-multiple-documents]
   - id: check-json
 - repo: https://github.com/pre-commit/mirrors-clang-format
-  rev: v18.1.8
+  rev: v19.1.4
   hooks:
   - id: clang-format
 - repo: https://github.com/PyCQA/pylint
-  rev: v3.2.7
+  rev: v3.3.2
   hooks:
   - id: pylint
     exclude: ^(.cmake-format.py)
@@ -51,6 +51,6 @@ repos:
     language: ruby
     files: \.(md|mdown|markdown)$
 - repo: https://github.com/fsfe/reuse-tool
-  rev: v4.0.3
+  rev: v5.0.2
   hooks:
   - id: reuse

@@ -123,8 +123,8 @@ inline auto kdCoroSignal(typename QtPrivate::FunctionPointer<Func1>::Object *sen
 }
 
 template<typename T, typename Func1>
-inline auto kdCoroSignal(typename QtPrivate::FunctionPointer<Func1>::Object *sender, Func1 signal,
-                         QObject *receiver) -> KDCoroExpected<T>
+inline auto kdCoroSignal(typename QtPrivate::FunctionPointer<Func1>::Object *sender, Func1 signal, QObject *receiver)
+    -> KDCoroExpected<T>
 {
     KDCoroExpected<T> awaiter(sender);
 
