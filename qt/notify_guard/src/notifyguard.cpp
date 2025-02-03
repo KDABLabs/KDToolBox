@@ -258,7 +258,7 @@ Internal::SignalDataSPtr getDataObject(QObject *target, QMetaMethod notifySignal
             {
                 if (auto sptr = it->dataWPtr.lock())
                 {
-                    qCDebug(cat) << "re-using shared instanceData for" << notifySignal.name() << sptr.get();
+                    qCDebug(cat) << "reusing shared instanceData for" << notifySignal.name() << sptr.get();
                     return sptr;
                 }
 
