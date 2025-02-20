@@ -1,33 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!--
-    ****************************************************************************
-    **
-    ** Copyright (C) 2022 The Qt Company Ltd.
-    ** Contact: https://www.qt.io/licensing/
-    **
-    ** This file is part of the Qt VS Tools.
-    **
-    ** $QT_BEGIN_LICENSE:GPL-EXCEPT$
-    ** Commercial License Usage
-    ** Licensees holding valid commercial Qt licenses may use this file in
-    ** accordance with the commercial license agreement provided with the
-    ** Software or, alternatively, in accordance with the terms contained in
-    ** a written agreement between you and The Qt Company. For licensing terms
-    ** and conditions see https://www.qt.io/terms-conditions. For further
-    ** information use the contact form at https://www.qt.io/contact-us.
-    **
-    ** GNU General Public License Usage
-    ** Alternatively, this file may be used under the terms of the GNU
-    ** General Public License version 3 as published by the Free Software
-    ** Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
-    ** included in the packaging of this file. Please review the following
-    ** information to ensure the GNU General Public License requirements will
-    ** be met: https://www.gnu.org/licenses/gpl-3.0.html.
-    **
-    ** $QT_END_LICENSE$
-    **
-    ****************************************************************************
--->
+<!--************************************************************************************************
+ Copyright (C) 2024 The Qt Company Ltd.
+ SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+*************************************************************************************************-->
 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
 
@@ -457,7 +432,7 @@
         </Expand>
     </Type>
 
-    <Type Name="QMap&lt;*,*&gt;">
+   <Type Name="QMap&lt;*,*&gt;">
         <AlternativeType Name="QMultiMap&lt;*,*&gt;"/>
         <DisplayString>{{ size={d.d-&gt;m._Mypair._Myval2._Myval2._Mysize} }}</DisplayString>
         <Expand>
@@ -471,11 +446,11 @@
         </Expand>
     </Type>
 
-    <Type Name="std::pair&lt;*, *&gt;" IncludeView="MapHelper">
+   <Type Name="std::pair&lt;*, *&gt;" IncludeView="MapHelper">
         <DisplayString>{second}</DisplayString>
     </Type>
 
-    <Type Name="QHashPrivate::Node&lt;*,*&gt;">
+   <Type Name="QHashPrivate::Node&lt;*,*&gt;">
         <DisplayString>{value}</DisplayString>
         <Expand>
             <Item Name="key">key</Item>
@@ -483,7 +458,7 @@
         </Expand>
     </Type>
 
-    <Type Name="QHashPrivate::MultiNode&lt;*,*&gt;">
+   <Type Name="QHashPrivate::MultiNode&lt;*,*&gt;">
         <DisplayString Condition="value-&gt;next == 0">{value-&gt;value}</DisplayString>
         <DisplayString Condition="value-&gt;next != 0 &amp;&amp; value-&gt;next-&gt;next == 0">({value-&gt;value}, {value-&gt;next-&gt;value})</DisplayString>
         <DisplayString Condition="value-&gt;next != 0 &amp;&amp; value-&gt;next-&gt;next != 0">({value-&gt;value}, {value-&gt;next-&gt;value}, ...)</DisplayString>
@@ -496,7 +471,7 @@
         </Expand>
     </Type>
 
-    <Type Name="QHash&lt;*,*&gt;">
+   <Type Name="QHash&lt;*,*&gt;">
         <AlternativeType Name="QMultiHash&lt;*,*&gt;"/>
         <Intrinsic Name="getOffset" Category="Method" Expression="d-&gt;spans[span].offsets[offset]">
             <Parameter Name="span" Type="int" />
@@ -654,14 +629,14 @@
         </Expand>
     </Type>
 
-    <Type Name="QSet&lt;*&gt;">
+   <Type Name="QSet&lt;*&gt;">
         <DisplayString>{{ size={q_hash.d-&gt;size} }}</DisplayString>
         <Expand>
             <ExpandedItem>q_hash</ExpandedItem>
         </Expand>
     </Type>
 
-    <Type Name="QVariant">
+   <Type Name="QVariant">
         <Intrinsic Name="typeId" Expression="*(int*)(&amp;((const QtPrivate::QMetaTypeInterface *)(d.packedType &lt;&lt; 2))->typeId)">
         </Intrinsic>
         <Intrinsic Name="dataStar" Expression="(&amp;(d.data.data))">
