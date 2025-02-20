@@ -37,6 +37,8 @@ int main(int argc, char *argv[])
     auto qsetString =
         QSet<QString>{QStringLiteral("one"), QStringLiteral("two"), QStringLiteral("three"), QStringLiteral("four")};
 
+    QDate date = QDate::currentDate();
+
     QVariant v_null;
     QVariant v_bool = true;
     QVariant v_int = -10;
