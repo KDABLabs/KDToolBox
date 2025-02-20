@@ -371,8 +371,27 @@
         </Expand>
     </Type>
 
-    <Type Name="QDate">
-        <DisplayString>{{ julian day = {jd} }}</DisplayString>
+   <Type Name="QDate">
+        <!-- formula from https://aa.usno.navy.mil/faq/JD_formula -->
+        <Intrinsic Name="L1" Expression="jd + 68569" />
+        <Intrinsic Name="N" Expression="4 * L1() / 146097" />
+        <Intrinsic Name="L2" Expression="L1() - (146097 * N() + 3) / 4" />
+        <Intrinsic Name="I1" Expression="4000 * (L2() + 1) / 1461001" />
+        <Intrinsic Name="L3" Expression="L2() - 1461 * I1() / 4 + 31" />
+        <Intrinsic Name="J1" Expression="80 * L3() / 2447" />
+        <Intrinsic Name="day" Expression="L3() - 2447 * J1() / 80" />
+        <Intrinsic Name="L4" Expression="J1() / 11" />
+        <Intrinsic Name="month" Expression="J1() + 2 - 12 * L4()" />
+        <Intrinsic Name="year" Expression="100 * (N() - 49) + I1() + L4()" />
+        <DisplayString Condition="month()&lt;10 &amp;&amp; day()&lt;10">{year()}-0{month()}-0{day()}</DisplayString>
+        <DisplayString Condition="month()&lt;10">{year()}-0{month()}-{day()}</DisplayString>
+        <DisplayString Condition="day()&lt;10">{year()}-{month()}-0{day()}</DisplayString>
+        <DisplayString>{year()}-{month()}-{day()}</DisplayString>
+        <Expand>
+            <Item Name="[year]">year()</Item>
+            <Item Name="[month]">month()</Item>
+            <Item Name="[day]">day()</Item>
+        </Expand>
     </Type>
 
    <Type Name="QTime">
