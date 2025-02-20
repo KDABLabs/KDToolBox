@@ -6,3 +6,10 @@ debug
 /qt/ui_watchdog/example/ui_watchdog_example
 *~
 build*
+
+# Visual Studio
+.vs
+
+# VS Code
+.cache
+compile_commands.json
