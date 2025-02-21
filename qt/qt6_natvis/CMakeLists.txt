@@ -1,4 +1,4 @@
-﻿# This file is part of KDToolBox.
+# This file is part of KDToolBox.
 #
 # SPDX-FileCopyrightText: 2023 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
 #
@@ -24,10 +24,7 @@ find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core Gui)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui)
 
 qt_add_executable(debug main.cpp)
-qt_add_resources(debug "debug_assets"
-    PREFIX "/"
-    FILES
-        kdab-logo.png)
+qt_add_resources(debug "debug_assets" PREFIX "/" FILES kdab-logo.png)
 target_link_libraries(debug PRIVATE Qt6::Gui)
 
 install(TARGETS debug LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
