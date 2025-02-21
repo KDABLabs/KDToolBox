@@ -6,7 +6,7 @@
 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
 
-    <Type Name="QPropertyData&lt;*&gt;">
+	<Type Name="QPropertyData&lt;*&gt;">
         <DisplayString>{val}</DisplayString>
         <Expand>
             <Item Name="[value]">val</Item>
@@ -777,5 +777,22 @@
             <ExpandedItem Condition="typeId() == QMetaType::QStringList">*(QList&lt;QString&gt;*) sharedDataStar()</ExpandedItem>
         </Expand>
    </Type>
+	
+	<Type Name="QImage">
+		<DisplayString Condition="d" Optional="true">{{ {d-&gt;width}x{d-&gt;height} }}</DisplayString>
+		<DisplayString>empty</DisplayString>
+        <Expand>
+			<Item Condition="d" Optional="true" Name="[width]">d-&gt;width</Item>
+			<Item Condition="d" Optional="true" Name="[height]">d-&gt;height</Item>
+		</Expand>
+    </Type>
 
+	<Type Name="QPixmap">
+		<DisplayString Condition="data.d" Optional="true">{{ {data.d-&gt;w}x{data.d-&gt;h} }}</DisplayString>
+		<DisplayString>empty</DisplayString>
+		<Expand>
+			<Item Condition="data.d" Optional="true" Name="[width]">data.d-&gt;w</Item>
+			<Item Condition="data.d" Optional="true" Name="[height]">data.d-&gt;h</Item>
+		</Expand>
+	</Type>
 </AutoVisualizer>
