@@ -1,4 +1,4 @@
-/*
+﻿/*
   This file is part of KDToolBox.
 
   SPDX-FileCopyrightText: 2023 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
@@ -8,12 +8,15 @@
 */
 
 #include <QtCore>
+#include <QtGui>
 
 #include <unordered_map>
 #include <unordered_set>
 
 int main(int argc, char *argv[])
 {
+    QGuiApplication app(argc, argv);
+
     auto mapString =
         std::map<int, QString>{{10, QStringLiteral("one")}, {20, QStringLiteral("two")}, {30, QStringLiteral("three")}};
     auto qmapString =
@@ -72,6 +75,10 @@ int main(int argc, char *argv[])
     auto v_hash = QVariantHash{
         {QStringLiteral("string"), v_qstring}, {QStringLiteral("double"), v_double}, {QStringLiteral("rect"), v_qrect}};
     auto v_stringlist = QStringList{QStringLiteral("one"), QStringLiteral("two"), QStringLiteral("three")};
+
+    QImage image(":/kdab-logo.png");
+
+    QPixmap pixmap(":/kdab-logo.png");
 
     return 0;
 }
