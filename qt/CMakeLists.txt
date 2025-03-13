@@ -17,7 +17,6 @@ add_subdirectory(qt_hasher)
 add_subdirectory(singleshot_connect)
 add_subdirectory(tabWindow)
 add_subdirectory(ui_watchdog)
-add_subdirectory(qt6_natvis)
 add_subdirectory(qt_fmt)
 
 if(LINUX)
