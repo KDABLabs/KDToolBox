@@ -22,7 +22,8 @@ jobs:
           - ubuntu-latest
           - windows-latest
           - macos-latest
-
+        compiler:
+          - name: default
         config:
           - qt_version: 5.15.2
             macos_architectures: "x86_64"
@@ -30,6 +31,25 @@ jobs:
             macos_architectures: "x86_64;arm64"
           - qt_version: 6.9.0 # bump freely to latest
             macos_architectures: "x86_64;arm64"
+
+        include:
+          # Add clang builds for Ubuntu
+          - os: ubuntu-latest
+            compiler:
+              name: clang
+              cc: clang
+              cxx: clang++
+            config:
+              qt_version: 6.6.2
+              macos_architectures: "x86_64;arm64"
+          - os: ubuntu-latest
+            compiler:
+              name: clang
+              cc: clang
+              cxx: clang++
+            config:
+              qt_version: 6.9.0 # bump freely to latest
+              macos_architectures: "x86_64;arm64"
 
     steps:
       - name: Install Qt ${{ matrix.config.qt_version }} with options and default aqtversion
@@ -52,8 +72,10 @@ jobs:
 
       - name: Configure project
         run: >
-            cmake -S . -B ./build
-            -DCMAKE_OSX_ARCHITECTURES="${{ matrix.config.macos_architectures }}"
+          cmake -S . -B ./build
+          -DCMAKE_OSX_ARCHITECTURES="${{ matrix.config.macos_architectures }}"
+          ${{ matrix.compiler.cc != '' && format('-DCMAKE_C_COMPILER={0}', matrix.compiler.cc) || '' }}
+          ${{ matrix.compiler.cxx != '' && format('-DCMAKE_CXX_COMPILER={0}', matrix.compiler.cxx) || '' }}
 
       - name: Build Project
         run: cmake --build ./build
