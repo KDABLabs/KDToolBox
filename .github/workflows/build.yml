@@ -28,10 +28,12 @@ jobs:
             macos_architectures: "x86_64"
           - qt_version: 6.6.2
             macos_architectures: "x86_64;arm64"
+          - qt_version: 6.9.0 # bump freely to latest
+            macos_architectures: "x86_64;arm64"
 
     steps:
       - name: Install Qt ${{ matrix.config.qt_version }} with options and default aqtversion
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: ${{ matrix.config.qt_version }}
           cache: true
