@@ -31,13 +31,6 @@ class UiWatchdog;
 class UiWatchdogWorker : public QObject
 {
 public:
-    enum Option
-    {
-        OptionNone = 0,
-        OptionDebugBreak = 1
-    };
-    typedef int Options;
-
    ~UiWatchdogWorker() override
     {
         qCDebug(uidelays) << "UiWatchdogWorker destroyed";
@@ -50,9 +43,8 @@ public:
     UiWatchdogWorker &operator=(UiWatchdogWorker &&) = delete;
 
 private:
-    explicit UiWatchdogWorker(Options options, int maxTimeBlockedMsecs)
+    explicit UiWatchdogWorker(int maxTimeBlockedMsecs)
         : m_watchTimer(new QTimer(this))
-        , m_options(options)
         , m_maxTimeBlocked(maxTimeBlockedMsecs)
     {
         qCDebug(uidelays) << "UiWatchdogWorker created";
@@ -79,10 +71,7 @@ private:
         if (elapsed > m_maxTimeBlocked)
         {
             qWarning() << "UI is blocked !" << elapsed; // Add custom action here!
-            if ((m_options & OptionDebugBreak))
-            {
-                debugBreak();
-            }
+            debugBreak();
         }
     }
 
@@ -90,7 +79,11 @@ private:
     {
 #ifdef Q_OS_WIN
         DebugBreak();
+#else
+        qWarning() << "Debug break not implemented on this platform.";
 #endif
+        // TODO: invoke a user provided lambda, so they can do what they want.
+        // like wait for GDB, etc.
     }
 
     void reset()
@@ -103,17 +96,15 @@ private:
     QTimer *const m_watchTimer;
     QElapsedTimer m_elapsedTimeSinceLastBeat;
     QMutex m_mutex;
-    const Options m_options;
     friend class UiWatchdog;
 };
 
 class UiWatchdog : public QObject
 {
 public:
-    explicit UiWatchdog(UiWatchdogWorker::Options options = UiWatchdogWorker::OptionNone, QObject *parent = nullptr)
+    explicit UiWatchdog(QObject *parent = nullptr)
         : QObject(parent)
         , m_uiTimer(new QTimer(this))
-        , m_options(options)
     {
         QLoggingCategory::setFilterRules(QStringLiteral("uidelays.debug=false"));
         qCDebug(uidelays) << "UiWatchdog created";
@@ -147,7 +138,7 @@ public:
 
         m_uiTimer->start(frequency_msecs);
 
-        m_worker = new UiWatchdogWorker(m_options, m_maxTimeBlocked);
+        m_worker = new UiWatchdogWorker(m_maxTimeBlocked);
         m_watchDogThread = new QThread(this);
         m_worker->moveToThread(m_watchDogThread);
         m_watchDogThread->start();
@@ -177,7 +168,6 @@ private:
     QTimer *const m_uiTimer;
     QThread *m_watchDogThread = nullptr;
     UiWatchdogWorker *m_worker = nullptr;
-    const UiWatchdogWorker::Options m_options;
     int m_maxTimeBlocked = DEFAULT_MAX_TIME_BLOCKED;
 };
 
