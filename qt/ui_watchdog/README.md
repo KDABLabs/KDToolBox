@@ -14,6 +14,7 @@ can be customized next to the "Add custom action here" comment.
     (...)
 
     UiWatchdog dog;
+    dog.setMaxTimeBlocked(500); // Warns if main thread is blocked for more than 500 ms
     dog.start();
 
     return app.exec();
