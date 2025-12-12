@@ -45,6 +45,7 @@ int main(int argc, char **argv)
     QObject::connect(button3, &QPushButton::clicked, sleepTimer, &QTimer::stop);
 
     UiWatchdog dog;
+    dog.setMaxTimeBlocked(500); // Warns if main thread is blocked for more than 500 ms
     dog.start();
     w.resize(800, 800);
     w.show();
