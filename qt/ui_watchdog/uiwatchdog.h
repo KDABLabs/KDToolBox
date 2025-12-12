@@ -21,7 +21,8 @@
 #include <Windows.h>
 #endif
 
-#define MAX_TIME_BLOCKED 300 // ms
+constexpr int MAX_TIME_BLOCKED = 300; // ms
+constexpr int PING_FREQUENCY = 40; // ms
 
 Q_DECLARE_LOGGING_CATEGORY(uidelays)
 Q_LOGGING_CATEGORY(uidelays, "uidelays")
@@ -37,23 +38,27 @@ public:
     };
     typedef int Options;
 
+   ~UiWatchdogWorker() override
+    {
+        qCDebug(uidelays) << "UiWatchdogWorker destroyed";
+        stop();
+    }
+
+    UiWatchdogWorker(const UiWatchdogWorker &) = delete;
+    UiWatchdogWorker &operator=(const UiWatchdogWorker &) = delete;
+    UiWatchdogWorker(UiWatchdogWorker &&) = delete;
+    UiWatchdogWorker &operator=(UiWatchdogWorker &&) = delete;
+
 private:
-    UiWatchdogWorker(Options options)
-        : QObject()
-        , m_watchTimer(new QTimer(this))
+    explicit UiWatchdogWorker(Options options)
+        : m_watchTimer(new QTimer(this))
         , m_options(options)
     {
         qCDebug(uidelays) << "UiWatchdogWorker created";
         connect(m_watchTimer, &QTimer::timeout, this, &UiWatchdogWorker::checkUI);
     }
 
-    ~UiWatchdogWorker()
-    {
-        qCDebug(uidelays) << "UiWatchdogWorker destroyed";
-        stop();
-    }
-
-    void start(int frequency_msecs = 200)
+    void start(int frequency_msecs)
     {
         m_watchTimer->start(frequency_msecs);
         m_elapsedTimeSinceLastBeat.start();
@@ -63,7 +68,7 @@ private:
 
     void checkUI()
     {
-        qint64 elapsed;
+        qint64 elapsed = 0;
 
         {
             QMutexLocker l(&m_mutex);
@@ -72,9 +77,11 @@ private:
 
         if (elapsed > MAX_TIME_BLOCKED)
         {
-            qDebug() << "UI is blocked !" << elapsed; // Add custom action here!
+            qWarning() << "UI is blocked !" << elapsed; // Add custom action here!
             if ((m_options & OptionDebugBreak))
+            {
                 debugBreak();
+            }
         }
     }
 
@@ -111,13 +118,18 @@ public:
         connect(m_uiTimer, &QTimer::timeout, this, &UiWatchdog::onUiBeat);
     }
 
-    ~UiWatchdog()
+    ~UiWatchdog() override
     {
         stop();
         qCDebug(uidelays) << "UiWatchdog destroyed";
     }
 
-    void start(int frequency_msecs = 100)
+    UiWatchdog(const UiWatchdog &) = delete;
+    UiWatchdog &operator=(const UiWatchdog &) = delete;
+    UiWatchdog(UiWatchdog &&) = delete;
+    UiWatchdog &operator=(UiWatchdog &&) = delete;
+
+    void start(int frequency_msecs = PING_FREQUENCY)
     {
         if (m_worker)
             return;
