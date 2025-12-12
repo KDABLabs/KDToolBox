@@ -21,7 +21,7 @@
 #include <Windows.h>
 #endif
 
-constexpr int MAX_TIME_BLOCKED = 300; // ms
+constexpr int DEFAULT_MAX_TIME_BLOCKED = 300; // ms
 constexpr int PING_FREQUENCY = 40; // ms
 
 Q_DECLARE_LOGGING_CATEGORY(uidelays)
@@ -50,9 +50,10 @@ public:
     UiWatchdogWorker &operator=(UiWatchdogWorker &&) = delete;
 
 private:
-    explicit UiWatchdogWorker(Options options)
+    explicit UiWatchdogWorker(Options options, int maxTimeBlockedMsecs)
         : m_watchTimer(new QTimer(this))
         , m_options(options)
+        , m_maxTimeBlocked(maxTimeBlockedMsecs)
     {
         qCDebug(uidelays) << "UiWatchdogWorker created";
         connect(m_watchTimer, &QTimer::timeout, this, &UiWatchdogWorker::checkUI);
@@ -75,7 +76,7 @@ private:
             elapsed = m_elapsedTimeSinceLastBeat.elapsed();
         }
 
-        if (elapsed > MAX_TIME_BLOCKED)
+        if (elapsed > m_maxTimeBlocked)
         {
             qWarning() << "UI is blocked !" << elapsed; // Add custom action here!
             if ((m_options & OptionDebugBreak))
@@ -98,6 +99,7 @@ private:
         m_elapsedTimeSinceLastBeat.restart();
     }
 
+    const int m_maxTimeBlocked;
     QTimer *const m_watchTimer;
     QElapsedTimer m_elapsedTimeSinceLastBeat;
     QMutex m_mutex;
@@ -129,6 +131,15 @@ public:
     UiWatchdog(UiWatchdog &&) = delete;
     UiWatchdog &operator=(UiWatchdog &&) = delete;
 
+    void setMaxTimeBlocked(int maxTimeBlockedMsecs)
+    {
+        if (m_worker) {
+            qFatal("Cannot change max time blocked while watchdog is running");
+        } else {
+            m_maxTimeBlocked = maxTimeBlockedMsecs;
+        }
+    }
+
     void start(int frequency_msecs = PING_FREQUENCY)
     {
         if (m_worker)
@@ -136,7 +147,7 @@ public:
 
         m_uiTimer->start(frequency_msecs);
 
-        m_worker = new UiWatchdogWorker(m_options);
+        m_worker = new UiWatchdogWorker(m_options, m_maxTimeBlocked);
         m_watchDogThread = new QThread(this);
         m_worker->moveToThread(m_watchDogThread);
         m_watchDogThread->start();
@@ -167,6 +178,7 @@ private:
     QThread *m_watchDogThread = nullptr;
     UiWatchdogWorker *m_worker = nullptr;
     const UiWatchdogWorker::Options m_options;
+    int m_maxTimeBlocked = DEFAULT_MAX_TIME_BLOCKED;
 };
 
 #endif
