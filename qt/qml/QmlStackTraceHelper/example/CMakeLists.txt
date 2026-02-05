@@ -15,6 +15,10 @@ find_package(
     Quick
 )
 
+if (Qt6Qml_VERSION VERSION_GREATER_EQUAL "6.10.0")
+    find_package(Qt6 ${QT_REQUIRED_VERSION} CONFIG REQUIRED QmlPrivate)
+endif()
+
 set(example_tmp_4_SOURCES ../QmlStackTraceHelper.cpp main.cpp)
 
 set(example_tmp_4_QRCS qrc.qrc)

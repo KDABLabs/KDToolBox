@@ -14,6 +14,10 @@ find_package(
     Test
 )
 
+if (Qt6Core_VERSION VERSION_GREATER_EQUAL "6.10.0")
+    find_package(Qt6 ${QT_REQUIRED_VERSION} CONFIG REQUIRED CorePrivate)
+endif()
+
 add_definitions(-DQT_DEPRECATED_WARNINGS)
 set(tst_sortproxymodeltest_SOURCES ../sortproxymodel.cpp ../sortproxymodel.h tst_sortproxymodeltest.cpp vectormodel.h)
 
