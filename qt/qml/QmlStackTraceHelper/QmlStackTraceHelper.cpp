@@ -14,6 +14,7 @@
 #include <QString>
 #include <QVector>
 #include <QtQml/private/qqmlengine_p.h>
+#include <QtQml/private/qv4stackframe_p.h>
 
 extern "C" char *qt_v4StackTrace(void *executionContext);
 
@@ -37,7 +38,11 @@ void printQmlStackTraces()
             if (!context)
                 continue;
             QQmlEnginePrivate *enginePriv = QQmlEnginePrivate::get(context->engine());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 11, 0)
+            QV4::ExecutionEngine *v4engine = enginePriv->v4Engine.get();
+#else
             QV4::ExecutionEngine *v4engine = enginePriv->v4engine();
+#endif
             qDebug() << "Stack trace for" << qw;
             qDebug().noquote() << qmlStackTrace(v4engine);
             qDebug() << "\n";
