@@ -17,11 +17,11 @@ repos:
     args: [--allow-multiple-documents]
   - id: check-json
 - repo: https://github.com/pre-commit/mirrors-clang-format
-  rev: v21.1.6
+  rev: v22.1.8
   hooks:
   - id: clang-format
 - repo: https://github.com/PyCQA/pylint
-  rev: v4.0.4
+  rev: v4.0.6
   hooks:
   - id: pylint
     exclude: ^(.cmake-format.py)
@@ -33,7 +33,7 @@ repos:
     additional_dependencies:
     - psutil
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.4.1
+  rev: v2.4.3
   hooks:
   - id: codespell
 - repo: https://github.com/cheshirekow/cmake-format-precommit
@@ -44,7 +44,7 @@ repos:
   - id: cmake-format
     exclude: (.py.cmake|Doxyfile.cmake)
 - repo: https://github.com/markdownlint/markdownlint
-  rev: v0.15.0
+  rev: v0.17.0
   hooks:
   - id: markdownlint
     entry: mdl
