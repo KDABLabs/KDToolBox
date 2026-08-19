@@ -4,4 +4,7 @@
 #
 # SPDX-License-Identifier: MIT
 #
-add_subdirectory(asan_assert_fail)
+
+if(NOT MSVC AND NOT APPLE)
+  add_subdirectory(asan_assert_fail)
+endif()
