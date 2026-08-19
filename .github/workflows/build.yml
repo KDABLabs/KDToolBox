@@ -56,6 +56,10 @@ jobs:
           - os: macos-latest
             config:
               qt_version: "5.15.2"
+          # Newer MSVC doesn't build with Qt 5 anymore: (qvector.h(960): error C2653: 'stdext': is not a class or namespace name)
+          - os: windows-latest
+            config:
+              qt_version: "5.15.2"
           # ld: framework 'AGL' not found (QTBUG-137687)
           - os: macos-latest
             config:
