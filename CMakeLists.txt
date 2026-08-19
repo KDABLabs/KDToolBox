@@ -6,7 +6,7 @@
 #
 cmake_minimum_required(VERSION 3.5)
 
-project(KDToolBox LANGUAGES CXX)
+project(KDToolBox LANGUAGES C CXX)
 
 option(KDTOOLBOX_CXX20 "Enabling C++20 tests" OFF)
 option(KDTOOLBOX_CXX23 "Enabling C++23 tests" OFF)
@@ -22,11 +22,13 @@ set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
 
 set(QT_REQUIRED_VERSION "5.15.0")
 if(NOT DEFINED QT_VERSION_MAJOR)
-    find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+    find_package(QT NAMES Qt6 Qt5 COMPONENTS Core)
 endif()
-find_package(Qt${QT_VERSION_MAJOR} ${QT_REQUIRED_VERSION} CONFIG REQUIRED Core Gui)
+if(DEFINED QT_VERSION_MAJOR)
+    find_package(Qt${QT_VERSION_MAJOR} ${QT_REQUIRED_VERSION} CONFIG REQUIRED Core Gui)
+    set(CMAKE_AUTOMOC ON)
+endif()
 
-set(CMAKE_AUTOMOC ON)
 
 if(MSVC)
     add_compile_options(/Zc:__cplusplus)
@@ -43,6 +45,9 @@ add_definitions(
     -DQT_DISABLE_DEPRECATED_BEFORE=0x060200
 )
 
-add_subdirectory(cpp)
-add_subdirectory(qt)
-add_subdirectory(general)
+add_subdirectory(poc)
+if(DEFINED QT_VERSION_MAJOR)
+    add_subdirectory(cpp)
+    add_subdirectory(qt)
+    add_subdirectory(general)
+endif()
