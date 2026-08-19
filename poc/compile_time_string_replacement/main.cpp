@@ -11,7 +11,7 @@ This file is part of KDToolBox.
 namespace
 {
 // store a string in a more formal manner
-template <size_t N>
+template<size_t N>
 struct fixed_string
 {
     char data[N]{};
@@ -29,19 +29,19 @@ struct fixed_string
 
 // rule for how to deduce strings into fixed_string
 // "abc" will be deduced into fixed_string<4> (including null terminator)
-template <size_t N>
+template<size_t N>
 fixed_string(const char (&)[N]) -> fixed_string<N>;
 
 // the count needs to be performed separately
 // thus this is a separate function
-template <fixed_string S>
+template<fixed_string S>
 consteval size_t count_replaced_length()
 {
     constexpr size_t source_length = sizeof(S.data);
     size_t target_string_character_count = 0;
     for (size_t source_index = 0; source_index + 1 < source_length; ++source_index)
     {
-        const auto& source_character = S.data[source_index];
+        const auto &source_character = S.data[source_index];
 
         if (source_character == '\0')
         {
@@ -65,7 +65,7 @@ consteval size_t count_replaced_length()
 }
 
 // perform the actual replacement in the string
-template <fixed_string S>
+template<fixed_string S>
 consteval auto compute_replaced()
 {
     constexpr size_t source_length = sizeof(S.data);
@@ -100,16 +100,16 @@ consteval auto compute_replaced()
 }
 
 // user-facing function to replace %s with 0x01
-template <fixed_string S>
-consteval const char* replace_percent_s()
+template<fixed_string S>
+consteval const char *replace_percent_s()
 {
     static constexpr auto value = compute_replaced<S>();
     return value.data;
 }
 
 // User-defined literal option: "..."_replace
-template <fixed_string S>
-consteval const char* operator""_replace()
+template<fixed_string S>
+consteval const char *operator""_replace()
 {
     static constexpr auto value = compute_replaced<S>();
     return value.data;
@@ -124,18 +124,18 @@ static_assert(replace_percent_s<"">()[0] == '\0');
 
 namespace some_namespace
 {
-    // User-defined literal option: "..."_rep
-    template <fixed_string S>
-    consteval const char* operator""_rep()
-    {
-        static constexpr auto value = compute_replaced<S>();
-        return value.data;
-    }
+// User-defined literal option: "..."_rep
+template<fixed_string S>
+consteval const char *operator""_rep()
+{
+    static constexpr auto value = compute_replaced<S>();
+    return value.data;
+}
 
-    static void print()
-    {
-        std::cout << "3: Hey, welcome to %s "_rep << "!\n";
-    }
+static void print()
+{
+    std::cout << "3: Hey, welcome to %s "_rep << "!\n";
+}
 }
 
 int main()

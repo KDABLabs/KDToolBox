@@ -15,7 +15,7 @@ find_package(
     Quick
 )
 
-if (Qt6Qml_VERSION VERSION_GREATER_EQUAL "6.10.0")
+if(Qt6Qml_VERSION VERSION_GREATER_EQUAL "6.10.0")
     find_package(Qt6 ${QT_REQUIRED_VERSION} CONFIG REQUIRED QmlPrivate)
 endif()
 

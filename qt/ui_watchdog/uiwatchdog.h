@@ -22,7 +22,7 @@
 #endif
 
 constexpr int DEFAULT_MAX_TIME_BLOCKED = 300; // ms
-constexpr int PING_FREQUENCY = 40; // ms
+constexpr int PING_FREQUENCY = 40;            // ms
 
 Q_DECLARE_LOGGING_CATEGORY(uidelays)
 Q_LOGGING_CATEGORY(uidelays, "uidelays")
@@ -31,7 +31,7 @@ class UiWatchdog;
 class UiWatchdogWorker : public QObject
 {
 public:
-   ~UiWatchdogWorker() override
+    ~UiWatchdogWorker() override
     {
         qCDebug(uidelays) << "UiWatchdogWorker destroyed";
         stop();
@@ -124,9 +124,12 @@ public:
 
     void setMaxTimeBlocked(int maxTimeBlockedMsecs)
     {
-        if (m_worker) {
+        if (m_worker)
+        {
             qFatal("Cannot change max time blocked while watchdog is running");
-        } else {
+        }
+        else
+        {
             m_maxTimeBlocked = maxTimeBlockedMsecs;
         }
     }
