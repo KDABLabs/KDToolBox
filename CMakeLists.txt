@@ -32,6 +32,8 @@ if(MSVC)
     add_compile_options(/Zc:__cplusplus)
 endif()
 
+# add comment
+
 add_definitions(
     -DQT_NO_CAST_TO_ASCII
     -DQT_NO_CAST_FROM_ASCII
