@@ -29,7 +29,7 @@ jobs:
             macos_architectures: "x86_64"
           - qt_version: 6.6.2
             macos_architectures: "x86_64;arm64"
-          - qt_version: 6.9.0 # bump freely to latest
+          - qt_version: 6.9.* # bump freely to latest
             macos_architectures: "x86_64;arm64"
 
         include:
@@ -48,8 +48,18 @@ jobs:
               cc: clang
               cxx: clang++
             config:
-              qt_version: 6.9.0 # bump freely to latest
+              qt_version: 6.9.* # bump freely to latest
               macos_architectures: "x86_64;arm64"
+
+        exclude:
+          # There's no ARM binaries for Qt 5.15 via aqtinstall
+          - os: macos-latest
+            config:
+              qt_version: "5.15.2"
+          # ld: framework 'AGL' not found (QTBUG-137687)
+          - os: macos-latest
+            config:
+              qt_version: "6.6.2"
 
     steps:
       - name: Install Qt ${{ matrix.config.qt_version }} with options and default aqtversion
