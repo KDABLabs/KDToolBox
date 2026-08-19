@@ -6,5 +6,5 @@
 #
 
 if(NOT MSVC AND NOT APPLE)
-  add_subdirectory(asan_assert_fail)
+    add_subdirectory(asan_assert_fail)
 endif()

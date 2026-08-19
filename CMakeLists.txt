@@ -29,7 +29,6 @@ if(DEFINED QT_VERSION_MAJOR)
     set(CMAKE_AUTOMOC ON)
 endif()
 
-
 if(MSVC)
     add_compile_options(/Zc:__cplusplus)
 endif()

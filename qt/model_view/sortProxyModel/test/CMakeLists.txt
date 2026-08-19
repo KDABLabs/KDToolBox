@@ -14,7 +14,7 @@ find_package(
     Test
 )
 
-if (Qt6Core_VERSION VERSION_GREATER_EQUAL "6.10.0")
+if(Qt6Core_VERSION VERSION_GREATER_EQUAL "6.10.0")
     find_package(Qt6 ${QT_REQUIRED_VERSION} CONFIG REQUIRED CorePrivate)
 endif()
 
