@@ -22,32 +22,27 @@ set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
 
 set(QT_REQUIRED_VERSION "5.15.0")
 if(NOT DEFINED QT_VERSION_MAJOR)
-    find_package(QT NAMES Qt6 Qt5 COMPONENTS Core)
+    find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 endif()
-if(DEFINED QT_VERSION_MAJOR)
-    find_package(Qt${QT_VERSION_MAJOR} ${QT_REQUIRED_VERSION} CONFIG REQUIRED Core Gui)
-    set(CMAKE_AUTOMOC ON)
-endif()
+find_package(Qt${QT_VERSION_MAJOR} ${QT_REQUIRED_VERSION} CONFIG REQUIRED Core Gui)
 
+set(CMAKE_AUTOMOC ON)
 
 if(MSVC)
     add_compile_options(/Zc:__cplusplus)
 endif()
 
 add_definitions(
-    -DQT_NO_CAST_TO_ASCII
-    -DQT_NO_CAST_FROM_ASCII
-    -DQT_STRICT_ITERATORS
-    -DQT_NO_URL_CAST_FROM_STRING
-    -DQT_NO_CAST_FROM_BYTEARRAY
-    -DQT_USE_QSTRINGBUILDER
-    -DQT_USE_FAST_OPERATOR_PLUS
-    -DQT_DISABLE_DEPRECATED_BEFORE=0x060200
+        -DQT_NO_CAST_TO_ASCII
+        -DQT_NO_CAST_FROM_ASCII
+        -DQT_STRICT_ITERATORS
+        -DQT_NO_URL_CAST_FROM_STRING
+        -DQT_NO_CAST_FROM_BYTEARRAY
+        -DQT_USE_QSTRINGBUILDER
+        -DQT_USE_FAST_OPERATOR_PLUS
+        -DQT_DISABLE_DEPRECATED_BEFORE=0x060200
 )
 
-add_subdirectory(poc)
-if(DEFINED QT_VERSION_MAJOR)
-    add_subdirectory(cpp)
-    add_subdirectory(qt)
-    add_subdirectory(general)
-endif()
+add_subdirectory(cpp)
+add_subdirectory(qt)
+add_subdirectory(general)
