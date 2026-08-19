@@ -1,0 +1,1 @@
+add_subdirectory(compile_time_string_replacement)
