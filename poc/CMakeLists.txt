@@ -6,3 +6,4 @@
 #
 
 add_subdirectory(compile_time_string_replacement)
+add_subdirectory(variadic_template_arguments)
