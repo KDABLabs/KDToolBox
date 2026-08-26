@@ -4,11 +4,9 @@
 #
 # SPDX-License-Identifier: MIT
 #
+project(test_int_to_string LANGUAGES CXX)
 
-add_subdirectory(compile_time_string_replacement)
+set(CMAKE_CXX_STANDARD 23)
 
-if(WIN32)
-    add_subdirectory(int_to_string)
-endif()
-
-add_subdirectory(variadic_template_arguments)
+add_executable(test_int_to_string main.cpp)
+target_compile_options(test_int_to_string PRIVATE -O3)
