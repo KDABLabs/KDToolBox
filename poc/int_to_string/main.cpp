@@ -204,9 +204,7 @@ constexpr std::uint8_t int_to_string(T integer_value, result_buffer_type &target
     return target_index;
 }
 
-
 // --- below is tests / benchmarks
-
 
 void print_number(result_buffer_type &source, size_t num_characters)
 {

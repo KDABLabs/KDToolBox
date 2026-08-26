@@ -9,6 +9,6 @@ add_subdirectory(compile_time_string_replacement)
 
 if(WIN32)
     add_subdirectory(int_to_string)
-endif ()
+endif()
 
 add_subdirectory(variadic_template_arguments)
