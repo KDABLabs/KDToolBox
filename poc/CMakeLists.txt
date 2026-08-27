@@ -11,4 +11,5 @@ if(WIN32)
     add_subdirectory(int_to_string)
 endif()
 
+add_subdirectory(rvo_optional)
 add_subdirectory(variadic_template_arguments)
