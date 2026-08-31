@@ -8,3 +8,8 @@ The result of the replacement (the const char*) is stored in the executables dat
 
 The project can be the start of a fictive printf() or other formatting function which optimizes away the 's' in "%s"
 and replaces it with a character not used in logging '\01' or also written as 0x01.
+
+# LLM Use
+
+Please note that it has been written with LLM assistance / review
+which does not indemnify the user of the code.
