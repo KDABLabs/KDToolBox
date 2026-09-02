@@ -68,7 +68,7 @@ static constexpr std::uint8_t digit_count_lut[64] = {
 // two-digit -> ASCII lookup (saves divide/modulo per digit)
 // two_digit_lut[v*2]     -> tens  digit character
 // two_digit_lut[v*2 + 1] -> ones  digit character
-static constexpr std::array<char,200> two_digit_lut = {
+static constexpr std::array<char, 200> two_digit_lut = {
     '0', '0', '0', '1', '0', '2', '0', '3', '0', '4', '0', '5', '0', '6', '0', '7', '0', '8', '0', '9', '1', '0', '1',
     '1', '1', '2', '1', '3', '1', '4', '1', '5', '1', '6', '1', '7', '1', '8', '1', '9', '2', '0', '2', '1', '2', '2',
     '2', '3', '2', '4', '2', '5', '2', '6', '2', '7', '2', '8', '2', '9', '3', '0', '3', '1', '3', '2', '3', '3', '3',
@@ -78,7 +78,6 @@ static constexpr std::array<char,200> two_digit_lut = {
     '6', '9', '7', '0', '7', '1', '7', '2', '7', '3', '7', '4', '7', '5', '7', '6', '7', '7', '7', '8', '7', '9', '8',
     '0', '8', '1', '8', '2', '8', '3', '8', '4', '8', '5', '8', '6', '8', '7', '8', '8', '8', '9', '9', '0', '9', '1',
     '9', '2', '9', '3', '9', '4', '9', '5', '9', '6', '9', '7', '9', '8', '9', '9'};
-
 
 // MSB position (0-indexed) via binary bit-scan - no floating point
 constexpr std::uint8_t msb_pos(std::uint64_t n) noexcept
@@ -134,8 +133,6 @@ constexpr std::uint8_t digit_count(std::uint64_t n) noexcept
 }
 }
 
-
-
 template<typename T>
 constexpr std::uint8_t int_to_string(T integer_value, result_buffer_type &target_buffer) noexcept
 {
@@ -185,7 +182,8 @@ constexpr std::uint8_t int_to_string(T integer_value, result_buffer_type &target
     // digit count via logarithm lookup
     std::uint8_t digits_left_to_encode = detail::digit_count(number_to_encode);
 
-    static_assert(std::clamp(static_cast<uint16_t>(201), static_cast<uint16_t>(0U), static_cast<uint16_t>(199U)) == 199);
+    static_assert(std::clamp(static_cast<uint16_t>(201), static_cast<uint16_t>(0U), static_cast<uint16_t>(199U)) ==
+                  199);
 
     // left-to-right extraction, 2 digits (0-99) per loop
     // Each iteration costs: 1 divide + 1 multiply + 1 subtract
@@ -198,7 +196,8 @@ constexpr std::uint8_t int_to_string(T integer_value, result_buffer_type &target
         // chunk must be possible to multiply by 2 without overflow
         std::uint8_t lut_index = (chunk & static_cast<uint8_t>(0b01111111)) * 2;
 
-        lut_index = std::clamp(lut_index, static_cast<uint8_t>(0U), static_cast<uint8_t>(detail::two_digit_lut.size() - 1));
+        lut_index =
+            std::clamp(lut_index, static_cast<uint8_t>(0U), static_cast<uint8_t>(detail::two_digit_lut.size() - 1));
 
         // tens
         target_buffer[target_index] = detail::two_digit_lut[lut_index];
@@ -209,7 +208,8 @@ constexpr std::uint8_t int_to_string(T integer_value, result_buffer_type &target
         ++target_index;
 
         // remove leading part
-        uint64_t number_to_reduce = static_cast<uint64_t>(chunk) * divisor; // when this is on the next line, tool misinterprets the whole thing
+        uint64_t number_to_reduce =
+            static_cast<uint64_t>(chunk) * divisor; // when this is on the next line, tool misinterprets the whole thing
         number_to_encode -= number_to_reduce;
 
         digits_left_to_encode -= 2;

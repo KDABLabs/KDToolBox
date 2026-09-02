@@ -11,7 +11,7 @@ This file is part of KDToolBox.
 #include <cassert>
 #include <iostream>
 
-constexpr bool compare_number(result_buffer_type &source, size_t num_characters, const std::string& expected)
+constexpr bool compare_number(result_buffer_type &source, size_t num_characters, const std::string &expected)
 {
     for (size_t i = 0; i < num_characters; i++)
     {
@@ -22,14 +22,14 @@ constexpr bool compare_number(result_buffer_type &source, size_t num_characters,
     return true;
 }
 
-void test_conversion(auto integer_value, const std::string& expected)
+void test_conversion(auto integer_value, const std::string &expected)
 {
     result_buffer_type target = {};
     auto characters_written = int_to_string(integer_value, target);
     assert(compare_number(target, characters_written, expected));
 }
 
-consteval bool test_conversion_ce(auto integer_value, const std::string& expected)
+consteval bool test_conversion_ce(auto integer_value, const std::string &expected)
 {
     result_buffer_type target = {};
     auto characters_written = int_to_string(integer_value, target);
