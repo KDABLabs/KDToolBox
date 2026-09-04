@@ -43,6 +43,14 @@
                 "CMAKE_C_COMPILER": "clang",
                 "CMAKE_CXX_COMPILER": "clang++"
             }
+        },
+        {
+            "name": "clazy",
+            "inherits": "dev",
+            "displayName": "Clazy build",
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "clazy"
+            }
         }
     ]
 }
