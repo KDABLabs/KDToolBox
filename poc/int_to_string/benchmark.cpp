@@ -46,13 +46,13 @@ int main()
         result_buffer_type buffer = {};
         uint64_t integer = std::numeric_limits<std::uint64_t>::max();
 
-        auto start = std::chrono::system_clock::now();
+        auto start = std::chrono::steady_clock::now();
         for (size_t i = 0; i < loop_count; ++i)
         {
             _ui64toa(integer, buffer.data(), 10);
             integer -= reduction_value;
         }
-        auto end = std::chrono::system_clock::now();
+        auto end = std::chrono::steady_clock::now();
         auto elapsed = end - start;
         std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << " ms\n";
     }
@@ -63,14 +63,15 @@ int main()
 
         uint64_t integer = std::numeric_limits<std::uint64_t>::max();
         uint64_t accumulated_characters = 0;
-        auto start = std::chrono::system_clock::now();
+        auto start = std::chrono::steady_clock::now();
+
         for (size_t i = 0; i < loop_count; ++i)
         {
             auto [ptr, ec] = std::to_chars(buffer.data(), buffer.data() + buffer.size(), integer);
             accumulated_characters += static_cast<std::size_t>(ptr - buffer.data());
             integer -= reduction_value;
         }
-        auto end = std::chrono::system_clock::now();
+        auto end = std::chrono::steady_clock::now();
 
         auto elapsed = end - start;
         std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << " ms       ";
@@ -85,13 +86,13 @@ int main()
         uint64_t integer = std::numeric_limits<std::uint64_t>::max();
         uint64_t accumulated_characters = 0;
 
-        auto start = std::chrono::system_clock::now();
+        auto start = std::chrono::steady_clock::now();
         for (size_t i = 0; i < loop_count; ++i)
         {
             accumulated_characters += int_to_string(integer, buffer);
             integer -= reduction_value;
         }
-        auto end = std::chrono::system_clock::now();
+        auto end = std::chrono::steady_clock::now();
 
         auto elapsed = end - start;
 

@@ -181,19 +181,19 @@ constexpr std::uint8_t int_to_string(T integer_value, result_buffer_type &target
     // digit count via logarithm lookup
     std::uint8_t digits_left_to_encode = detail::digit_count(number_to_encode);
 
-    static_assert(std::clamp(static_cast<uint16_t>(201), static_cast<uint16_t>(0U), static_cast<uint16_t>(199U)) ==
-                  199);
-
-    // left-to-right extraction, 2 digits (0-99) per loop
-    // Each iteration costs: 1 divide + 1 multiply + 1 subtract
-    // (vs. 2 divides + 2 mods in the classic right-to-left scheme)
-    while (digits_left_to_encode >= 2)
+// left-to-right extraction, 2 digits (0-99) per loop
+// Each iteration costs: 1 divide + 1 multiply + 1 subtract
+// (vs. 2 divides + 2 mods in the classic right-to-left scheme)
+#if KDTOOLBOX_ASTREE
+    __ASTREE_unroll((20))
+#endif
+        while (digits_left_to_encode >= 2)
     {
         std::uint64_t divisor = detail::pow10[digits_left_to_encode - 2]; // 10^(L-2)
-        auto chunk = static_cast<uint16_t>((number_to_encode / divisor) & 0xFFFFULL);
+        auto chunk = static_cast<uint16_t>(number_to_encode / divisor);
 
         // chunk must be possible to multiply by 2 without overflow
-        std::uint8_t lut_index = (chunk & static_cast<uint8_t>(0b01111111)) * 2;
+        std::uint8_t lut_index = chunk * 2;
 
         lut_index =
             std::clamp(lut_index, static_cast<uint8_t>(0U), static_cast<uint8_t>(detail::two_digit_lut.size() - 1));
