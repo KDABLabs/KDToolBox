@@ -6,11 +6,11 @@ This file is part of KDToolBox.
 
   SPDX-License-Identifier: MIT
 */
-#include <new>
-#include <utility>
 #include <cassert>
 #include <cstdint>
+#include <new>
 #include <type_traits>
+#include <utility>
 
 // enabling this allows the custom optional class to allow the "bad" behaviour
 #define ENABLE_BAD_PATTERN 0
@@ -53,10 +53,7 @@ class optional
 public:
     static_assert(!std::is_reference_v<T>, "KDToolBox::optional cannot store reference types");
     static_assert(!std::is_array_v<T>, "KDToolBox::optional cannot store array types");
-    ~optional() noexcept
-    {
-        reset();
-    }
+    ~optional() noexcept { reset(); }
 
     optional() noexcept
         : m_dummy()
@@ -325,12 +322,12 @@ __cdecl Lifetime::~Lifetime(void) noexcept
 __cdecl Lifetime::~Lifetime(void) noexcept
 __cdecl Lifetime::~Lifetime(void) noexcept
 */
- KDToolBox::optional<Lifetime> get_opt_bad_2()
- {
-     KDToolBox::optional<Lifetime> opt;
-     opt = Lifetime(42);
-     return opt;
- }
+KDToolBox::optional<Lifetime> get_opt_bad_2()
+{
+    KDToolBox::optional<Lifetime> opt;
+    opt = Lifetime(42);
+    return opt;
+}
 #endif
 
 void extra_move_and_destructor_examples()
@@ -412,7 +409,6 @@ int main()
     }
     printf("END: get_stdopt_bad_2()\n\n");
 
-
     // Good output looks like:
     //   Lifetime::Lifetime(int) noexcept
     //   Lifetime::~Lifetime(void) noexcept
@@ -469,7 +465,6 @@ int main()
         assert(ret.has_value());
         assert(ret.value() == 45);
     }
-
 
     // Bad value access
     // This code will not throw an exception but will

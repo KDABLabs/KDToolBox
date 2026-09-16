@@ -1,4 +1,4 @@
-# Return Value Optimized optional 
+# Return Value Optimized optional
 
 It is possible to use std::optional in a way that it incurs
 extra move and destructor calls.
