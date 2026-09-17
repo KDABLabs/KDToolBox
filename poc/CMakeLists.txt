@@ -9,6 +9,7 @@ add_subdirectory(compile_time_string_replacement)
 
 if(WIN32)
     add_subdirectory(int_to_string)
+    add_subdirectory(windows_waitable_timer)
 endif()
 
 add_subdirectory(rvo_optional)
